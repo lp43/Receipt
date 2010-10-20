@@ -2,6 +2,7 @@ package com.comangi.receipt;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,13 +11,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import android.content.Context;
 import android.util.Log;
 
 public class BackStage {
-
+	public static String[] nums;
 	private final static String tag="tag";
 
-	public static void dataRequest(String time){
+	public static void dataRequest(Context context,String time){
 		 URL url = null;
 		 HttpURLConnection uc = null;
 		 String buffera,contentBuffer="";
@@ -51,16 +53,35 @@ public class BackStage {
 	  					   } 					   
 				   } while(buffera !=null);
 				 
-				 int startindex = contentBuffer.indexOf("<span class=\"number\">");
-				 Log.i(tag, "<span class=\"number\">: "+String.valueOf(startindex));
-				 
-				 int endindex=contentBuffer.indexOf("</span>");
-				 Log.i(tag, "</span>: "+String.valueOf(endindex));
-				 String iwant=contentBuffer.substring(startindex, endindex);
-				 Log.i(tag, "iwant is: "+iwant);
+				   String iwant="";
+				   int startindex,endindex=0;
+				  
+				   startindex= contentBuffer.indexOf("<span class=\"number\">",endindex);
+				   endindex=contentBuffer.indexOf("</span>",endindex);
+				   while(startindex!=-1){
+//					   Log.i(tag, "startindex: "+startindex);
+					   
+//					   Log.i(tag, "endindex: "+endindex);
+					   String iwantbuffer=contentBuffer.substring(startindex+21, endindex);
+					   iwant+=iwantbuffer+"、";
+//					   Log.i(tag, "iwant: "+iwant);
+					  
+					   startindex= contentBuffer.indexOf("<span class=\"number\">",endindex);
+					   endindex=contentBuffer.indexOf("</span>",startindex);
+				   }
+			 
 				   br.close();
 				   uc.disconnect();
-			
+				   
+				   String ch=iwant.replace("、", ",");
+				   nums = ch.split(",");
+
+				   FileOutputStream fos = context.openFileOutput("receipt"+"_"+time+".txt", context.MODE_PRIVATE);
+//				   for(String num:nums){
+//					   Log.i(tag, num);	     			
+//				   }
+				   fos.write(ch.getBytes());
+				   fos.close();
 			} catch (IOException e) {
 				Log.i(tag, e.getMessage());
 			}

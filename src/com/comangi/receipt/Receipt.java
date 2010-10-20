@@ -1,24 +1,36 @@
 package com.comangi.receipt;
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Receipt extends Activity {
-	private String softversion="v1.001";
+	private String softversion="v1.003";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     TextView textview ;
 	private String tag="tag";
-	private int limit=2;
+	/**
+	 * 使用者可以設定對獎所要輸入的號碼數︰2碼或3碼
+	 */
+	private int limit=1;
+	String[] checknum;
+	private boolean got;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,9 +115,31 @@ public class Receipt extends Activity {
 				textview.setText("");		
 			} 	
         });
+        File f= new File(this.getFilesDir()+"/receipt_now.txt");
         
-        BackStage.dataRequest("now");
-        
+        if(!f.exists()){
+        	Log.i(tag, "f.exist=false");
+        	BackStage.dataRequest(this,"now");
+        }else{
+        	Log.i(tag, "f.exist=true");
+        }
+        FileInputStream fi = null;
+        try {
+			fi=new FileInputStream(f);
+		} catch (FileNotFoundException e) {
+			Log.i(tag, "Exception: "+e.getMessage());
+		}
+		InputStreamReader is=new InputStreamReader(fi);
+	   BufferedReader br =new BufferedReader(is);
+	   String getnum = null;
+        try {
+			getnum=br.readLine();
+//			Log.i(tag, "getnum: "+getnum);
+		} catch (IOException e) {
+			Log.i(tag, "IOException: "+e.getMessage());
+		}
+		checknum=getnum.split(",");
+		 
       /*  new AlertDialog.Builder(Receipt.this)
 		
 		.setTitle("何取得對獎號的方式？")
@@ -136,11 +170,71 @@ public class Receipt extends Activity {
      * @param num 當要使用這個函式時，會將要在文字框印出的數字傳進來，再做判斷，然後顯示
      */
     private void type(String num){
-    	Log.i(tag, "num: "+num);
-    	if(textview.getText().length()<limit){	
-			textview.setText(textview.getText()+num);
-		}else{
+    	
+//    	Log.i(tag, "num: "+num);
+    	if(textview.getText().length()>0&textview.getText().length()<limit){	
+			textview.setText(num+textview.getText());
+		}else if(textview.getText().length()==0){
 			textview.setText(num);	
+			got=false;
+		}else if(textview.getText().length()==limit){
+			got=false;
+			if(limit==1){
+				checkLast(textview.getText().toString());
+			}else if(limit==3){
+				checkThree(textview.getText().toString());
+			}
+			
+			
+			if(got==false){
+				textview.setText(num);//清空,直接輸入新的	
+			}
+			
+			
 		}
     }
+    
+    private void checkLast(String num){
+    	 for(String numcheck:checknum){
+    		 if(numcheck.length()==8){
+//    			 Log.i(tag, "at8: "+numcheck.substring(7));
+    			 if(num.equals(numcheck.substring(7))){
+    				 limit=3;
+    				 got=true;
+        			 Toast.makeText(this, "有機會,再來!", Toast.LENGTH_SHORT).show();
+        		 }
+    		 }else{//長度為3是特別獎
+    			 if(num.equals(numcheck.substring(2))){
+    				 limit=3;
+    				 got=true;
+        			 Toast.makeText(this, "有機會,再來!", Toast.LENGTH_SHORT).show();
+        		 } 
+    			 
+    		 }
+    
+		   }
+    }
+    
+    private void checkThree(String num){
+    	Log.i(tag, "get num is: "+num);
+   	 for(String numcheck:checknum){
+   		 if(numcheck.length()==8){
+   			 Log.i(tag, "at5-7: "+numcheck.substring(5,7));
+   			 if(num.equals(numcheck.substring(5,7))){
+   				 limit=8;
+   				 got=true;
+       			 Toast.makeText(this, "有200塊了,再來!", Toast.LENGTH_SHORT).show();
+       		 }
+   		 }else{//長度為3是特別獎
+   			 if(num.equals(numcheck.substring(0,2))){
+   				Log.i(tag, "at5-7: "+numcheck.substring(0,2));
+   				got=true;
+       			 Toast.makeText(this, "有200塊了,恭喜!", Toast.LENGTH_SHORT).show();
+       		 } 
+   			 
+   		 }
+   
+		   }
+   }
+    
 }
