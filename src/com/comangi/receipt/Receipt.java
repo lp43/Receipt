@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Receipt extends Activity {
-	private String softversion="v1.004";
+	private String softversion="v1.005";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     TextView textview ;
@@ -31,11 +32,26 @@ public class Receipt extends Activity {
 	private int limit=1;
 	String[] checknum;
 	private boolean got;
+	/**
+	 * 記錄目前8碼的末3碼是特獎還是頭獎的型態變數
+	 */
+	private static int checkEightType;
+	/**
+	 * 若程式判斷末3碼是和特獎末3碼一樣，則判斷變數為該變數
+	 */
+	private static final int eightInSpecial=1;
+	/**
+	 * 若程式判斷末3碼是和頭獎末3碼一樣，則判斷變數為該變數
+	 */
+	private static final int eightInHead=2;
+	private MediaPlayer mediaPlayer01;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.keyboard);
+        mediaPlayer01=new MediaPlayer();
+        
         textview=(TextView) findViewById(R.id.text);
         button0=(Button) findViewById(R.id.button_0);
         button1=(Button) findViewById(R.id.button_1);
@@ -53,7 +69,19 @@ public class Receipt extends Activity {
 			@Override
 			public void onClick(View v) {
 				type("0");
-					
+				
+				mediaPlayer01=MediaPlayer.create(Receipt.this, R.raw.zero);
+				try {				
+					mediaPlayer01.start();
+				} catch (IllegalStateException e) {
+					Log.i(tag, "IllegalStateException: "+e.getMessage());
+					e.printStackTrace();
+				} /*catch (IOException e) {
+					Log.i(tag, "IOException: "+e.getMessage());
+					e.printStackTrace();
+				}*/
+//				mediaPlayer01.stop();
+				
 			} 	
         });
         button1.setOnClickListener(new OnClickListener(){
@@ -164,9 +192,32 @@ public class Receipt extends Activity {
 			};
 		})
 		.show();*/
+		
+		mediaPlayer01.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				
+				mp.release();
+				
+			}
+		});
+		mediaPlayer01.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+
+			@Override
+			public boolean onError(MediaPlayer mp, int what, int extra) {
+				
+				mp.release();
+				return false;
+			}
+		});
     }
     
-    /**
+
+
+
+
+	/**
      * 描述 : 頂頭描述框的計算公式<br/>
      * @param num 當要使用這個函式時，會將要在文字框印出的數字傳進來，再做判斷，然後顯示
      */
@@ -236,14 +287,21 @@ public class Receipt extends Activity {
      */
     private void checkThree(String num){
     	Log.i(tag, "get 3num is: "+ num);
+    	int i=0;
     	 for(String numcheck:checknum){
-    		
+    		i++;
     		 if(numcheck.length()==8){//從file目錄抓出來的txt檔，轉為for迴圈後，會有6組8個號碼和1組3個號碼,當長度為8,也就是頭獎和特獎時
+    			 
 //    			 Log.i(tag, "numlength 8:"+numcheck);
     			 if(num.equals(numcheck.substring(5,8))){//當傳進來的3碼和特、頭獎的第5~8碼數值一樣時
     				 limit=8;
     				 got=true;
         			 Toast.makeText(this, "再來,再來!", Toast.LENGTH_SHORT).show();
+        			 if(i<4){
+        				 checkEightType=eightInSpecial;
+        			 }else if(i>=4){
+        				 checkEightType=eightInHead;
+        			 }
         			 return;
         		 }
     		 }else if(numcheck.length()==3){ //當for迴圈跑到最後一筆3碼時
@@ -282,187 +340,177 @@ public class Receipt extends Activity {
      */
     private void checkEight(String num){
     	Log.i(tag, "get 8num is: "+ num);
+    	Log.i(tag, "getEightType is: "+checkEightType);
     	int i=0;
-    	 for(String numcheck:checknum){
-    		i++;//i幫我判別是特獎、頭獎還是增開獎
-//    		Log.i(tag, "i: "+i);
-    		 if(numcheck.length()==8){
-    			 
-//    			 Log.i(tag, "numlength 8:"+numcheck);
-    			 limit=1;
-    			 if(num.equals(numcheck)){//如果傳來的8組數字和迴圈的6個一樣
-    				 Log.i(tag, "into equal 0-8");
-    				 got=true;
-    				 if(i<4){//如果是在for迴圈的前3筆,代表中了最大獎
-    					 new AlertDialog.Builder(this)
- 						.setTitle("恭喜你中了特獎")
- 						.setIcon(R.drawable.warning)
- 						.setMessage("獎金: 200萬!")
- 						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
- 							@Override
- 							public void onClick(DialogInterface dialog, int which) {
- 								textview.setText("");
- 							}
- 							})
- 						
- 						.show();	
-    					 return;
-    				 }//如果是前3組，就是特獎的結束區塊
-    				 else if(i>=4){//如果是for迴圈的後四組代表中了20萬
-    					 new AlertDialog.Builder(this)
-  						.setTitle("恭喜你中了頭獎")
-  						.setIcon(R.drawable.warning)
-  						.setMessage("獎金: 20萬!")
-  						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
-  							@Override
-  							public void onClick(DialogInterface dialog, int which) {
-  								textview.setText("");
-  							}
-  							})
-  						.show(); 
-    					 return;
-    				 }//否則就是頭獎的結束區塊
-    				 else if(num.substring(1,8).equals(numcheck.substring(1,8))&i>=4){
-        				 //如果傳進來的末7碼是頭獎的7碼一樣，代表中六獎
-            			 Log.i(tag, "into not equal 0-8");
-            			 new AlertDialog.Builder(this)
-    						.setTitle("恭喜你中了二獎")
-    						.setIcon(R.drawable.warning)
-    						.setMessage("獎金: 4萬元!")
-    						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+    	
+   	 for(String numcheck:checknum){
+   		i++;//i幫我判別是特獎、頭獎還是增開獎
+//   		Log.i(tag, "i: "+i);
+   		
+   	
+		 
+//		 Log.i(tag, "numlength 8:"+numcheck);
+		 limit=1;
+		 if(checkEightType==eightInSpecial){
+			 if(num.equals(numcheck)){//如果傳來的8組數字和迴圈的6個一樣
+				 Log.i(tag, "into special equal 0-8");
+				 got=true;
+				
+					 new AlertDialog.Builder(this)
+						.setTitle("恭喜你中了特獎")
+						.setIcon(R.drawable.warning)
+						.setMessage("獎金: 200萬!")
+						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
-    							@Override
-    							public void onClick(DialogInterface dialog, int which) {
-    								textview.setText("");
-    							}
-    							})
-    						
-    						.show();	
-     					 return;
-            		 } 
-    				 else if(num.substring(2,8).equals(numcheck.substring(2,8))&i>=4){
-        				 //如果傳進來的末6碼是頭獎的6碼一樣，代表中六獎
-            			 Log.i(tag, "into not equal 0-8");
-            			 new AlertDialog.Builder(this)
-    						.setTitle("恭喜你中了三獎")
-    						.setIcon(R.drawable.warning)
-    						.setMessage("獎金: 1萬元!")
-    						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								textview.setText("");
+							}
+							})
+						
+						.show();	
+		 
+					 return;
+			 }else {
+				//如果傳進來的8位數沒有全部一樣，代表沒中
+				 Log.i(tag, "into special no equal");
+    			 new AlertDialog.Builder(this)
+					.setTitle("真可惜")
+					.setIcon(R.drawable.warning)
+					.setMessage("沒中...")
+					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
-    							@Override
-    							public void onClick(DialogInterface dialog, int which) {
-    								textview.setText("");
-    							}
-    							})
-    						
-    						.show();	
-     					 return;
-            		 } 
-    				 else if(num.substring(3,8).equals(numcheck.substring(3,8))&i>=4){
-        				 //如果傳進來的末5碼是頭獎的5碼一樣，代表中六獎
-            			 Log.i(tag, "into not equal 0-8");
-            			 new AlertDialog.Builder(this)
-    						.setTitle("恭喜你中了四獎")
-    						.setIcon(R.drawable.warning)
-    						.setMessage("獎金: 4,000塊")
-    						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-    							@Override
-    							public void onClick(DialogInterface dialog, int which) {
-    								textview.setText("");
-    							}
-    							})
-    						
-    						.show();	
-     					 return;
-            		 } 
-    				 else if(num.substring(4,8).equals(numcheck.substring(4,8))&i>=4){
-        				 //如果傳進來的末4碼是頭獎的4碼一樣，代表中六獎
-            			 Log.i(tag, "into not equal 0-8");
-            			 new AlertDialog.Builder(this)
-    						.setTitle("恭喜你中了五獎")
-    						.setIcon(R.drawable.warning)
-    						.setMessage("獎金: 1,000塊")
-    						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-    							@Override
-    							public void onClick(DialogInterface dialog, int which) {
-    								textview.setText("");
-    							}
-    							})
-    						
-    						.show();	
-     					 return;
-            		 } 
-    				 else if(num.substring(5,8).equals(numcheck.substring(5,8))&i>=4){
-        				 //如果傳進來的末3碼是頭獎的3碼一樣，代表中六獎
-            			 Log.i(tag, "into not equal 0-8");
-            			 new AlertDialog.Builder(this)
-    						.setTitle("恭喜你中了六獎")
-    						.setIcon(R.drawable.warning)
-    						.setMessage("獎金: 200塊")
-    						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-    							@Override
-    							public void onClick(DialogInterface dialog, int which) {
-    								textview.setText("");
-    							}
-    							})
-    						
-    						.show();	
-     					 return;
-            		 }
-    				 else if(num.substring(5,8).equals(numcheck.substring(5,8))&i<4){
-    	    				//如果傳進來的8組的末3碼是特獎的末3碼，沒中
-    	        			 Log.i(tag, "into not equal 0-8");
-    	        			 new AlertDialog.Builder(this)
-    							.setTitle("真可惜")
-    							.setIcon(R.drawable.warning)
-    							.setMessage("沒中...")
-    							.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-    								@Override
-    								public void onClick(DialogInterface dialog, int which) {
-    									textview.setText("");
-    									limit=1;
-    			        			 	got=false;
-    								}
-    								})
-    							
-    							.show();	
-    	        			
-    	 					 return;
-    	        		 }
-    				 else{
-    				     //如果不是特獎也不是頭獎，就是普通獎
-    					 new AlertDialog.Builder(this)
-  						.setTitle("恭喜你中了六獎")
-  						.setIcon(R.drawable.warning)
-  						.setMessage("獎金: 200塊")
-  						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-  							@Override
-  							public void onClick(DialogInterface dialog, int which) {
-  								textview.setText("");
-  							}
-  							})
-  						
-  						.show();	
-    					 return;
-    				 }
-        			 
-        			 
-        		 }//如果進來的數字和8碼相符的結束區塊
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							textview.setText("");
+							limit=1;
+	        			 	got=false;
+						}
+						})
+					
+					.show();	
     			
-    			
-    			
-    			
-    			 
-    			
-    			 
-    		 }//跳出所有數字了的區塊
-		   }//for結束區塊
+					 return;
+			 }
+		 }else if(checkEightType==eightInHead){
+			 if(num.equals(numcheck)){//如果傳來的8組數字和迴圈的6個一樣
+				 Log.i(tag, "into Head equal 0-8");
+				 got=true;
+				
+					 new AlertDialog.Builder(this)
+						.setTitle("恭喜你中了頭獎")
+						.setIcon(R.drawable.warning)
+						.setMessage("獎金: 20萬!")
+						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								textview.setText("");
+							}
+							})
+						
+						.show();	
+		 
+					 return;
+			 } else if(num.substring(1,8).equals(numcheck.substring(1,8))){
+				 //如果傳進來的末7碼是頭獎的7碼一樣，代表中六獎
+				 Log.i(tag, "into Head equal 1-8");
+    			 new AlertDialog.Builder(this)
+					.setTitle("恭喜你中了二獎")
+					.setIcon(R.drawable.warning)
+					.setMessage("獎金: 4萬元!")
+					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							textview.setText("");
+						}
+						})
+					
+					.show();	
+					 return;
+    		 } 
+			 else if(num.substring(2,8).equals(numcheck.substring(2,8))){
+				 //如果傳進來的末6碼是頭獎的6碼一樣，代表中六獎
+				 Log.i(tag, "into Head equal 2-8");
+    			 new AlertDialog.Builder(this)
+					.setTitle("恭喜你中了三獎")
+					.setIcon(R.drawable.warning)
+					.setMessage("獎金: 1萬元!")
+					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							textview.setText("");
+						}
+						})
+					
+					.show();	
+					 return;
+    		 } 
+			 else if(num.substring(3,8).equals(numcheck.substring(3,8))){
+				 //如果傳進來的末5碼是頭獎的5碼一樣，代表中六獎
+				 Log.i(tag, "into Head equal 3-8");
+    			 new AlertDialog.Builder(this)
+					.setTitle("恭喜你中了四獎")
+					.setIcon(R.drawable.warning)
+					.setMessage("獎金: 4千塊")
+					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							textview.setText("");
+						}
+						})
+					
+					.show();	
+					 return;
+    		 } 
+			 else if(num.substring(4,8).equals(numcheck.substring(4,8))){
+				 //如果傳進來的末4碼是頭獎的4碼一樣，代表中六獎
+				 Log.i(tag, "into Head equal 4-8");
+    			 new AlertDialog.Builder(this)
+					.setTitle("恭喜你中了五獎")
+					.setIcon(R.drawable.warning)
+					.setMessage("獎金: 1千塊")
+					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							textview.setText("");
+						}
+						})
+					
+					.show();	
+					 return;
+    		 } 
+			 else if(num.substring(5,8).equals(numcheck.substring(5,8))){
+				 //如果傳進來的末3碼是頭獎的3碼一樣，代表中六獎
+				 Log.i(tag, "into Head equal 5-8");
+    			 new AlertDialog.Builder(this)
+					.setTitle("恭喜你中了六獎")
+					.setIcon(R.drawable.warning)
+					.setMessage("獎金: 200塊")
+					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							textview.setText("");
+						}
+						})
+					
+					.show();	
+					 return;
+    		 }
+	   	
+		 }
+
+   		
+   		
+   		
+	   }//for結束區塊
    }
+    
 }
