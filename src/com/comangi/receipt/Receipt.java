@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Receipt extends Activity {
-	private String softversion="v1.005";
+	private String softversion="v1.006";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     TextView textview ;
@@ -45,6 +46,10 @@ public class Receipt extends Activity {
 	 */
 	private static final int eightInHead=2;
 	private MediaPlayer mediaPlayer01;
+	/*
+	 * 播放音效的版本變數
+	 */
+	private String voice_version="tw";
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,82 +71,159 @@ public class Receipt extends Activity {
         button_clear=(Button) findViewById(R.id.button_clear);
         
         button0.setOnClickListener(new OnClickListener(){
+			
+
 			@Override
 			public void onClick(View v) {
-				type("0");
-				
-				mediaPlayer01=MediaPlayer.create(Receipt.this, R.raw.zero);
-				try {				
-					mediaPlayer01.start();
-				} catch (IllegalStateException e) {
-					Log.i(tag, "IllegalStateException: "+e.getMessage());
-					e.printStackTrace();
-				} /*catch (IOException e) {
-					Log.i(tag, "IOException: "+e.getMessage());
-					e.printStackTrace();
-				}*/
-//				mediaPlayer01.stop();
-				
+				type("0");	
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("zero",voice_version);				
 			} 	
         });
         button1.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("1");		
+				type("1");
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("one",voice_version);	
 			} 	
         });
         button2.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("2");	
+				type("2");
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("two",voice_version);	
 			} 	
         });
         button3.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("3");		
+				type("3");
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("three",voice_version);	
 			} 	
         });
         button4.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				type("4");		
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("four",voice_version);	
 			} 	
         });
         button5.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				type("5");		
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("five",voice_version);	
 			} 	
         });
         button6.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("6");		
+				type("6");	
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("six",voice_version);	
 			} 	
         });
         button7.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("7");		
+				type("7");	
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("seven",voice_version);	
 			} 	
         });
         button8.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("8");		
+				type("8");	
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("eight",voice_version);	
 			} 	
         });
         button9.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("9");		
+				type("9");	
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("nine",voice_version);	
 			} 	
         });
         button_clear.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				textview.setText("");		
+				textview.setText("");
+				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
+				String voice_version="";
+				if(Receipt.this.voice_version.equals("big")){
+					voice_version="regular";
+				}else{
+					voice_version=Receipt.this.voice_version;
+				}
+				createMedia("clear",voice_version);	
 			} 	
         });
         File f= new File(this.getFilesDir()+"/receipt_now.txt");
@@ -193,24 +275,7 @@ public class Receipt extends Activity {
 		})
 		.show();*/
 		
-		mediaPlayer01.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-			
-			@Override
-			public void onCompletion(MediaPlayer mp) {
-				
-				mp.release();
-				
-			}
-		});
-		mediaPlayer01.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-
-			@Override
-			public boolean onError(MediaPlayer mp, int what, int extra) {
-				
-				mp.release();
-				return false;
-			}
-		});
+		
     }
     
 
@@ -260,7 +325,8 @@ public class Receipt extends Activity {
     			 if(num.equals(numcheck.substring(7))){//陣列的碼數是從0開始算，所以最尾碼是7
     				 limit=3;
     				 got=true;
-        			 Toast.makeText(this, "有機會,再來!", Toast.LENGTH_SHORT).show();
+//        			 Toast.makeText(this, "有機會,再來!", Toast.LENGTH_SHORT).show();
+        			 createMedia("again");
         			 return;
         		 }
     		 }else if(numcheck.length()==3){ //如果for迴圈出來的長度是3，代表是增開獎的獎項
@@ -268,13 +334,15 @@ public class Receipt extends Activity {
     			 limit=3;
 				 got=true;
     			 Toast.makeText(this, "有機會,再來!", Toast.LENGTH_SHORT).show();
+    			 createMedia("again");
     			 return;
     		 }else{
     			 //如果最尾碼根本就沒有對到任何數字，就清除文字框
     			 limit=1;
     			 got=false;
     			 textview.setText("");
-    			 Toast.makeText(this, "沒中...", Toast.LENGTH_SHORT).show(); 
+//    			 Toast.makeText(this, "沒中...", Toast.LENGTH_SHORT).show();
+    			 createMedia("no");
     			 return;
     		 	  }	 
     		 }
@@ -297,6 +365,7 @@ public class Receipt extends Activity {
     				 limit=8;
     				 got=true;
         			 Toast.makeText(this, "再來,再來!", Toast.LENGTH_SHORT).show();
+        			 createMedia("again");
         			 if(i<4){
         				 checkEightType=eightInSpecial;
         			 }else if(i>=4){
@@ -309,6 +378,7 @@ public class Receipt extends Activity {
     		 	if(num.equals(numcheck.substring(0,3))){//當傳進來的碼和for迴圈的尾碼相吻合時
 	    			limit=1;
 				    got=true;
+				    createMedia("notsimple");
 				    new AlertDialog.Builder(this)
 						.setTitle("恭喜你中了增開六獎")
 						.setIcon(R.drawable.warning)
@@ -327,7 +397,8 @@ public class Receipt extends Activity {
     			 limit=1;
     			 got=false;
     			 textview.setText("");
-    			 Toast.makeText(this, "沒中...", Toast.LENGTH_SHORT).show(); 
+//    			 Toast.makeText(this, "沒中...", Toast.LENGTH_SHORT).show(); 
+    			 createMedia("nono");
     			 return;
     		 	}	 
     		 }
@@ -354,10 +425,11 @@ public class Receipt extends Activity {
 //		 Log.i(tag, "numlength 8:"+numcheck);
 		 limit=1;
 		 if(checkEightType==eightInSpecial){
+			 Log.i(tag, "now check to: "+numcheck);
 			 if(num.equals(numcheck)){//如果傳來的8組數字和迴圈的6個一樣
 				 Log.i(tag, "into special equal 0-8");
 				 got=true;
-				
+				 createMedia("million2");
 					 new AlertDialog.Builder(this)
 						.setTitle("恭喜你中了特獎")
 						.setIcon(R.drawable.warning)
@@ -373,9 +445,11 @@ public class Receipt extends Activity {
 						.show();	
 		 
 					 return;
-			 }else {
+			 }else if(i==4){
 				//如果傳進來的8位數沒有全部一樣，代表沒中
 				 Log.i(tag, "into special no equal");
+				 Log.i(tag, "now check to: "+numcheck);
+				 createMedia("noany");
     			 new AlertDialog.Builder(this)
 					.setTitle("真可惜")
 					.setIcon(R.drawable.warning)
@@ -398,7 +472,7 @@ public class Receipt extends Activity {
 			 if(num.equals(numcheck)){//如果傳來的8組數字和迴圈的6個一樣
 				 Log.i(tag, "into Head equal 0-8");
 				 got=true;
-				
+				 createMedia("th200");
 					 new AlertDialog.Builder(this)
 						.setTitle("恭喜你中了頭獎")
 						.setIcon(R.drawable.warning)
@@ -417,6 +491,7 @@ public class Receipt extends Activity {
 			 } else if(num.substring(1,8).equals(numcheck.substring(1,8))){
 				 //如果傳進來的末7碼是頭獎的7碼一樣，代表中六獎
 				 Log.i(tag, "into Head equal 1-8");
+				 createMedia("onlycon");
     			 new AlertDialog.Builder(this)
 					.setTitle("恭喜你中了二獎")
 					.setIcon(R.drawable.warning)
@@ -435,6 +510,7 @@ public class Receipt extends Activity {
 			 else if(num.substring(2,8).equals(numcheck.substring(2,8))){
 				 //如果傳進來的末6碼是頭獎的6碼一樣，代表中六獎
 				 Log.i(tag, "into Head equal 2-8");
+				 createMedia("onlycon");
     			 new AlertDialog.Builder(this)
 					.setTitle("恭喜你中了三獎")
 					.setIcon(R.drawable.warning)
@@ -453,6 +529,7 @@ public class Receipt extends Activity {
 			 else if(num.substring(3,8).equals(numcheck.substring(3,8))){
 				 //如果傳進來的末5碼是頭獎的5碼一樣，代表中六獎
 				 Log.i(tag, "into Head equal 3-8");
+				 createMedia("onlycon");
     			 new AlertDialog.Builder(this)
 					.setTitle("恭喜你中了四獎")
 					.setIcon(R.drawable.warning)
@@ -471,6 +548,7 @@ public class Receipt extends Activity {
 			 else if(num.substring(4,8).equals(numcheck.substring(4,8))){
 				 //如果傳進來的末4碼是頭獎的4碼一樣，代表中六獎
 				 Log.i(tag, "into Head equal 4-8");
+				 createMedia("onlycon");
     			 new AlertDialog.Builder(this)
 					.setTitle("恭喜你中了五獎")
 					.setIcon(R.drawable.warning)
@@ -489,6 +567,7 @@ public class Receipt extends Activity {
 			 else if(num.substring(5,8).equals(numcheck.substring(5,8))){
 				 //如果傳進來的末3碼是頭獎的3碼一樣，代表中六獎
 				 Log.i(tag, "into Head equal 5-8");
+				 createMedia("hundred2");				 
     			 new AlertDialog.Builder(this)
 					.setTitle("恭喜你中了六獎")
 					.setIcon(R.drawable.warning)
@@ -512,5 +591,86 @@ public class Receipt extends Activity {
    		
 	   }//for結束區塊
    }
+    private void createMedia(String userPressed,String voice_version){
+    	
+    	
+		
+    	try {
+//    		Log.i(tag, "get choice is: "+userPressed);
+    		
+    		mediaPlayer01/*media*/=MediaPlayer.create(Receipt.this, Receipt.this.getResources().getIdentifier(userPressed+"_"+voice_version, "raw", this.getPackageName()));
+        		
+
+//			 mediaPlayer01.prepare();	
+    		mediaPlayer01/*media*/.start();
+			} catch (IllegalStateException e) {
+				Log.i(tag, "IllegalStateException: "+e.getMessage());
+				e.printStackTrace();
+			} /*catch (IOException e) {
+				Log.i(tag, "IOException: "+e.getMessage());
+				e.printStackTrace();
+			}*/
+//			mediaPlayer01.stop();
+			
+			
+			mediaPlayer01/*media*/.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+				
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+//					Log.i(tag, "into onCompletion()");
+					mp.release();
+					
+				}
+			});
+			mediaPlayer01/*media*/.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+
+				@Override
+				public boolean onError(MediaPlayer mp, int what, int extra) {
+//					Log.i(tag, "into onError()");
+					mp.release();
+					return false;
+				}
+			});
+    }
+ 
     
+    private void createMedia(String userPressed){
+	
+    	try {
+    		Log.i(tag, "get choice is: "+userPressed);
+    		
+    		mediaPlayer01/*media*/=MediaPlayer.create(Receipt.this, Receipt.this.getResources().getIdentifier(userPressed+"_"+voice_version, "raw", this.getPackageName()));
+        		
+
+//			 mediaPlayer01.prepare();	
+    		mediaPlayer01/*media*/.start();
+			} catch (IllegalStateException e) {
+				Log.i(tag, "IllegalStateException: "+e.getMessage());
+				e.printStackTrace();
+			} /*catch (IOException e) {
+				Log.i(tag, "IOException: "+e.getMessage());
+				e.printStackTrace();
+			}*/
+//			mediaPlayer01.stop();
+			
+			
+			mediaPlayer01/*media*/.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+				
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+//					Log.i(tag, "into onCompletion()");
+					mp.release();
+					
+				}
+			});
+			mediaPlayer01/*media*/.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+
+				@Override
+				public boolean onError(MediaPlayer mp, int what, int extra) {
+//					Log.i(tag, "into onError()");
+					mp.release();
+					return false;
+				}
+			});
+    }
 }
