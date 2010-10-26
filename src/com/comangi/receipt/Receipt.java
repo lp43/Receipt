@@ -10,19 +10,25 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Receipt extends Activity {
-	private String softversion="v1.006";
+	private String softversion="v1.007";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     TextView textview ;
@@ -49,13 +55,19 @@ public class Receipt extends Activity {
 	/*
 	 * 播放音效的版本變數
 	 */
-	private String voice_version="tw";
-	
+	private String voice_version="regular";
+	AudioManager am;
+	  Toast toast;
+	  
+	  
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.keyboard);
         mediaPlayer01=new MediaPlayer();
+        
+        am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+       
         
         textview=(TextView) findViewById(R.id.text);
         button0=(Button) findViewById(R.id.button_0);
@@ -326,6 +338,7 @@ public class Receipt extends Activity {
     				 limit=3;
     				 got=true;
 //        			 Toast.makeText(this, "有機會,再來!", Toast.LENGTH_SHORT).show();
+    				
         			 createMedia("again");
         			 return;
         		 }
@@ -364,7 +377,19 @@ public class Receipt extends Activity {
     			 if(num.equals(numcheck.substring(5,8))){//當傳進來的3碼和特、頭獎的第5~8碼數值一樣時
     				 limit=8;
     				 got=true;
-        			 Toast.makeText(this, "再來,再來!", Toast.LENGTH_SHORT).show();
+        			 
+    				  Toast toast = Toast.makeText(this, "再來！再來！", Toast.LENGTH_SHORT);
+	   			      View originView=toast.getView();
+	   			      LinearLayout layout= new LinearLayout(this);
+	   			      layout.setOrientation(LinearLayout.VERTICAL);
+	   			      ImageView view = new ImageView(this);
+	   			      view.setImageResource(R.drawable.again);
+	   			      layout.addView(view);
+	   			      layout.addView(originView);
+	   			      toast.setView(layout);
+	   			      toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+	   			      toast.show();
+   			      
         			 createMedia("again");
         			 if(i<4){
         				 checkEightType=eightInSpecial;
@@ -380,9 +405,9 @@ public class Receipt extends Activity {
 				    got=true;
 				    createMedia("notsimple");
 				    new AlertDialog.Builder(this)
-						.setTitle("恭喜你中了增開六獎")
-						.setIcon(R.drawable.warning)
-						.setMessage("獎金: 200塊")
+				    	.setTitle("恭喜你")
+						.setIcon(R.drawable.congratulations)
+						.setMessage("恭喜你中了[增開六獎]\n獎金: 200塊")
 						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 							@Override
@@ -397,7 +422,20 @@ public class Receipt extends Activity {
     			 limit=1;
     			 got=false;
     			 textview.setText("");
-//    			 Toast.makeText(this, "沒中...", Toast.LENGTH_SHORT).show(); 
+    			
+    			      Toast toast = Toast.makeText(this, "沒中...", Toast.LENGTH_SHORT);
+    			      View originView=toast.getView();
+    			      LinearLayout layout= new LinearLayout(this);
+    			      layout.setOrientation(LinearLayout.VERTICAL);
+    			      ImageView view = new ImageView(this);
+    			      view.setImageResource(R.drawable.no);
+    			      layout.addView(view);
+    			      layout.addView(originView);
+    			      toast.setView(layout);
+    			      toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+    			      toast.show();
+
+
     			 createMedia("nono");
     			 return;
     		 	}	 
@@ -431,9 +469,9 @@ public class Receipt extends Activity {
 				 got=true;
 				 createMedia("million2");
 					 new AlertDialog.Builder(this)
-						.setTitle("恭喜你中了特獎")
-						.setIcon(R.drawable.warning)
-						.setMessage("獎金: 200萬!")
+				    	.setTitle("恭喜你")
+						.setIcon(R.drawable.million2)
+						.setMessage("恭喜你中了[特獎]\n獎金: 200萬!")
 						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 							@Override
@@ -451,9 +489,9 @@ public class Receipt extends Activity {
 				 Log.i(tag, "now check to: "+numcheck);
 				 createMedia("noany");
     			 new AlertDialog.Builder(this)
-					.setTitle("真可惜")
-					.setIcon(R.drawable.warning)
-					.setMessage("沒中...")
+			    	.setTitle("真可惜")				    	
+					.setIcon(R.drawable.noany)
+					.setMessage("真可惜\n沒中...")
 					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 						@Override
@@ -474,9 +512,9 @@ public class Receipt extends Activity {
 				 got=true;
 				 createMedia("th200");
 					 new AlertDialog.Builder(this)
-						.setTitle("恭喜你中了頭獎")
-						.setIcon(R.drawable.warning)
-						.setMessage("獎金: 20萬!")
+					 	.setTitle("恭喜你")
+						.setIcon(R.drawable.th200)
+						.setMessage("恭喜你中了[頭獎]\n獎金: 20萬!")
 						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 							@Override
@@ -493,9 +531,9 @@ public class Receipt extends Activity {
 				 Log.i(tag, "into Head equal 1-8");
 				 createMedia("onlycon");
     			 new AlertDialog.Builder(this)
-					.setTitle("恭喜你中了二獎")
-					.setIcon(R.drawable.warning)
-					.setMessage("獎金: 4萬元!")
+    			 	.setTitle("恭喜你")
+					.setIcon(R.drawable.congratulations)
+					.setMessage("恭喜你中了[二獎]\n獎金: 4萬元!")
 					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 						@Override
@@ -512,9 +550,9 @@ public class Receipt extends Activity {
 				 Log.i(tag, "into Head equal 2-8");
 				 createMedia("onlycon");
     			 new AlertDialog.Builder(this)
-					.setTitle("恭喜你中了三獎")
-					.setIcon(R.drawable.warning)
-					.setMessage("獎金: 1萬元!")
+    			 	.setTitle("恭喜你")
+					.setIcon(R.drawable.congratulations)
+					.setMessage("恭喜你中了[三獎]\n獎金: 1萬元!")
 					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 						@Override
@@ -531,9 +569,9 @@ public class Receipt extends Activity {
 				 Log.i(tag, "into Head equal 3-8");
 				 createMedia("onlycon");
     			 new AlertDialog.Builder(this)
-					.setTitle("恭喜你中了四獎")
-					.setIcon(R.drawable.warning)
-					.setMessage("獎金: 4千塊")
+    			 	.setTitle("恭喜你")
+					.setIcon(R.drawable.congratulations)
+					.setMessage("恭喜你中了[四獎]\n獎金: 4千塊")
 					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 						@Override
@@ -550,9 +588,9 @@ public class Receipt extends Activity {
 				 Log.i(tag, "into Head equal 4-8");
 				 createMedia("onlycon");
     			 new AlertDialog.Builder(this)
-					.setTitle("恭喜你中了五獎")
-					.setIcon(R.drawable.warning)
-					.setMessage("獎金: 1千塊")
+    			 	.setTitle("恭喜你")
+					.setIcon(R.drawable.congratulations)
+					.setMessage("恭喜你中了[五獎]\n獎金: 1千塊")
 					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 						@Override
@@ -569,9 +607,9 @@ public class Receipt extends Activity {
 				 Log.i(tag, "into Head equal 5-8");
 				 createMedia("hundred2");				 
     			 new AlertDialog.Builder(this)
-					.setTitle("恭喜你中了六獎")
-					.setIcon(R.drawable.warning)
-					.setMessage("獎金: 200塊")
+    			 	.setTitle("恭喜你")
+					.setIcon(R.drawable.hundred2)
+					.setMessage("恭喜你中了[六獎]\n獎金: 200塊")
 					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 						@Override
@@ -598,11 +636,11 @@ public class Receipt extends Activity {
     	try {
 //    		Log.i(tag, "get choice is: "+userPressed);
     		
-    		mediaPlayer01/*media*/=MediaPlayer.create(Receipt.this, Receipt.this.getResources().getIdentifier(userPressed+"_"+voice_version, "raw", this.getPackageName()));
+    		mediaPlayer01=MediaPlayer.create(Receipt.this, Receipt.this.getResources().getIdentifier(userPressed+"_"+voice_version, "raw", this.getPackageName()));
         		
 
 //			 mediaPlayer01.prepare();	
-    		mediaPlayer01/*media*/.start();
+    		mediaPlayer01.start();
 			} catch (IllegalStateException e) {
 				Log.i(tag, "IllegalStateException: "+e.getMessage());
 				e.printStackTrace();
@@ -613,7 +651,7 @@ public class Receipt extends Activity {
 //			mediaPlayer01.stop();
 			
 			
-			mediaPlayer01/*media*/.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			mediaPlayer01.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 				
 				@Override
 				public void onCompletion(MediaPlayer mp) {
@@ -622,7 +660,7 @@ public class Receipt extends Activity {
 					
 				}
 			});
-			mediaPlayer01/*media*/.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+			mediaPlayer01.setOnErrorListener(new MediaPlayer.OnErrorListener() {
 
 				@Override
 				public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -638,12 +676,11 @@ public class Receipt extends Activity {
 	
     	try {
     		Log.i(tag, "get choice is: "+userPressed);
-    		
-    		mediaPlayer01/*media*/=MediaPlayer.create(Receipt.this, Receipt.this.getResources().getIdentifier(userPressed+"_"+voice_version, "raw", this.getPackageName()));
-        		
 
-//			 mediaPlayer01.prepare();	
-    		mediaPlayer01/*media*/.start();
+    			mediaPlayer01=MediaPlayer.create(Receipt.this, Receipt.this.getResources().getIdentifier(userPressed+"_"+voice_version, "raw", this.getPackageName()));
+        		mediaPlayer01.start();
+
+    		
 			} catch (IllegalStateException e) {
 				Log.i(tag, "IllegalStateException: "+e.getMessage());
 				e.printStackTrace();
@@ -654,7 +691,7 @@ public class Receipt extends Activity {
 //			mediaPlayer01.stop();
 			
 			
-			mediaPlayer01/*media*/.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			mediaPlayer01.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 				
 				@Override
 				public void onCompletion(MediaPlayer mp) {
@@ -663,7 +700,7 @@ public class Receipt extends Activity {
 					
 				}
 			});
-			mediaPlayer01/*media*/.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+			mediaPlayer01.setOnErrorListener(new MediaPlayer.OnErrorListener() {
 
 				@Override
 				public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -673,4 +710,51 @@ public class Receipt extends Activity {
 				}
 			});
     }
+    
+    
+    @Override//覆寫音量放大或縮小鍵為控制媒體音量鍵
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int action = event.getAction();
+        int keyCode = event.getKeyCode(); 
+
+            switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (action == KeyEvent.ACTION_UP) {
+//                    Log.i(tag, "volume_up");
+                    am.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, 0);
+//                    Log.i(tag, "getStreamvolume: "+String.valueOf(am.getStreamVolume(AudioManager.STREAM_MUSIC)));
+//                    Log.i(tag,"getStreamMaxVolume: "+String.valueOf(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)));
+                 	
+                    if(toast!=null){
+//                    	toast.cancel();
+                    	toast.setText("最大音量︰ "+am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)+"\n目前音量︰ "+am.getStreamVolume(AudioManager.STREAM_MUSIC));
+                    }else{
+                    	toast=Toast.makeText(this, "最大音量︰ "+am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)+"\n目前音量︰ "+am.getStreamVolume(AudioManager.STREAM_MUSIC), Toast.LENGTH_SHORT);	
+                    }
+                    
+
+                    toast.show();
+                }
+                return true;
+
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (action == KeyEvent.ACTION_UP) {
+//                	Log.i(tag, "volume_down");
+                	am.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, 0);
+                	
+                	 if(toast!=null){
+//                     	toast.cancel();
+                		 toast.setText("最大音量︰ "+am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)+"\n目前音量︰ "+am.getStreamVolume(AudioManager.STREAM_MUSIC));
+                     }else{
+                     toast=Toast.makeText(this, "最大音量︰ "+am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)+"\n目前音量︰ "+am.getStreamVolume(AudioManager.STREAM_MUSIC), Toast.LENGTH_SHORT);
+                     }
+                	 toast.show();
+                }
+//                Log.i(tag, "action: "+action);
+                return true;
+            default:
+                return super.dispatchKeyEvent(event);
+            }
+            
+        }
 }

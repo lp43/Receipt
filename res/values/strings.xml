@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="hello">Hello World, Receipt!</string>
-    <string name="app_name">Receipt</string>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+	
+    <string name="app_name">統一發票愛我</string>
+    <string name="title1">中華民國99年7-8月份</string>
+	<string name="title2">收銀機統一發票</string>
+	<string name="title3">(收執聯)</string>
 </resources>
