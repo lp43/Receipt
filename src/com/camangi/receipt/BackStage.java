@@ -1,4 +1,4 @@
-package com.comangi.receipt;
+package com.camangi.receipt;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,11 +12,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 public class BackStage {
 	public static String[] nums;
 	private final static String tag="tag";
+	static WifiManager wm;
+	static ConnectivityManager cm;
 
 	public static void dataRequest(Context context,String time){
 		 URL url = null;
@@ -54,11 +59,19 @@ public class BackStage {
 				   } while(buffera !=null);
 				 
 				   String iwant="";
+				   
+				  /* int monthstartindex,monthendindex=0;
+				   monthstartindex=contentBuffer.indexOf("<div class=\"caption\">",monthendindex);
+				   monthendindex=contentBuffer.indexOf("</div>",monthstartindex);*/			   
+				   
 				   int startindex,endindex=0;
-				  
 				   startindex= contentBuffer.indexOf("<span class=\"number\">",endindex);
 				   endindex=contentBuffer.indexOf("</span>",endindex);
 				   while(startindex!=-1){
+					/*   Log.i(tag, "monthstartindex:"+monthstartindex);
+					   Log.i(tag, "monthendindex:"+monthendindex);
+					   String iwantmonth=contentBuffer.substring(monthstartindex+22, monthendindex);
+					   Receipt.getMonth="iwantmonth";*/
 //					   Log.i(tag, "startindex: "+startindex);
 					   
 //					   Log.i(tag, "endindex: "+endindex);
@@ -85,7 +98,29 @@ public class BackStage {
 			} catch (IOException e) {
 				Log.i(tag, e.getMessage());
 			}
-			Log.i(tag, "content is: "+contentBuffer);
+//			Log.i(tag, "content is: "+contentBuffer);
 	}
+	
+	public static boolean check3GConnectStatus(Context context){
+		boolean net3g_status=false;
 		
+		cm= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo ni=cm.getActiveNetworkInfo();
+//		Log.i(tag, "NetworkInfo status: "+cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState());
+		if(cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState()==NetworkInfo.State.DISCONNECTED|cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState()==NetworkInfo.State.UNKNOWN){		
+			net3g_status=false;
+		}else{
+			net3g_status=true;
+		}
+		return net3g_status;
+	}
+	
+	public static boolean checkEnableingWifiStatus(Context context){
+		wm =(WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+		if(wm.getWifiState()==wm.WIFI_STATE_DISABLED|wm.getConnectionInfo().getIpAddress()==0){
+			return false;
+		}else{
+			return true;
+		}	
+	}	
 }

@@ -1,5 +1,4 @@
-package com.comangi.receipt;
-
+package com.camangi.receipt;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;

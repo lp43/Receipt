@@ -15,31 +15,31 @@
 
      <TextView 
      		  android:id="@+id/text" 
-              android:layout_width="240px" 
-              android:layout_height="120px" 
+              android:layout_width="290dip" 
+              android:layout_height="140dip" 
 			  android:hint="數字顯示框"
-              android:textSize="32dp"
+              android:textSize="40dp"
               android:textColor="@color/black"
               android:gravity="center_vertical"
-              android:paddingTop="52px"
-              android:paddingLeft="72px"
-              android:layout_marginTop="5px"
-              android:layout_marginLeft="40px"	
+              android:paddingTop="60dip"
+              android:paddingLeft="72dip"
+              android:layout_marginTop="18dip"
+              android:layout_marginLeft="14dip"	
               android:background="@drawable/textground"/>
             <TextView 
 			 android:id="@+id/title_firstline"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
-		 	android:paddingLeft="100px"
-		 	android:paddingTop="20px"
+		 	android:paddingLeft="88dip"
+		 	android:paddingTop="36dip"
 			 android:textColor="@color/black"
-			 android:text="@string/title1"
+			 android:text="中華民國99年7-8月份"
 		 />           
 		 <TextView 
 			 android:id="@+id/title_secondline"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"    
-			 android:paddingLeft="100px"
+			 android:paddingLeft="110dip"
 			 android:layout_below="@id/title_firstline"
 			 android:textColor="@color/black"
 			 android:text="@string/title2"
@@ -48,7 +48,7 @@
 			 android:id="@+id/title_thirdline"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
-			 android:paddingLeft="100px"
+			 android:paddingLeft="132dip"
 			 android:layout_below="@id/title_secondline"
 			 android:textColor="@color/black"
 			 android:text="@string/title3"
@@ -57,27 +57,37 @@
 			 android:id="@+id/title_fourline"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
-			 android:paddingLeft="44px"
-			 android:textSize="32dp"
+			 android:paddingLeft="28dip"
+			 android:textSize="40dp"
 			 android:layout_below="@id/title_thirdline"
 			 android:textColor="@color/brown"
-			 android:layout_marginTop="10px"
+			 android:layout_marginTop="0dip"
 			 android:text="HQ"
-		 />     
+		 /> 
+		 <TextView 
+			 android:id="@+id/title_fiveline"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			 android:paddingLeft="52dip"
+			 android:textSize="16sp"
+			 android:layout_below="@id/title_fourline"
+			 android:textColor="@color/blue"
+			 android:text="@string/title5"
+		 />       
        <Button 
     	android:id="@+id/button_1" 
-    	android:layout_marginTop="1px"
+    	android:layout_marginTop="18dip"
     	android:layout_below="@id/text"
-        android:layout_width="90dip" 
-        android:layout_height="70dip" 
-        android:layout_marginLeft="24px"
-         android:textSize="40dp"
+		android:layout_width="90dip" 
+        android:layout_height="70dip"
+        android:layout_marginLeft="24dip"
+        android:textSize="40dp"
         android:background="@drawable/button_background"
         android:text="1" />
 
       <Button 
     	android:id="@+id/button_2" 
-        android:layout_width="90dip" 
+		android:layout_width="90dip" 
         android:layout_height="70dip" 
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_1"
@@ -86,7 +96,7 @@
         android:text="2" />
  <Button 
     	android:id="@+id/button_3" 
-        android:layout_width="90dip" 
+		android:layout_width="90dip" 
         android:layout_height="70dip" 
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_2"
@@ -95,8 +105,8 @@
         android:text="3" /> 
       <Button 
     	android:id="@+id/button_4" 
-        android:layout_width="90dip" 
-        android:layout_height="70dip" 
+		android:layout_width="90dip" 
+        android:layout_height="70dip"  
         android:background="@drawable/button_background"
         android:layout_below="@id/button_1"
         android:layout_alignLeft="@id/button_1"
@@ -104,8 +114,8 @@
         android:text="4" />
       <Button 
     	android:id="@+id/button_5" 
-        android:layout_width="90dip" 
-        android:layout_height="70dip" 
+		android:layout_width="90dip" 
+        android:layout_height="70dip"  
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_4"
 		android:layout_alignTop="@id/button_4"
@@ -114,8 +124,8 @@
         android:text="5" />
      <Button 
     	android:id="@+id/button_6" 
-        android:layout_width="90dip" 
-        android:layout_height="70dip" 
+		android:layout_width="90dip" 
+        android:layout_height="70dip"
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_5"
 		android:layout_alignTop="@id/button_5"
@@ -124,8 +134,8 @@
         android:text="6" /> 
       <Button 
     	android:id="@+id/button_7" 
-        android:layout_width="90dip" 
-        android:layout_height="70dip" 
+		android:layout_width="90dip" 
+        android:layout_height="70dip"
         android:background="@drawable/button_background"
         android:layout_below="@id/button_4"
         android:layout_alignLeft="@id/button_4"
@@ -133,7 +143,7 @@
         android:text="7" />
       <Button 
     	android:id="@+id/button_8" 
-        android:layout_width="90dip" 
+		android:layout_width="90dip" 
         android:layout_height="70dip" 
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_7"
@@ -143,7 +153,7 @@
         android:text="8" />
      <Button 
     	android:id="@+id/button_9" 
-        android:layout_width="90dip" 
+		android:layout_width="90dip" 
         android:layout_height="70dip" 
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_8"
@@ -153,8 +163,8 @@
         android:text="9" />                
         <Button 
     	android:id="@+id/button_clear" 
-        android:layout_width="90dip" 
-        android:layout_height="70dip" 
+		android:layout_width="90dip" 
+        android:layout_height="50dip"
         android:background="@drawable/button_background"
 		android:layout_below="@id/button_7"
 		android:layout_alignLeft="@id/button_7"
@@ -163,27 +173,20 @@
         android:text="清除" />         
         <Button 
     	android:id="@+id/button_0" 
-        android:layout_width="180dip" 
-        android:layout_height="70dip" 
+		android:layout_width="180dip" 
+        android:layout_height="50dip"
         android:background="@drawable/button_background"
         android:layout_toRightOf="@id/button_clear"
 		android:layout_below="@id/button_8"
 		android:textSize="40dp"
         android:text="0" />    
-          
-</RelativeLayout>-->
-  <LinearLayout
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white">
         <TextView android:id="@+id/right_ad" 
               android:layout_width="fill_parent" 
               android:layout_height="40dip" 
               android:text="以後要放的廣告"
               android:textSize="40dp"
-              android:gravity="center_vertical"
+              android:layout_below="@id/button_clear"
               android:paddingLeft="30px"
-              android:background="@drawable/test2"/>
-</LinearLayout>
+              android:background="@drawable/test2"/>  
+</RelativeLayout>
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.comangi.receipt;
+package com.camangi.receipt;
 
 
 import java.io.BufferedReader;
@@ -12,14 +12,19 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,15 +33,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Receipt extends Activity {
-	private String softversion="v1.007";
+	private String softVersion="v1.008b1";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
-    TextView textview ;
+    TextView textview,textfive;
 	private String tag="tag";
 	/**
 	 * 使用者可以設定對獎所要輸入的號碼數︰2碼或3碼
 	 */
 	private int limit=1;
+	/**
+	 * 裡面置放7組檢查碼
+	 */
 	String[] checknum;
 	private boolean got;
 	/**
@@ -55,21 +63,44 @@ public class Receipt extends Activity {
 	/*
 	 * 播放音效的版本變數
 	 */
-	private String voice_version="regular";
-	AudioManager am;
-	  Toast toast;
+	private String voice_version="tw";
+	AudioManager am;//用來調整音量Stream大小的啟始變數
+	  Toast toast;//用來調整音量的toast變數
+	 /* static String getMonth;*/
+	  File f;//檔案
 	  
 	  
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.keyboard);
+        
+       
+        
+        //定義螢幕UI
+        WindowManager manager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+		Display display = manager.getDefaultDisplay();
+		int ScreenHeight=display.getHeight();
+		Log.i(tag, "getScreenHeight: "+String.valueOf(ScreenHeight));
+		if(ScreenHeight==800|ScreenHeight==854){
+			setContentView(R.layout.mainlayout800);
+		}else if(ScreenHeight==480){
+			setContentView(R.layout.mainlayout480);
+		}else if(ScreenHeight==320){
+			setContentView(R.layout.mainlayout320);
+		}else{
+			setContentView(R.layout.mainlayout800);
+		}
+        
         mediaPlayer01=new MediaPlayer();
         
         am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
        
         
         textview=(TextView) findViewById(R.id.text);
+        textfive=(TextView) findViewById(R.id.title_fiveline);
+        String finaltext5=textfive.getText().toString().replace("#message", "\"最末碼\"");
+        textfive.setText(finaltext5);
+        
         button0=(Button) findViewById(R.id.button_0);
         button1=(Button) findViewById(R.id.button_1);
         button2=(Button) findViewById(R.id.button_2);
@@ -238,60 +269,39 @@ public class Receipt extends Activity {
 				createMedia("clear",voice_version);	
 			} 	
         });
-        File f= new File(this.getFilesDir()+"/receipt_now.txt");
+        f= new File(this.getFilesDir()+"/receipt_now.txt");
         
         if(!f.exists()){
-        	Log.i(tag, "f.exist=false");
-        	BackStage.dataRequest(this,"now");
+        	Log.i(tag, "into f.exist==false");
+        	Log.i(tag, "BackStage.check3GConnectStatus(this)= "+String.valueOf(BackStage.check3GConnectStatus(this)));
+        	Log.i(tag, "BackStage.checkWIFIStatus(this)= "+String.valueOf(BackStage.checkEnableingWifiStatus(this)));
+        	 if (BackStage.check3GConnectStatus(this)==false&BackStage.checkEnableingWifiStatus(this)==false){
+            	 
+            	
+//        		 Log.i(tag, "into new");
+             	new AlertDialog.Builder(this)
+     	    	.setTitle("沒有中獎號碼的資料!")
+     			.setIcon(R.drawable.warning)
+     			.setMessage("當第1次使用時\n系統必須連上網路\n才能下載中獎號碼...")
+     			.setPositiveButton("離開程式", new DialogInterface.OnClickListener() {
+
+     				@Override
+     				public void onClick(DialogInterface dialog, int which) {
+     					finish();
+     				}
+     				})
+     			
+     			.show();	
+             }else{
+            	 BackStage.dataRequest(this,"now"); 
+            	 generateEntity();
+             }
         }else{
         	Log.i(tag, "f.exist=true");
+        	generateEntity();
         }
-        FileInputStream fi = null;
-        try {
-			fi=new FileInputStream(f);
-		} catch (FileNotFoundException e) {
-			Log.i(tag, "Exception: "+e.getMessage());
-		}
-		InputStreamReader is=new InputStreamReader(fi);
-	   BufferedReader br =new BufferedReader(is);
-	   String getnum = null;
-        try {
-			getnum=br.readLine();
-//			Log.i(tag, "getnum: "+getnum);
-		} catch (IOException e) {
-			Log.i(tag, "IOException: "+e.getMessage());
-		}
-		checknum=getnum.split(",");
-		 
-      /*  new AlertDialog.Builder(Receipt.this)
-		
-		.setTitle("何取得對獎號的方式？")
-		.setIcon(R.drawable.question)
-		.setItems(new String[]{"自動上網搜尋","手動輸入"}, new DialogInterface.OnClickListener(){
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				switch(which){
-				case 0:
-		
-					break;
-							
-				case 1:		
-					Intent intent = new Intent();
-					intent.setClass(Receipt.this, InsertNum.class);
-					startActivity(intent);					
-					break;
-
-				}	
-			};
-		})
-		.show();*/
-		
-		
+       
     }
-    
-
-
 
 
 	/**
@@ -435,7 +445,7 @@ public class Receipt extends Activity {
     			      toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
     			      toast.show();
 
-
+    			     
     			 createMedia("nono");
     			 return;
     		 	}	 
@@ -757,4 +767,77 @@ public class Receipt extends Activity {
             }
             
         }
+    
+    /**
+     * 將文字檔轉化成checknum陣列
+     */
+    private void generateEntity(){
+    	Log.i(tag, "into generateEntity()");
+		 FileInputStream fi = null;
+         try {
+ 			fi=new FileInputStream(f);
+ 		} catch (FileNotFoundException e) {
+ 			Log.i(tag, "Exception: "+e.getMessage());
+ 		}
+ 		InputStreamReader is=new InputStreamReader(fi);
+ 	   BufferedReader br =new BufferedReader(is);
+ 	   String getnum = null;
+         try {
+ 			getnum=br.readLine();
+ 			Log.i(tag, "getnum: "+getnum);
+ 		} catch (IOException e) {
+ 			Log.i(tag, "IOException: "+e.getMessage());
+ 		}
+ 		checknum=getnum.split(",");
+    }
+    
+	public boolean onCreateOptionsMenu(Menu menu) {
+		
+		menu.add(0, 0, 0, "關於");
+//		menu.add(0, 1, 1, R.string.channel_list);
+		menu.getItem(0).setIcon(R.drawable.about);
+//		menu.getItem(1).setIcon(R.drawable.setting);
+
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	/**描述 : 建立Menu清單的觸發事件*/
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+			case 0:
+				new AlertDialog.Builder(this)
+				.setMessage(getString(R.string.app_name)+" "+ softVersion +"\n作者 Camangi Corporation\n\n版權 2010")
+				.setIcon(R.drawable.icon)
+				.setTitle("關於")
+				.setPositiveButton("問題回報", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Intent sendIntent = new Intent(Intent.ACTION_SEND);
+						sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"simon@camangi.com"}); 
+						sendIntent.putExtra(Intent.EXTRA_TEXT, "請將意見填寫於此");
+						sendIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.app_name)+" 意見回報");
+						sendIntent.setType("message/rfc822");
+						startActivity(Intent.createChooser(sendIntent, "Title:"));
+					}
+				})
+				.setNeutralButton("返回", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+		
+					}
+				})
+				.show();
+				break;
+			
+//			case 1:
+//
+//				break;
+		
+		}
+		return super.onOptionsItemSelected(item);
+	}
 }
