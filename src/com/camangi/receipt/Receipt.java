@@ -13,6 +13,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -33,7 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.008b1";
+	private String softVersion="v1.009";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     TextView textview,textfive;
@@ -63,8 +64,8 @@ public class Receipt extends Activity {
 	/*
 	 * 播放音效的版本變數
 	 */
-	private String voice_version="tw";
-	AudioManager am;//用來調整音量Stream大小的啟始變數
+	private String voice_version="regular";
+	static AudioManager am;//用來調整音量Stream大小的啟始變數
 	  Toast toast;//用來調整音量的toast變數
 	 /* static String getMonth;*/
 	  File f;//檔案
@@ -95,6 +96,15 @@ public class Receipt extends Activity {
         
         am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
        
+        SharedPreferences sharedata = getSharedPreferences("data", 0);  
+        String voicedata = sharedata.getString("voice", "regular");  
+        Log.i(tag,"data="+voicedata);
+        if(voicedata.equals("mute")){
+        	am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+        }else{
+        	voice_version=voicedata;
+        }
+        
         
         textview=(TextView) findViewById(R.id.text);
         textfive=(TextView) findViewById(R.id.title_fiveline);
@@ -302,6 +312,20 @@ public class Receipt extends Activity {
         }
        
     }
+
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		SharedPreferences sharedata = getSharedPreferences("data", 0);  
+        String voicedata = sharedata.getString("voice", "regular");  
+        Log.i(tag,"data="+voicedata);
+        if(voicedata.equals("mute")){
+        	am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+        }else{
+        	voice_version=voicedata;
+        }
+	}
 
 
 	/**
@@ -793,10 +817,11 @@ public class Receipt extends Activity {
     
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
-		menu.add(0, 0, 0, "關於");
-//		menu.add(0, 1, 1, R.string.channel_list);
-		menu.getItem(0).setIcon(R.drawable.about);
-//		menu.getItem(1).setIcon(R.drawable.setting);
+		menu.add(0, 0, 0, "設定");
+		menu.add(0, 1, 1, "關於");
+		menu.getItem(0).setIcon(R.drawable.setting);
+		menu.getItem(1).setIcon(R.drawable.about);
+		
 
 		
 		return super.onCreateOptionsMenu(menu);
@@ -807,6 +832,17 @@ public class Receipt extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 			case 0:
+				Intent intent=new Intent();
+				int oldvolume=am.getStreamVolume(AudioManager.STREAM_MUSIC);
+				
+				Bundle bundle=new Bundle();
+				bundle.putInt("oldvolume", oldvolume);
+				bundle.putString("voice_version", voice_version);
+				intent.putExtras(bundle);
+				intent.setClass(this, Setting.class);
+				startActivity(intent);
+				break;
+			case 1:
 				new AlertDialog.Builder(this)
 				.setMessage(getString(R.string.app_name)+" "+ softVersion +"\n作者 Camangi Corporation\n\n版權 2010")
 				.setIcon(R.drawable.icon)
@@ -833,9 +869,7 @@ public class Receipt extends Activity {
 				.show();
 				break;
 			
-//			case 1:
-//
-//				break;
+
 		
 		}
 		return super.onOptionsItemSelected(item);
