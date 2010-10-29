@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -34,7 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.009";
+	private String softVersion="v1.010b1";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     TextView textview,textfive;
@@ -66,10 +67,16 @@ public class Receipt extends Activity {
 	 */
 	private String voice_version="regular";
 	static AudioManager am;//用來調整音量Stream大小的啟始變數
-	  Toast toast;//用來調整音量的toast變數
+	Toast toast;//用來調整音量的toast變數
 	 /* static String getMonth;*/
-	  File f;//檔案
-	  
+	File f;//檔案
+	/*
+	 * 記錄對獎方式的邏輯變數<br/>
+	 * 0:由右至左
+	 * 1:由左至右
+	 * 2:先輸入末3碼，再輸入剩餘8碼
+	 */
+	static int logic;  
 	  
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -322,6 +329,7 @@ public class Receipt extends Activity {
         Log.i(tag,"data="+voicedata);
         if(voicedata.equals("mute")){
         	am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+
         }else{
         	voice_version=voicedata;
         }
@@ -338,7 +346,7 @@ public class Receipt extends Activity {
     	if(textview.getText().length()==0){
     		got=false;
     		textview.setText(num);
-    		checkLast(textview.getText().toString());	
+    		checkLastR2L(textview.getText().toString());	
     	}else if(textview.getText().length()>0&textview.getText().length()<limit-1){
     		got=false;
     		textview.setText(num+textview.getText());	
@@ -347,10 +355,10 @@ public class Receipt extends Activity {
     		textview.setText(num+textview.getText());
     		if(textview.getText().length()==3){
     			Log.i(tag, "into length 3");
-    			checkThree(textview.getText().toString());
+    			checkThreeR2L(textview.getText().toString());
     		}else if(textview.getText().length()==8){
     			Log.i(tag, "into length 8");
-    			checkEight(textview.getText().toString());
+    			checkEightR2L(textview.getText().toString());
     		}
     		
     	}
@@ -361,7 +369,7 @@ public class Receipt extends Activity {
      * 描述 : 當使用者一輸入最尾碼時，進入該計算公式
      * @param num 使用者所輸入的單一號碼
      */
-    private void checkLast(String num){
+    private void checkLastR2L(String num){
     	Log.i(tag, "get num is: "+ num);
     	 for(String numcheck:checknum){//for迴圈會將file目錄裡的文字檔讀進來，並一一放進陣列裡,再用這個for迴圈,
     		 //一次讀出一筆的特性，去計算出是否有中獎
@@ -400,7 +408,7 @@ public class Receipt extends Activity {
      * 描述 : 當使用者輸的數字是3筆時，呼叫這個函式做運算
      * @param num 使用者所輸入的3組號碼
      */
-    private void checkThree(String num){
+    private void checkThreeR2L(String num){
     	Log.i(tag, "get 3num is: "+ num);
     	int i=0;
     	 for(String numcheck:checknum){
@@ -481,7 +489,7 @@ public class Receipt extends Activity {
      * 描述 : 當使用者輸入完3碼後，續輸完8碼時，會呼叫這個運算函式
      * @param num
      */
-    private void checkEight(String num){
+    private void checkEightR2L(String num){
     	Log.i(tag, "get 8num is: "+ num);
     	Log.i(tag, "getEightType is: "+checkEightType);
     	int i=0;
@@ -769,6 +777,11 @@ public class Receipt extends Activity {
 
                     toast.show();
                 }
+                //調整音量時還要再寫進SharedPreferences是因為有可能使用者在設定裡調成靜音，但後來調成有音量時，因為系統會在[設定][語音設定]設回靜音前的版本
+                //如果沒有在調整音量時，馬上將SharedPreferences原為靜音設為之前的版本，會產生錯亂
+                Editor sharedata = getSharedPreferences("data", 0).edit();
+                sharedata.putString("voice",voice_version);
+                sharedata.commit();
                 return true;
 
             case KeyEvent.KEYCODE_VOLUME_DOWN:
@@ -785,6 +798,11 @@ public class Receipt extends Activity {
                 	 toast.show();
                 }
 //                Log.i(tag, "action: "+action);
+                //調整音量時還要再寫進SharedPreferences是因為有可能使用者在設定裡調成靜音，但後來調成有音量時，因為系統會在[設定][語音設定]設回靜音前的版本
+                //如果沒有在調整音量時，馬上將SharedPreferences原為靜音設為之前的版本，會產生錯亂
+                Editor sharedata1 = getSharedPreferences("data", 0).edit();
+                sharedata1.putString("voice",voice_version);
+                sharedata1.commit();
                 return true;
             default:
                 return super.dispatchKeyEvent(event);

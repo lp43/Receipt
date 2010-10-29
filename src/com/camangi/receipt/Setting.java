@@ -45,8 +45,10 @@ public class Setting extends Activity {
 	int oldvalue;//將Receipt傳來的原聲音設定版本轉成int值，讓SingleChoiceItems能有預設值
 	final int SETLOGIC=0;
 	final int SETVOICEVERSIONDIALOG=1;
+	AlertDialog alert;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
 //		Log.i(tag, "into onCreate()");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.setting);
@@ -56,15 +58,16 @@ public class Setting extends Activity {
 		oldvolume=bundle.getInt("oldvolume");
 		old_voice_version=bundle.getString("voice_version");
 		Log.i(tag, "voice_version: "+old_voice_version);
-		if(old_voice_version.equals("regular")){
+		if(Receipt.am.getStreamVolume(AudioManager.STREAM_MUSIC)==0){
+			//判斷音量為0的程式邏輯一定要先寫，因為使用者可能後來自己將音量從實體按鍵調成0，那麼就會變成靜音
+			oldvalue=3;
+		}else if(old_voice_version.equals("regular")){
 			oldvalue=0;
 		}else if(old_voice_version.equals("big")){
 			oldvalue=1;
 		}else if(old_voice_version.equals("tw")){
 			oldvalue=2;
-		}else if(old_voice_version.equals("mute")){
-			oldvalue=3;
-		}
+		} 
 		
 		
 		lv=(ListView) findViewById(R.id.list);
@@ -97,22 +100,27 @@ public class Setting extends Activity {
 		
 	}
 	
-/*	@Override
-	protected void onResume() {
-		super.onResume();
-		
-	}*/
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			Log.i(tag, "press_keyBack");
+			Log.i(tag, "AlertDialog=null? "+String.valueOf(alert==null));
+			
 				finish();
 	 			Intent intent = new Intent();
 				intent.setClass(Setting.this, Receipt.class);
 				startActivity(intent);
+			
+		}
+		
+				
 
 		return super.onKeyDown(keyCode, event);	
 	}
 	
+
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch(id){
@@ -173,7 +181,7 @@ public class Setting extends Activity {
 							dismissDialog(SETVOICEVERSIONDIALOG);
 							break;
 						case 3:
-
+							Log.i(tag, "AlertDialog=null? "+String.valueOf(alert==null));
 							Receipt.am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
 							sharedata.putString("voice","mute");
 							sharedata.commit();
@@ -190,7 +198,7 @@ public class Setting extends Activity {
 	        	
 	        }
 			});
-			AlertDialog alert = builder.create();
+			alert = builder.create();
 			return alert;
 		}
 		return super.onCreateDialog(id);
