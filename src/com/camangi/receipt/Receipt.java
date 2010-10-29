@@ -35,10 +35,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.010b1";
+	private String softVersion="v1.010b2";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
-    TextView textview,textfive;
+    TextView textview,textfirst,textfive;
 	private String tag="tag";
 	/**
 	 * 使用者可以設定對獎所要輸入的號碼數︰2碼或3碼
@@ -77,7 +77,7 @@ public class Receipt extends Activity {
 	 * 2:先輸入末3碼，再輸入剩餘8碼
 	 */
 	static int logic;  
-	  
+	String month;//從txt檔裡抓出來的月份字串
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +114,8 @@ public class Receipt extends Activity {
         
         
         textview=(TextView) findViewById(R.id.text);
+        textfirst=(TextView) findViewById(R.id.title_firstline);
+      
         textfive=(TextView) findViewById(R.id.title_fiveline);
         String finaltext5=textfive.getText().toString().replace("#message", "\"最末碼\"");
         textfive.setText(finaltext5);
@@ -286,7 +288,7 @@ public class Receipt extends Activity {
 				createMedia("clear",voice_version);	
 			} 	
         });
-        f= new File(this.getFilesDir()+"/receipt_now.txt");
+        f= new File(this.getFilesDir()+"/receipt_head.txt");
         
         if(!f.exists()){
         	Log.i(tag, "into f.exist==false");
@@ -310,7 +312,7 @@ public class Receipt extends Activity {
      			
      			.show();	
              }else{
-            	 BackStage.dataRequest(this,"now"); 
+            	 BackStage.dataRequest(this,"head"); 
             	 generateEntity();
              }
         }else{
@@ -825,12 +827,17 @@ public class Receipt extends Activity {
  	   BufferedReader br =new BufferedReader(is);
  	   String getnum = null;
          try {
+        	month=br.readLine();
  			getnum=br.readLine();
  			Log.i(tag, "getnum: "+getnum);
  		} catch (IOException e) {
  			Log.i(tag, "IOException: "+e.getMessage());
  		}
  		checknum=getnum.split(",");
+ 		
+ 		 //month變數從txt檔裡讀出來以後，才可以將月份取代掉
+        String finaltext1=textfirst.getText().toString().replace("#date", month);
+        textfirst.setText(finaltext1);
     }
     
 	public boolean onCreateOptionsMenu(Menu menu) {

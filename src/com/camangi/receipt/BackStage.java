@@ -29,10 +29,10 @@ public class BackStage {
 		 String buffera,contentBuffer="";
 		
 		 try {
-			 if(time.equals("now")){			
+			 if(time.equals("head")){			
 					url = new URL("http://invoice.etax.nat.gov.tw/etaxinfo_1.htm");
 				
-			 }else{
+			 }else if(time.equals("head2")){
 				 url = new URL("http://invoice.etax.nat.gov.tw/etaxinfo_2.htm");
 			 }
 		 } catch (MalformedURLException e) {
@@ -60,18 +60,25 @@ public class BackStage {
 				 
 				   String iwant="";
 				   
-				  /* int monthstartindex,monthendindex=0;
+				   int monthstartindex,monthendindex=0;
 				   monthstartindex=contentBuffer.indexOf("<div class=\"caption\">",monthendindex);
-				   monthendindex=contentBuffer.indexOf("</div>",monthstartindex);*/			   
+				   monthendindex=contentBuffer.indexOf("</div>",monthstartindex);			   
+				   String iwantdate=contentBuffer.substring(monthstartindex+21, monthendindex);
+				   Log.i(tag, "iwantmonth: "+iwantdate);
+				   int dateend=iwantdate.indexOf("統");
+				   Log.i(tag, "yearend: "+dateend);
+				   String iwantyear=iwantdate.substring(0, dateend);
+				   Log.i(tag, "iwantyear: "+iwantyear);
+				   FileOutputStream fos = context.openFileOutput("receipt"+"_"+time+".txt", context.MODE_PRIVATE);
+				   
+				   fos.write(iwantyear.getBytes());
+				
+				   fos.write(System.getProperty("line.separator").getBytes());
 				   
 				   int startindex,endindex=0;
 				   startindex= contentBuffer.indexOf("<span class=\"number\">",endindex);
 				   endindex=contentBuffer.indexOf("</span>",endindex);
-				   while(startindex!=-1){
-					/*   Log.i(tag, "monthstartindex:"+monthstartindex);
-					   Log.i(tag, "monthendindex:"+monthendindex);
-					   String iwantmonth=contentBuffer.substring(monthstartindex+22, monthendindex);
-					   Receipt.getMonth="iwantmonth";*/
+				   while(startindex!=-1){					   
 //					   Log.i(tag, "startindex: "+startindex);
 					   
 //					   Log.i(tag, "endindex: "+endindex);
@@ -79,6 +86,7 @@ public class BackStage {
 					   iwant+=iwantbuffer+"、";
 //					   Log.i(tag, "iwant: "+iwant);
 					  
+					   //繼續往下找還有沒有數值
 					   startindex= contentBuffer.indexOf("<span class=\"number\">",endindex);
 					   endindex=contentBuffer.indexOf("</span>",startindex);
 				   }
@@ -89,10 +97,8 @@ public class BackStage {
 				   String ch=iwant.replace("、", ",");
 				   nums = ch.split(",");
 
-				   FileOutputStream fos = context.openFileOutput("receipt"+"_"+time+".txt", context.MODE_PRIVATE);
-//				   for(String num:nums){
-//					   Log.i(tag, num);	     			
-//				   }
+//				   FileOutputStream fos = context.openFileOutput("receipt"+"_"+time+".txt", context.MODE_PRIVATE);
+
 				   fos.write(ch.getBytes());
 				   fos.close();
 			} catch (IOException e) {

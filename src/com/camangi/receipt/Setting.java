@@ -73,7 +73,7 @@ public class Setting extends Activity {
 		lv=(ListView) findViewById(R.id.list);
 
  		lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(Setting.this, android.R.layout.simple_list_item_1, new String[]{"對獎方式設定","語音設定"});
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(Setting.this, android.R.layout.simple_list_item_1, new String[]{"對獎邏輯設定","語音設定"});
 		lv.setAdapter(adapter);
 
 		lv.setOnItemClickListener(new OnItemClickListener(){
@@ -104,8 +104,8 @@ public class Setting extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
-			Log.i(tag, "press_keyBack");
-			Log.i(tag, "AlertDialog=null? "+String.valueOf(alert==null));
+//			Log.i(tag, "press_keyBack");
+//			Log.i(tag, "AlertDialog=null? "+String.valueOf(alert==null));
 			
 				finish();
 	 			Intent intent = new Intent();

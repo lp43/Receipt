@@ -2,7 +2,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 	
     <string name="app_name">統一發票愛我</string>
-    <string name="title1">中華民國99年7-8月份</string>
+    <string name="title1">中華民國#date份</string>
 	<string name="title2">收銀機統一發票</string>
 	<string name="title3">(收執聯)</string>
 	<string name="title5">▲ 請從發票 #message 開始輸入！</string>

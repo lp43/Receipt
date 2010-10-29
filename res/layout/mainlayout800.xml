@@ -33,7 +33,7 @@
 		 	android:paddingLeft="88dip"
 		 	android:paddingTop="36dip"
 			 android:textColor="@color/black"
-			 android:text="中華民國99年7-8月份"
+			 android:text="@string/title1"
 		 />           
 		 <TextView 
 			 android:id="@+id/title_secondline"
