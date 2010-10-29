@@ -35,7 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.010b2";
+	private String softVersion="v1.010b3";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     TextView textview,textfirst,textfive;
@@ -299,9 +299,9 @@ public class Receipt extends Activity {
             	
 //        		 Log.i(tag, "into new");
              	new AlertDialog.Builder(this)
-     	    	.setTitle("沒有中獎號碼的資料!")
+     	    	.setTitle("沒有\"新的\"中獎號碼資料!")
      			.setIcon(R.drawable.warning)
-     			.setMessage("當第1次使用時\n系統必須連上網路\n才能下載中獎號碼...")
+     			.setMessage("系統必須連上網路取得資料...\n一有資料，\n之後就暫時不用再連線了")
      			.setPositiveButton("離開程式", new DialogInterface.OnClickListener() {
 
      				@Override
