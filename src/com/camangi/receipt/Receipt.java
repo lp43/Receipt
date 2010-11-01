@@ -33,39 +33,34 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.camangi.receipt.logic.*;
+import com.camangi.receipt.media.Media;
 
 public class Receipt extends Activity {
 	private String softVersion="v1.010b3";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
-    TextView textview,textfirst,textfive;
+    public static TextView textview,textfirst,textfive;
 	private String tag="tag";
+	Media media;
 	/**
 	 * 使用者可以設定對獎所要輸入的號碼數︰2碼或3碼
 	 */
-	private int limit=1;
+	public static int limit=1;
 	/**
 	 * 裡面置放7組檢查碼
 	 */
-	String[] checknum;
-	private boolean got;
-	/**
-	 * 記錄目前8碼的末3碼是特獎還是頭獎的型態變數
+	public static String[] checknum;
+	public static boolean got;
+	/*
+	 * 從SharePreference讀出預設的的logic運算模式,存放在此變數
 	 */
-	private static int checkEightType;
-	/**
-	 * 若程式判斷末3碼是和特獎末3碼一樣，則判斷變數為該變數
-	 */
-	private static final int eightInSpecial=1;
-	/**
-	 * 若程式判斷末3碼是和頭獎末3碼一樣，則判斷變數為該變數
-	 */
-	private static final int eightInHead=2;
-	private MediaPlayer mediaPlayer01;
+	private String logic;
+
 	/*
 	 * 播放音效的版本變數
 	 */
-	private String voice_version="regular";
+	public static String voice_version="regular";
 	static AudioManager am;//用來調整音量Stream大小的啟始變數
 	Toast toast;//用來調整音量的toast變數
 	 /* static String getMonth;*/
@@ -76,7 +71,7 @@ public class Receipt extends Activity {
 	 * 1:由左至右
 	 * 2:先輸入末3碼，再輸入剩餘8碼
 	 */
-	static int logic;  
+
 	String month;//從txt檔裡抓出來的月份字串
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,13 +94,13 @@ public class Receipt extends Activity {
 			setContentView(R.layout.mainlayout800);
 		}
         
-        mediaPlayer01=new MediaPlayer();
+     
         
         am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
        
         SharedPreferences sharedata = getSharedPreferences("data", 0);  
         String voicedata = sharedata.getString("voice", "regular");  
-        Log.i(tag,"data="+voicedata);
+//        Log.i(tag,"data="+voicedata);
         if(voicedata.equals("mute")){
         	am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
         }else{
@@ -117,8 +112,7 @@ public class Receipt extends Activity {
         textfirst=(TextView) findViewById(R.id.title_firstline);
       
         textfive=(TextView) findViewById(R.id.title_fiveline);
-        String finaltext5=textfive.getText().toString().replace("#message", "\"最末碼\"");
-        textfive.setText(finaltext5);
+        
         
         button0=(Button) findViewById(R.id.button_0);
         button1=(Button) findViewById(R.id.button_1);
@@ -137,7 +131,15 @@ public class Receipt extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				type("0");	
+				if(logic.equals("RightToLeft")){
+					Type.rightToLeft("0", Receipt.this);
+				}else if(logic.equals("LeftToRight")){
+				    limit=8; //由左至右因為全部都要輸入，所以直接將界定值定為8
+				    Type.leftToRight("0", Receipt.this);
+				}else if(logic.equals("LastThree")){
+					Type.lastThree("0", Receipt.this);
+				}
+					
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -145,13 +147,20 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("zero",voice_version);				
+				media.createMedia("zero",Receipt.this,voice_version);				
 			} 	
         });
         button1.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("1");
+				if(logic.equals("RightToLeft")){
+					Type.rightToLeft("1", Receipt.this);
+				}else if(logic.equals("LeftToRight")){
+					Type.leftToRight("1", Receipt.this);
+				}else if(logic.equals("LastThree")){
+					Type.lastThree("1", Receipt.this);
+				}
+				
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -159,13 +168,20 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("one",voice_version);	
+				media.createMedia("one",Receipt.this,voice_version);	
 			} 	
         });
         button2.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("2");
+				if(logic.equals("RightToLeft")){
+					Type.rightToLeft("2", Receipt.this);
+				}else if(logic.equals("LeftToRight")){
+					Type.leftToRight("2", Receipt.this);
+				}else if(logic.equals("LastThree")){
+					Type.lastThree("2", Receipt.this);
+				}
+				
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -173,13 +189,20 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("two",voice_version);	
+				media.createMedia("two",Receipt.this,voice_version);	
 			} 	
         });
         button3.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("3");
+				if(logic.equals("RightToLeft")){
+					Type.rightToLeft("3", Receipt.this);
+				}else if(logic.equals("LeftToRight")){
+					Type.leftToRight("3", Receipt.this);
+				}else if(logic.equals("LastThree")){
+					Type.lastThree("3", Receipt.this);
+				}
+				
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -187,13 +210,20 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("three",voice_version);	
+				media.createMedia("three",Receipt.this,voice_version);	
 			} 	
         });
         button4.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("4");		
+				if(logic.equals("RightToLeft")){
+					Type.rightToLeft("4", Receipt.this);
+				}else if(logic.equals("LeftToRight")){
+					Type.leftToRight("4", Receipt.this);
+				}else if(logic.equals("LastThree")){
+					Type.lastThree("4", Receipt.this);
+				}
+						
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -201,13 +231,20 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("four",voice_version);	
+				media.createMedia("four",Receipt.this,voice_version);	
 			} 	
         });
         button5.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("5");		
+				if(logic.equals("RightToLeft")){
+					Type.rightToLeft("5", Receipt.this);
+				}else if(logic.equals("LeftToRight")){
+					Type.leftToRight("5", Receipt.this);
+				}else if(logic.equals("LastThree")){
+					Type.lastThree("5", Receipt.this);
+				}
+					
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -215,13 +252,20 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("five",voice_version);	
+				media.createMedia("five",Receipt.this,voice_version);	
 			} 	
         });
         button6.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("6");	
+				if(logic.equals("RightToLeft")){
+					Type.rightToLeft("6", Receipt.this);
+				}else if(logic.equals("LeftToRight")){
+					Type.leftToRight("6", Receipt.this);
+				}else if(logic.equals("LastThree")){
+					Type.lastThree("6", Receipt.this);
+				}
+			
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -229,13 +273,20 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("six",voice_version);	
+				media.createMedia("six",Receipt.this,voice_version);	
 			} 	
         });
         button7.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("7");	
+				if(logic.equals("RightToLeft")){
+					Type.rightToLeft("7", Receipt.this);
+				}else if(logic.equals("LeftToRight")){
+					Type.leftToRight("7", Receipt.this);
+				}else if(logic.equals("LastThree")){
+					Type.lastThree("7", Receipt.this);
+				}
+					
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -243,13 +294,20 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("seven",voice_version);	
+				media.createMedia("seven",Receipt.this,voice_version);	
 			} 	
         });
         button8.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("8");	
+				if(logic.equals("RightToLeft")){
+					Type.rightToLeft("8", Receipt.this);
+				}else if(logic.equals("LeftToRight")){
+					Type.leftToRight("8", Receipt.this);
+				}else if(logic.equals("LastThree")){
+					Type.lastThree("8", Receipt.this);
+				}
+				
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -257,13 +315,20 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("eight",voice_version);	
+				media.createMedia("eight",Receipt.this,voice_version);	
 			} 	
         });
         button9.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				type("9");	
+				if(logic.equals("RightToLeft")){
+					Type.rightToLeft("9", Receipt.this);
+				}else if(logic.equals("LeftToRight")){
+					Type.leftToRight("9", Receipt.this);
+				}else if(logic.equals("LastThree")){
+					Type.lastThree("9", Receipt.this);
+				}
+				
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -271,13 +336,16 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("nine",voice_version);	
+				media.createMedia("nine",Receipt.this,voice_version);	
 			} 	
         });
         button_clear.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				textview.setText("");
+				Type.numtotal="";//將累積的數值暫存變數清空
+				Type.first5total="";//將末三碼驗證的專屬變數︰前5碼暫存清除
+				got=false;
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -285,9 +353,10 @@ public class Receipt extends Activity {
 				}else{
 					voice_version=Receipt.this.voice_version;
 				}
-				createMedia("clear",voice_version);	
+				media.createMedia("clear",Receipt.this,voice_version);	
 			} 	
         });
+        
         f= new File(this.getFilesDir()+"/receipt_head.txt");
         
         if(!f.exists()){
@@ -325,6 +394,8 @@ public class Receipt extends Activity {
 
 	@Override
 	protected void onResume() {
+//		Log.i(tag, "into onResume()");
+		
 		super.onResume();
 		SharedPreferences sharedata = getSharedPreferences("data", 0);  
         String voicedata = sharedata.getString("voice", "regular");  
@@ -335,426 +406,30 @@ public class Receipt extends Activity {
         }else{
         	voice_version=voicedata;
         }
+        logic = sharedata.getString("logic", "RightToLeft");
+        Log.i(tag, "get SharePreferences logic: "+logic);
+       
+        if(logic.equals("RightToLeft")){
+//        	Log.i(tag, "into setText5: RightToLeft");
+        	textfive.setText("▲ 請從發票 #message 開始輸入！");
+        	String finaltext5=textfive.getText().toString().replace("#message", "\"最右邊\"");
+            textfive.setText(finaltext5);
+        }else if(logic.equals("LeftToRight")){	
+//        	Log.i(tag, "into setText5: LeftToRight");
+        	textfive.setText("▲ 請從發票 #message 開始輸入！");
+        	String finaltext5=textfive.getText().toString().replace("#message", "\"最左邊\"");
+            textfive.setText(finaltext5);
+        }else if(logic.equals("LastThree")){
+//        	Log.i(tag, "into setText5: LastThree");
+        	textfive.setText("▲ 請從發票 #message 開始輸入！");
+        	String finaltext5=textfive.getText().toString().replace("#message", "\"末三碼\"");
+            textfive.setText(finaltext5);
+        }
+        Type.numtotal="";
+        textview.setText("");
+        media= new Media();
 	}
-
-
-	/**
-     * 描述 : 頂頭描述框的計算公式<br/>
-     * @param num 當要使用這個函式時，會將要在文字框印出的數字傳進來，再做判斷，然後顯示
-     */
-    private void type(String num){
-    	Log.i(tag, "get length: "+textview.getText().length());
-//    	Log.i(tag, "num: "+num);
-    	if(textview.getText().length()==0){
-    		got=false;
-    		textview.setText(num);
-    		checkLastR2L(textview.getText().toString());	
-    	}else if(textview.getText().length()>0&textview.getText().length()<limit-1){
-    		got=false;
-    		textview.setText(num+textview.getText());	
-    	}else if(textview.getText().length()==limit-1){
-    		got=false;
-    		textview.setText(num+textview.getText());
-    		if(textview.getText().length()==3){
-    			Log.i(tag, "into length 3");
-    			checkThreeR2L(textview.getText().toString());
-    		}else if(textview.getText().length()==8){
-    			Log.i(tag, "into length 8");
-    			checkEightR2L(textview.getText().toString());
-    		}
-    		
-    	}
-
-    }
-    
-    /**
-     * 描述 : 當使用者一輸入最尾碼時，進入該計算公式
-     * @param num 使用者所輸入的單一號碼
-     */
-    private void checkLastR2L(String num){
-    	Log.i(tag, "get num is: "+ num);
-    	 for(String numcheck:checknum){//for迴圈會將file目錄裡的文字檔讀進來，並一一放進陣列裡,再用這個for迴圈,
-    		 //一次讀出一筆的特性，去計算出是否有中獎
-    		 if(numcheck.length()==8){
-    			 //如果for迴圈讀出來的數值是8碼，代表是特獎或頭獎的原始資料
-//    			 Log.i(tag, "at8: "+numcheck.substring(7));
-    			 if(num.equals(numcheck.substring(7))){//陣列的碼數是從0開始算，所以最尾碼是7
-    				 limit=3;
-    				 got=true;
-//        			 Toast.makeText(this, "有機會,再來!", Toast.LENGTH_SHORT).show();
-    				
-        			 createMedia("again");
-        			 return;
-        		 }
-    		 }else if(numcheck.length()==3){ //如果for迴圈出來的長度是3，代表是增開獎的獎項
-    		 	if(num.equals(numcheck.substring(2))){//陣列的碼數是從0開始算，所以最尾碼是2
-    			 limit=3;
-				 got=true;
-    			 Toast.makeText(this, "有機會,再來!", Toast.LENGTH_SHORT).show();
-    			 createMedia("again");
-    			 return;
-    		 }else{
-    			 //如果最尾碼根本就沒有對到任何數字，就清除文字框
-    			 limit=1;
-    			 got=false;
-    			 textview.setText("");
-//    			 Toast.makeText(this, "沒中...", Toast.LENGTH_SHORT).show();
-    			 createMedia("no");
-    			 return;
-    		 	  }	 
-    		 }
-		   }
-    }
-    
-    /**
-     * 描述 : 當使用者輸的數字是3筆時，呼叫這個函式做運算
-     * @param num 使用者所輸入的3組號碼
-     */
-    private void checkThreeR2L(String num){
-    	Log.i(tag, "get 3num is: "+ num);
-    	int i=0;
-    	 for(String numcheck:checknum){
-    		i++;
-    		 if(numcheck.length()==8){//從file目錄抓出來的txt檔，轉為for迴圈後，會有6組8個號碼和1組3個號碼,當長度為8,也就是頭獎和特獎時
-    			 
-//    			 Log.i(tag, "numlength 8:"+numcheck);
-    			 if(num.equals(numcheck.substring(5,8))){//當傳進來的3碼和特、頭獎的第5~8碼數值一樣時
-    				 limit=8;
-    				 got=true;
-        			 
-    				  Toast toast = Toast.makeText(this, "再來！再來！", Toast.LENGTH_SHORT);
-	   			      View originView=toast.getView();
-	   			      LinearLayout layout= new LinearLayout(this);
-	   			      layout.setOrientation(LinearLayout.VERTICAL);
-	   			      ImageView view = new ImageView(this);
-	   			      view.setImageResource(R.drawable.again);
-	   			      layout.addView(view);
-	   			      layout.addView(originView);
-	   			      toast.setView(layout);
-	   			      toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-	   			      toast.show();
-   			      
-        			 createMedia("again");
-        			 if(i<4){
-        				 checkEightType=eightInSpecial;
-        			 }else if(i>=4){
-        				 checkEightType=eightInHead;
-        			 }
-        			 return;
-        		 }
-    		 }else if(numcheck.length()==3){ //當for迴圈跑到最後一筆3碼時
-//    			 Log.i(tag, "numlength 3:"+numcheck);   			 
-    		 	if(num.equals(numcheck.substring(0,3))){//當傳進來的碼和for迴圈的尾碼相吻合時
-	    			limit=1;
-				    got=true;
-				    createMedia("notsimple");
-				    new AlertDialog.Builder(this)
-				    	.setTitle("恭喜你")
-						.setIcon(R.drawable.congratulations)
-						.setMessage("恭喜你中了[增開六獎]\n獎金: 200塊")
-						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								textview.setText("");
-							}
-							})
-						
-						.show();	
-	    			return;
-    		    }else{
-    			 limit=1;
-    			 got=false;
-    			 textview.setText("");
-    			
-    			      Toast toast = Toast.makeText(this, "沒中...", Toast.LENGTH_SHORT);
-    			      View originView=toast.getView();
-    			      LinearLayout layout= new LinearLayout(this);
-    			      layout.setOrientation(LinearLayout.VERTICAL);
-    			      ImageView view = new ImageView(this);
-    			      view.setImageResource(R.drawable.no);
-    			      layout.addView(view);
-    			      layout.addView(originView);
-    			      toast.setView(layout);
-    			      toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-    			      toast.show();
-
-    			     
-    			 createMedia("nono");
-    			 return;
-    		 	}	 
-    		 }
-		   }
-   }
  
-    /**
-     * 描述 : 當使用者輸入完3碼後，續輸完8碼時，會呼叫這個運算函式
-     * @param num
-     */
-    private void checkEightR2L(String num){
-    	Log.i(tag, "get 8num is: "+ num);
-    	Log.i(tag, "getEightType is: "+checkEightType);
-    	int i=0;
-
-
-    	
-   	 for(String numcheck:checknum){
-   		i++;//i幫我判別是特獎、頭獎還是增開獎
-//   		Log.i(tag, "i: "+i);
-   		
-   	
-		 
-//		 Log.i(tag, "numlength 8:"+numcheck);
-		 limit=1;
-		 if(checkEightType==eightInSpecial){
-			 Log.i(tag, "now check to: "+numcheck);
-			 if(num.equals(numcheck)){//如果傳來的8組數字和迴圈的6個一樣
-				 Log.i(tag, "into special equal 0-8");
-				 got=true;
-				 createMedia("million2");
-					 new AlertDialog.Builder(this)
-				    	.setTitle("恭喜你")
-						.setIcon(R.drawable.million2)
-						.setMessage("恭喜你中了[特獎]\n獎金: 200萬!")
-						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								textview.setText("");
-							}
-							})
-						
-						.show();	
-		 
-					 return;
-			 }else if(i==4){
-				//如果傳進來的8位數沒有全部一樣，代表沒中
-				 Log.i(tag, "into special no equal");
-				 Log.i(tag, "now check to: "+numcheck);
-				 createMedia("noany");
-    			 new AlertDialog.Builder(this)
-			    	.setTitle("真可惜")				    	
-					.setIcon(R.drawable.noany)
-					.setMessage("真可惜\n沒中...")
-					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							textview.setText("");
-							limit=1;
-	        			 	got=false;
-						}
-						})
-					
-					.show();	
-    			
-					 return;
-			 }
-		 }else if(checkEightType==eightInHead){
-			 if(num.equals(numcheck)){//如果傳來的8組數字和迴圈的6個一樣
-				 Log.i(tag, "into Head equal 0-8");
-				 got=true;
-				 createMedia("th200");
-					 new AlertDialog.Builder(this)
-					 	.setTitle("恭喜你")
-						.setIcon(R.drawable.th200)
-						.setMessage("恭喜你中了[頭獎]\n獎金: 20萬!")
-						.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								textview.setText("");
-							}
-							})
-						
-						.show();	
-		 
-					 return;
-			 } else if(num.substring(1,8).equals(numcheck.substring(1,8))){
-				 //如果傳進來的末7碼是頭獎的7碼一樣，代表中六獎
-				 Log.i(tag, "into Head equal 1-8");
-				 createMedia("onlycon");
-    			 new AlertDialog.Builder(this)
-    			 	.setTitle("恭喜你")
-					.setIcon(R.drawable.congratulations)
-					.setMessage("恭喜你中了[二獎]\n獎金: 4萬元!")
-					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							textview.setText("");
-						}
-						})
-					
-					.show();	
-					 return;
-    		 } 
-			 else if(num.substring(2,8).equals(numcheck.substring(2,8))){
-				 //如果傳進來的末6碼是頭獎的6碼一樣，代表中六獎
-				 Log.i(tag, "into Head equal 2-8");
-				 createMedia("onlycon");
-    			 new AlertDialog.Builder(this)
-    			 	.setTitle("恭喜你")
-					.setIcon(R.drawable.congratulations)
-					.setMessage("恭喜你中了[三獎]\n獎金: 1萬元!")
-					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							textview.setText("");
-						}
-						})
-					
-					.show();	
-					 return;
-    		 } 
-			 else if(num.substring(3,8).equals(numcheck.substring(3,8))){
-				 //如果傳進來的末5碼是頭獎的5碼一樣，代表中六獎
-				 Log.i(tag, "into Head equal 3-8");
-				 createMedia("onlycon");
-    			 new AlertDialog.Builder(this)
-    			 	.setTitle("恭喜你")
-					.setIcon(R.drawable.congratulations)
-					.setMessage("恭喜你中了[四獎]\n獎金: 4千塊")
-					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							textview.setText("");
-						}
-						})
-					
-					.show();	
-					 return;
-    		 } 
-			 else if(num.substring(4,8).equals(numcheck.substring(4,8))){
-				 //如果傳進來的末4碼是頭獎的4碼一樣，代表中六獎
-				 Log.i(tag, "into Head equal 4-8");
-				 createMedia("onlycon");
-    			 new AlertDialog.Builder(this)
-    			 	.setTitle("恭喜你")
-					.setIcon(R.drawable.congratulations)
-					.setMessage("恭喜你中了[五獎]\n獎金: 1千塊")
-					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							textview.setText("");
-						}
-						})
-					
-					.show();	
-					 return;
-    		 } 
-			 else if(num.substring(5,8).equals(numcheck.substring(5,8))){
-				 //如果傳進來的末3碼是頭獎的3碼一樣，代表中六獎
-				 Log.i(tag, "into Head equal 5-8");
-				 createMedia("hundred2");				 
-    			 new AlertDialog.Builder(this)
-    			 	.setTitle("恭喜你")
-					.setIcon(R.drawable.hundred2)
-					.setMessage("恭喜你中了[六獎]\n獎金: 200塊")
-					.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							textview.setText("");
-						}
-						})
-					
-					.show();	
-					 return;
-    		 }
-	   	
-		 }
-
-   		
-   		
-   		
-	   }//for結束區塊
-   }
-    private void createMedia(String userPressed,String voice_version){
-    	
-    	
-		
-    	try {
-//    		Log.i(tag, "get choice is: "+userPressed);
-    		
-    		mediaPlayer01=MediaPlayer.create(Receipt.this, Receipt.this.getResources().getIdentifier(userPressed+"_"+voice_version, "raw", this.getPackageName()));
-        		
-
-//			 mediaPlayer01.prepare();	
-    		mediaPlayer01.start();
-			} catch (IllegalStateException e) {
-				Log.i(tag, "IllegalStateException: "+e.getMessage());
-				e.printStackTrace();
-			} /*catch (IOException e) {
-				Log.i(tag, "IOException: "+e.getMessage());
-				e.printStackTrace();
-			}*/
-//			mediaPlayer01.stop();
-			
-			
-			mediaPlayer01.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-				
-				@Override
-				public void onCompletion(MediaPlayer mp) {
-//					Log.i(tag, "into onCompletion()");
-					mp.release();
-					
-				}
-			});
-			mediaPlayer01.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-
-				@Override
-				public boolean onError(MediaPlayer mp, int what, int extra) {
-//					Log.i(tag, "into onError()");
-					mp.release();
-					return false;
-				}
-			});
-    }
- 
-    
-    private void createMedia(String userPressed){
-	
-    	try {
-    		Log.i(tag, "get choice is: "+userPressed);
-
-    			mediaPlayer01=MediaPlayer.create(Receipt.this, Receipt.this.getResources().getIdentifier(userPressed+"_"+voice_version, "raw", this.getPackageName()));
-        		mediaPlayer01.start();
-
-    		
-			} catch (IllegalStateException e) {
-				Log.i(tag, "IllegalStateException: "+e.getMessage());
-				e.printStackTrace();
-			} /*catch (IOException e) {
-				Log.i(tag, "IOException: "+e.getMessage());
-				e.printStackTrace();
-			}*/
-//			mediaPlayer01.stop();
-			
-			
-			mediaPlayer01.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-				
-				@Override
-				public void onCompletion(MediaPlayer mp) {
-//					Log.i(tag, "into onCompletion()");
-					mp.release();
-					
-				}
-			});
-			mediaPlayer01.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-
-				@Override
-				public boolean onError(MediaPlayer mp, int what, int extra) {
-//					Log.i(tag, "into onError()");
-					mp.release();
-					return false;
-				}
-			});
-    }
-    
     
     @Override//覆寫音量放大或縮小鍵為控制媒體音量鍵
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -816,7 +491,7 @@ public class Receipt extends Activity {
      * 將文字檔轉化成checknum陣列
      */
     private void generateEntity(){
-    	Log.i(tag, "into generateEntity()");
+//    	Log.i(tag, "into generateEntity()");
 		 FileInputStream fi = null;
          try {
  			fi=new FileInputStream(f);
@@ -893,9 +568,7 @@ public class Receipt extends Activity {
 				})
 				.show();
 				break;
-			
-
-		
+	
 		}
 		return super.onOptionsItemSelected(item);
 	}

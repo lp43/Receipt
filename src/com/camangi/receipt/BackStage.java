@@ -16,7 +16,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
-
+/**
+ * 這個後臺被拿來判斷是否有網路連線,
+ * 如果有連線,也向伺服器請求對獎號碼資料,
+ * 並將下載下來的資料,轉成txt型式,存在機器裡的data資料夾
+ * @author simon
+ *
+ */
 public class BackStage {
 	public static String[] nums;
 	private final static String tag="tag";

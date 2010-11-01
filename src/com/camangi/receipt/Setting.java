@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.media.AudioManager;
@@ -43,6 +44,7 @@ public class Setting extends Activity {
 	int oldvolume;//從Receipt傳來的原音量
 	String old_voice_version;//從Receipt傳來的原聲音設定版本
 	int oldvalue;//將Receipt傳來的原聲音設定版本轉成int值，讓SingleChoiceItems能有預設值
+	int oldlogicset;//這個值是從SharePreference傳出來的值
 	final int SETLOGIC=0;
 	final int SETVOICEVERSIONDIALOG=1;
 	AlertDialog alert;
@@ -69,7 +71,18 @@ public class Setting extends Activity {
 			oldvalue=2;
 		} 
 		
-		
+		SharedPreferences sharedata = getSharedPreferences("data", 0);  
+        String logicdata = sharedata.getString("logic", "RightToLeft");  
+    	if(logicdata.equals("RightToLeft")){
+			//判斷音量為0的程式邏輯一定要先寫，因為使用者可能後來自己將音量從實體按鍵調成0，那麼就會變成靜音
+    		oldlogicset=0;
+		}else if(logicdata.equals("LeftToRight")){
+			oldlogicset=1;
+		}else if(logicdata.equals("LastThree")){
+			oldlogicset=2;
+		}
+        
+        
 		lv=(ListView) findViewById(R.id.list);
 
  		lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -85,7 +98,7 @@ public class Setting extends Activity {
 				switch(position){
 				case 0:
 //					Log.i(tag, "you press: "+position);
-					
+					showDialog(SETLOGIC);
 					break;
 				case 1:
 //					Log.i(tag, "you press: "+position);
@@ -123,13 +136,52 @@ public class Setting extends Activity {
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
+		final Editor sharedata = getSharedPreferences("data", 0).edit(); 
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		switch(id){
-		/*case SETLOGIC:
+		case SETLOGIC:
+
+
+			builder
+			.setTitle("請選擇你想使用的對獎輸入方式")
+			.setSingleChoiceItems(new String[]{"由右至左輸入(建議)","由左至右輸入(不建議)","末3碼輸入",},oldlogicset,new DialogInterface.OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					
+					
+					switch(which){
+						case 0:
+							sharedata.putString("logic","RightToLeft");
+							sharedata.commit();
+							dismissDialog(SETLOGIC);
+							break;
+						case 1:		
+							sharedata.putString("logic","LeftToRight");
+							sharedata.commit();
+							dismissDialog(SETLOGIC);
+							break;
+						case 2:							
+							sharedata.putString("logic","LastThree");
+							sharedata.commit();
+							dismissDialog(SETLOGIC);
+							break;
+					}
+					
+				}
+				
+			})
+			.setPositiveButton("取消", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int whichButton) {
+	        	
+	        }
+			});
+			alert = builder.create();
+			return alert;
 			
-			break;*/
 		case SETVOICEVERSIONDIALOG:
-			final Editor sharedata = getSharedPreferences("data", 0).edit(); 
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+/*			final Editor sharedata = getSharedPreferences("data", 0).edit(); 
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);*/
 
 			builder
 			.setTitle("請選擇語音")
