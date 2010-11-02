@@ -144,7 +144,7 @@ public class Setting extends Activity {
 
 			builder
 			.setTitle("請選擇你想使用的對獎輸入方式")
-			.setSingleChoiceItems(new String[]{"由右至左輸入(建議)","由左至右輸入(不建議)","末3碼輸入",},oldlogicset,new DialogInterface.OnClickListener(){
+			.setSingleChoiceItems(new String[]{"由右至左輸入","由左至右輸入","末3碼輸入(建議)",},oldlogicset,new DialogInterface.OnClickListener(){
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {

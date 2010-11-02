@@ -61,9 +61,9 @@ public class LastThree {
 			    			maybeNum=numcheck;//將核對到的可能中獎號碼存進maybeNum
 			    			checkEightType=EIGHTINSPECIAL;
 			    			Log.i(tag, "maybeNum is: "+maybeNum);
-			    			Receipt.textfive.setText("請繼續輸入前面5碼！");
+			    			Receipt.textfive.setText("請繼續\"由左至右\"輸入前面5碼！");
 			    			
-			    			Toast toast = Toast.makeText(context, "請繼續輸入前面5碼！", Toast.LENGTH_SHORT);
+			    			Toast toast = Toast.makeText(context, "請繼續\"由左至右\"輸入前面5碼！", Toast.LENGTH_SHORT);
 			    		    View originView=toast.getView();
 			    		    LinearLayout layout= new LinearLayout(context);
 			    		    layout.setOrientation(LinearLayout.VERTICAL);
@@ -85,9 +85,9 @@ public class LastThree {
 			    			maybeNum=numcheck;//將核對到的可能中獎號碼存進maybeNum
 			    			checkEightType=EIGHTINHEAD;
 			    			Log.i(tag, "maybeNum is: "+maybeNum);
-			    			Receipt.textfive.setText("請繼續輸入前面5碼！");
+			    			Receipt.textfive.setText("請繼續\"由左至右\"輸入前面5碼！");
 			    			
-			    			Toast toast = Toast.makeText(context, "請繼續輸入前面5碼！", Toast.LENGTH_SHORT);
+			    			Toast toast = Toast.makeText(context, "請繼續\"由左至右\"輸入前面5碼！", Toast.LENGTH_SHORT);
 			    		    View originView=toast.getView();
 			    		    LinearLayout layout= new LinearLayout(context);
 			    		    layout.setOrientation(LinearLayout.VERTICAL);

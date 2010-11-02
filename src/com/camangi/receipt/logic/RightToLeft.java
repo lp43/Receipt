@@ -61,7 +61,7 @@ public class RightToLeft {
     			 Receipt.limit=1;
     	
     			 Receipt.textview.setText("");
-//    			 Toast.makeText(this, "沒中...", Toast.LENGTH_SHORT).show();
+    			 Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT).show();
     			 media.createMedia("no",context,voice_version);
     			 return;
     		 	  }	 

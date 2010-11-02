@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +38,7 @@ import com.camangi.receipt.logic.*;
 import com.camangi.receipt.media.Media;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.010b3";
+	private String softVersion="v1.012";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -345,7 +346,16 @@ public class Receipt extends Activity {
 				textview.setText("");
 				Type.numtotal="";//將累積的數值暫存變數清空
 				Type.first5total="";//將末三碼驗證的專屬變數︰前5碼暫存清除
-				got=false;
+				got=false;//將LastThree專屬的中末3碼的got變數回復為false
+				
+				if(logic.equals("RightToLeft")){
+					textfive.setText("▲ 請從發票 \"最右邊\" 開始輸入！");
+				}else if(logic.equals("LeftToRight")){
+					textfive.setText("▲ 請從發票 \"最左邊\" 開始輸入！");
+				}else if(logic.equals("LastThree")){
+					textfive.setText("▲ 請從發票 \"末三碼\" 開始輸入！");
+				}
+				
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
 				if(Receipt.this.voice_version.equals("big")){
@@ -519,9 +529,11 @@ public class Receipt extends Activity {
 		
 		menu.add(0, 0, 0, "設定");
 		menu.add(0, 1, 1, "關於");
+		menu.add(0, 2, 2, "查看中獎號");
+		/*menu.add(0, 3, 3, "月份設定");*/
 		menu.getItem(0).setIcon(R.drawable.setting);
 		menu.getItem(1).setIcon(R.drawable.about);
-		
+		menu.getItem(2).setIcon(R.drawable.targetnum);
 
 		
 		return super.onCreateOptionsMenu(menu);
@@ -567,6 +579,14 @@ public class Receipt extends Activity {
 					}
 				})
 				.show();
+				break;
+			case 2:
+				 LayoutInflater factory = LayoutInflater.from(this);
+		            final View form = factory.inflate(R.layout.form, null);
+		            new AlertDialog.Builder(Receipt.this)
+		                .setView(form)
+
+		                .show();
 				break;
 	
 		}
