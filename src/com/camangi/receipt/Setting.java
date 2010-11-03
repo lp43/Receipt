@@ -72,7 +72,7 @@ public class Setting extends Activity {
 		} 
 		
 		SharedPreferences sharedata = getSharedPreferences("data", 0);  
-        String logicdata = sharedata.getString("logic", "RightToLeft");  
+        String logicdata = sharedata.getString("logic", "LastThree");  
     	if(logicdata.equals("RightToLeft")){
 			//判斷音量為0的程式邏輯一定要先寫，因為使用者可能後來自己將音量從實體按鍵調成0，那麼就會變成靜音
     		oldlogicset=0;

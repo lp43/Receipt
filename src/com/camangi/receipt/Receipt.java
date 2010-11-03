@@ -40,7 +40,7 @@ import com.camangi.receipt.logic.*;
 import com.camangi.receipt.media.Media;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.014";
+	private String softVersion="v1.014b1";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -676,6 +676,7 @@ public class Receipt extends Activity {
 					 head2.delete();	
 				 }
 				 onResume();//onResume()會檢查有沒有中獎txt檔案,如果沒有,會呼叫dataRequest(),並建立起實體generateEntity()
+				 Toast.makeText(this, "更新成功！", Toast.LENGTH_SHORT).show();
 				break;
 			case 3:
 				Intent intent=new Intent();
