@@ -40,7 +40,7 @@ import com.camangi.receipt.logic.*;
 import com.camangi.receipt.media.Media;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.013";
+	private String softVersion="v1.013b1";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -502,7 +502,10 @@ public class Receipt extends Activity {
      			
      			.show();	
              }else{
-            	 BackStage.dataRequest(this,iwantcheckmonth); 
+            	 //只要一檢查到沒有2個檔案，馬上一次將2筆資料請求下來
+            	 BackStage.dataRequest(this,"head");
+            	 BackStage.dataRequest(this,"head2"); 
+            	 //但是只產生被設定的月份的實體
             	 generateEntity();
              }
         }else{
@@ -605,7 +608,7 @@ public class Receipt extends Activity {
     
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		menu.add(0, 0, 0, "設定對獎月份");
+		menu.add(0, 0, 0, "對獎月份");
 		menu.add(0, 1, 1, "查看中獎號");
 		menu.add(0, 2, 2, "設定");
 		menu.add(0, 3, 3, "關於");

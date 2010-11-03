@@ -195,6 +195,7 @@ public class LastThree {
 		         toast.setView(layout);
 		         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 		         toast.show();
+		         Receipt.textfive.setText("▲ 請從發票 \"末三碼\" 開始輸入！");
 		         media.createMedia("noany",context,voice_version);
         	}
         	
