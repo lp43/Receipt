@@ -40,7 +40,7 @@ import com.camangi.receipt.logic.*;
 import com.camangi.receipt.media.Media;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.013b1";
+	private String softVersion="v1.014";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -610,14 +610,16 @@ public class Receipt extends Activity {
 
 		menu.add(0, 0, 0, "對獎月份");
 		menu.add(0, 1, 1, "查看中獎號");
-		menu.add(0, 2, 2, "設定");
-		menu.add(0, 3, 3, "關於");
-
+		menu.add(0, 2, 2, "更新");
+		menu.add(0, 3, 3, "設定");
+		menu.add(0, 4, 4, "關於");
+		
 		
 		menu.getItem(0).setIcon(R.drawable.setmonth);
 		menu.getItem(1).setIcon(R.drawable.targetnum);
-		menu.getItem(2).setIcon(R.drawable.setting);
-		menu.getItem(3).setIcon(R.drawable.about);
+		menu.getItem(2).setIcon(R.drawable.refresh);
+		menu.getItem(3).setIcon(R.drawable.setting);
+		menu.getItem(4).setIcon(R.drawable.about);
 	
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -664,7 +666,18 @@ public class Receipt extends Activity {
 					AA.show();
 					
 				break;
-			case 2:
+			case 2://先刪除原檔案，再呼叫onResume()重新抓取資料
+				 File head= new File(this.getFilesDir()+"/receipt_head.txt");
+				 if(head.exists()==true){
+					 head.delete();	
+				 }
+				 File head2= new File(this.getFilesDir()+"/receipt_head2.txt");
+				 if(head2.exists()==true){
+					 head2.delete();	
+				 }
+				 onResume();//onResume()會檢查有沒有中獎txt檔案,如果沒有,會呼叫dataRequest(),並建立起實體generateEntity()
+				break;
+			case 3:
 				Intent intent=new Intent();
 				int oldvolume=am.getStreamVolume(AudioManager.STREAM_MUSIC);
 				
@@ -675,7 +688,7 @@ public class Receipt extends Activity {
 				intent.setClass(this, Setting.class);
 				startActivity(intent);
 				break;
-			case 3:
+			case 4:
 				new AlertDialog.Builder(this)
 				.setMessage(getString(R.string.app_name)+" "+ softVersion +"\n作者 Camangi Corporation\n\n版權 2010")
 				.setIcon(R.drawable.icon)

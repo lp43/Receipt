@@ -24,11 +24,17 @@ import android.util.Log;
  *
  */
 public class BackStage {
-	public static String[] nums;
+//	public static String[] nums;
 	private final static String tag="tag";
 	static WifiManager wm;
 	static ConnectivityManager cm;
 
+	/**
+	 * dataRequest()用來連線財政部，抓取特定字串，轉存到data目錄裡,
+	 * 存成當期︰Receipt_head.txt或前一期Receipt_head2.txt裡，供之後每次開啟程式時，產生實體的資料
+	 * @param context 要用到data資料夾，就必須先有主體
+	 * @param time 時間是指要跟伺服器請求檔案,是當期的,還是前一期的，如果是當期的，傳進來的字串會是"head",否則為"head2"
+	 */
 	public static void dataRequest(Context context,String time){
 		 URL url = null;
 		 HttpURLConnection uc = null;
@@ -113,7 +119,7 @@ public class BackStage {
 				   uc.disconnect();
 				   
 				   String ch=iwant.replace("、", ",");
-				   nums = ch.split(",");
+//				   nums = ch.split(",");
 
 //				   FileOutputStream fos = context.openFileOutput("receipt"+"_"+time+".txt", context.MODE_PRIVATE);
 
@@ -127,6 +133,11 @@ public class BackStage {
 //			Log.i(tag, "content is: "+contentBuffer);
 	}
 	
+	/**
+	 * 檢查3G是否有連線
+	 * @param context 請求需有主體
+	 * @return 如果有連線,傳回True,否則傳回false
+	 */
 	public static boolean check3GConnectStatus(Context context){
 		boolean net3g_status=false;
 		
@@ -141,6 +152,11 @@ public class BackStage {
 		return net3g_status;
 	}
 	
+	/**
+	 * 檢查Wifi是否有連線
+	 * @param context 請求需有請求主體
+	 * @return 只要WiFi的狀態是Disabled或沒有ip值，傳回false,否則傳回True
+	 */
 	public static boolean checkEnableingWifiStatus(Context context){
 		wm =(WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 		if(wm.getWifiState()==wm.WIFI_STATE_DISABLED|wm.getConnectionInfo().getIpAddress()==0){
