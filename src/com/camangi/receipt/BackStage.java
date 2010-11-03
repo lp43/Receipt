@@ -70,11 +70,23 @@ public class BackStage {
 				   monthstartindex=contentBuffer.indexOf("<div class=\"caption\">",monthendindex);
 				   monthendindex=contentBuffer.indexOf("</div>",monthstartindex);			   
 				   String iwantdate=contentBuffer.substring(monthstartindex+21, monthendindex);
-				   Log.i(tag, "iwantmonth: "+iwantdate);
+//				   Log.i(tag, "iwantmonth: "+iwantdate);
 				   int dateend=iwantdate.indexOf("統");
-				   Log.i(tag, "yearend: "+dateend);
+//				   Log.i(tag, "yearend: "+dateend);
 				   String iwantyear=iwantdate.substring(0, dateend);
-				   Log.i(tag, "iwantyear: "+iwantyear);
+//				   Log.i(tag, "iwantyear: "+iwantyear);
+				   
+				   int periodstartindex,periodendindex=0;
+				   periodstartindex=contentBuffer.indexOf("<span class=\"style1\">",periodendindex);
+				   periodendindex=contentBuffer.indexOf("</span>",periodstartindex);			   
+				   String iwantperiod=contentBuffer.substring(periodstartindex+25, periodendindex);
+				   Log.i(tag, "iwantperiod: "+iwantperiod);
+//				   int peroidend=iwantdate.indexOf("統");
+////				   Log.i(tag, "yearend: "+dateend);
+//				   String iwantyear=iwantdate.substring(0, dateend);
+//				   Log.i(tag, "iwantyear: "+iwantyear);
+				   
+				   
 				   FileOutputStream fos = context.openFileOutput("receipt"+"_"+time+".txt", context.MODE_PRIVATE);
 				   
 				   fos.write(iwantyear.getBytes());
@@ -106,6 +118,8 @@ public class BackStage {
 //				   FileOutputStream fos = context.openFileOutput("receipt"+"_"+time+".txt", context.MODE_PRIVATE);
 
 				   fos.write(ch.getBytes());
+				   fos.write(System.getProperty("line.separator").getBytes());
+				   fos.write(iwantperiod.getBytes());
 				   fos.close();
 			} catch (IOException e) {
 				Log.i(tag, e.getMessage());
@@ -132,6 +146,7 @@ public class BackStage {
 		if(wm.getWifiState()==wm.WIFI_STATE_DISABLED|wm.getConnectionInfo().getIpAddress()==0){
 			return false;
 		}else{
+			Log.i(tag, "ip adress: "+wm.getConnectionInfo().getIpAddress());
 			return true;
 		}	
 	}	

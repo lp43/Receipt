@@ -67,6 +67,12 @@ public class RightToLeft {
     		 	  }	 
     		 }
 		   }
+    	 Receipt.limit=1;
+     	
+		 Receipt.textview.setText("");
+		 Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT).show();
+		 media.createMedia("no",context,voice_version);
+		 return;
     }
     
     /**
@@ -139,6 +145,25 @@ public class RightToLeft {
 			         }
 			         }
 			    }
+    	 Receipt.limit=1;
+	     
+         Receipt.textview.setText("");
+        
+         Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
+         View originView=toast.getView();
+         LinearLayout layout= new LinearLayout(context);
+         layout.setOrientation(LinearLayout.VERTICAL);
+         ImageView view = new ImageView(context);
+         view.setImageResource(R.drawable.no);
+         layout.addView(view);
+         layout.addView(originView);
+         toast.setView(layout);
+         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+         toast.show();
+
+        
+         media.createMedia("nono",context,voice_version);
+         return;
 	       }  
     
     /**

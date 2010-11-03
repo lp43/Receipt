@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,7 +40,7 @@ import com.camangi.receipt.logic.*;
 import com.camangi.receipt.media.Media;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.012";
+	private String softVersion="v1.013";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -53,27 +55,61 @@ public class Receipt extends Activity {
 	 */
 	public static String[] checknum;
 	public static boolean got;
-	/*
+	/**
 	 * 從SharePreference讀出預設的的logic運算模式,存放在此變數
 	 */
 	private String logic;
 
-	/*
+	/**
 	 * 播放音效的版本變數
 	 */
 	public static String voice_version="regular";
-	static AudioManager am;//用來調整音量Stream大小的啟始變數
-	Toast toast;//用來調整音量的toast變數
-	 /* static String getMonth;*/
+	/**
+	 * 用來調整音量Stream大小的啟始變數
+	 */
+	static AudioManager am;
+	/**
+	 * 用來調整音量的toast變數
+	 */
+	Toast toast;
 	File f;//檔案
-	/*
+	/**
 	 * 記錄對獎方式的邏輯變數<br/>
 	 * 0:由右至左
 	 * 1:由左至右
 	 * 2:先輸入末3碼，再輸入剩餘8碼
 	 */
 
-	String month;//從txt檔裡抓出來的月份字串
+	/**
+	 * 從txt檔裡抓出來的月份字串
+	 */
+	String month;
+	/**
+	 * 取得領獎期間
+	 */
+	String getmoneyperoid;
+	/**
+	 * 想要對獎的日期,當期為head,上一期為head2
+	 */
+	String iwantcheckmonth;
+	/**
+	 * onCreateDiloag視窗的第1個ID值視窗︰設定月份視窗,
+	 * 預設為0
+	 */
+	private final int SETMONTH=0;
+	/**
+	 * 從sharePreference取出來的欲核對的發票月份
+	 */
+	private int oldmonthsetted;
+	/**
+	 * 拿來給onCreateDiloag產生視窗用的值
+	 */
+	AlertDialog alert;
+	/**
+	 * SharedPreferences屬性的sharedata設為公用變數
+	 */
+	SharedPreferences sharedata;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,15 +135,15 @@ public class Receipt extends Activity {
         
         am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
        
-        SharedPreferences sharedata = getSharedPreferences("data", 0);  
+        sharedata = getSharedPreferences("data", 0);  
         String voicedata = sharedata.getString("voice", "regular");  
-//        Log.i(tag,"data="+voicedata);
+        Log.i(tag,"data="+voicedata);
         if(voicedata.equals("mute")){
         	am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
         }else{
         	voice_version=voicedata;
         }
-        
+//        String iwantcheckmonth = sharedata.getString("iwantcheckmonth", "head"); 
         
         textview=(TextView) findViewById(R.id.text);
         textfirst=(TextView) findViewById(R.id.title_firstline);
@@ -367,7 +403,82 @@ public class Receipt extends Activity {
 			} 	
         });
         
-        f= new File(this.getFilesDir()+"/receipt_head.txt");
+//        f= new File(this.getFilesDir()+"/receipt_"+iwantcheckmonth+".txt");
+//        
+//        if(!f.exists()){
+//        	Log.i(tag, "into f.exist==false");
+//        	Log.i(tag, "BackStage.check3GConnectStatus(this)= "+String.valueOf(BackStage.check3GConnectStatus(this)));
+//        	Log.i(tag, "BackStage.checkWIFIStatus(this)= "+String.valueOf(BackStage.checkEnableingWifiStatus(this)));
+//        	 if (BackStage.check3GConnectStatus(this)==false&BackStage.checkEnableingWifiStatus(this)==false){
+//            	 
+//            	
+////        		 Log.i(tag, "into new");
+//             	new AlertDialog.Builder(this)
+//     	    	.setTitle("沒有\"新的\"中獎號碼資料!")
+//     			.setIcon(R.drawable.warning)
+//     			.setMessage("系統必須連上網路取得資料...\n一有資料，\n之後就暫時不用再連線了")
+//     			.setPositiveButton("離開程式", new DialogInterface.OnClickListener() {
+//
+//     				@Override
+//     				public void onClick(DialogInterface dialog, int which) {
+//     					finish();
+//     				}
+//     				})
+//     			
+//     			.show();	
+//             }else{
+//            	 BackStage.dataRequest(this,iwantcheckmonth); 
+//            	 generateEntity();
+//             }
+//        }else{
+//        	Log.i(tag, "f.exist=true");
+//        	generateEntity();
+//        }
+       
+    }
+
+
+	@Override
+	protected void onResume() {
+//		Log.i(tag, "into onResume()");
+		
+		
+		sharedata = getSharedPreferences("data", 0);  
+        String voicedata = sharedata.getString("voice", "regular");  
+        Log.i(tag,"data="+voicedata);
+        am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        if(voicedata.equals("mute")){
+        	am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+
+        }else{
+        	voice_version=voicedata;
+        }
+        logic = sharedata.getString("logic", "LastThree");
+        Log.i(tag, "get SharePreferences logic: "+logic);
+       
+        if(logic.equals("RightToLeft")){
+//        	Log.i(tag, "into setText5: RightToLeft");
+        	textfive.setText("▲ 請從發票 #message 開始輸入！");
+        	String finaltext5=textfive.getText().toString().replace("#message", "\"最右邊\"");
+            textfive.setText(finaltext5);
+        }else if(logic.equals("LeftToRight")){	
+//        	Log.i(tag, "into setText5: LeftToRight");
+        	textfive.setText("▲ 請從發票 #message 開始輸入！");
+        	String finaltext5=textfive.getText().toString().replace("#message", "\"最左邊\"");
+            textfive.setText(finaltext5);
+        }else if(logic.equals("LastThree")){
+//        	Log.i(tag, "into setText5: LastThree");
+        	textfive.setText("▲ 請從發票 #message 開始輸入！");
+        	String finaltext5=textfive.getText().toString().replace("#message", "\"末三碼\"");
+            textfive.setText(finaltext5);
+        }
+        Type.numtotal="";
+        textview.setText("");//數字框清空
+        media= new Media();
+        
+        String iwantcheckmonth = sharedata.getString("iwantcheckmonth", "head");
+        
+        f= new File(this.getFilesDir()+"/receipt_"+iwantcheckmonth+".txt");
         
         if(!f.exists()){
         	Log.i(tag, "into f.exist==false");
@@ -391,53 +502,15 @@ public class Receipt extends Activity {
      			
      			.show();	
              }else{
-            	 BackStage.dataRequest(this,"head"); 
+            	 BackStage.dataRequest(this,iwantcheckmonth); 
             	 generateEntity();
              }
         }else{
         	Log.i(tag, "f.exist=true");
         	generateEntity();
         }
-       
-    }
-
-
-	@Override
-	protected void onResume() {
-//		Log.i(tag, "into onResume()");
-		
-		super.onResume();
-		SharedPreferences sharedata = getSharedPreferences("data", 0);  
-        String voicedata = sharedata.getString("voice", "regular");  
-        Log.i(tag,"data="+voicedata);
-        if(voicedata.equals("mute")){
-        	am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
-
-        }else{
-        	voice_version=voicedata;
-        }
-        logic = sharedata.getString("logic", "RightToLeft");
-        Log.i(tag, "get SharePreferences logic: "+logic);
-       
-        if(logic.equals("RightToLeft")){
-//        	Log.i(tag, "into setText5: RightToLeft");
-        	textfive.setText("▲ 請從發票 #message 開始輸入！");
-        	String finaltext5=textfive.getText().toString().replace("#message", "\"最右邊\"");
-            textfive.setText(finaltext5);
-        }else if(logic.equals("LeftToRight")){	
-//        	Log.i(tag, "into setText5: LeftToRight");
-        	textfive.setText("▲ 請從發票 #message 開始輸入！");
-        	String finaltext5=textfive.getText().toString().replace("#message", "\"最左邊\"");
-            textfive.setText(finaltext5);
-        }else if(logic.equals("LastThree")){
-//        	Log.i(tag, "into setText5: LastThree");
-        	textfive.setText("▲ 請從發票 #message 開始輸入！");
-        	String finaltext5=textfive.getText().toString().replace("#message", "\"末三碼\"");
-            textfive.setText(finaltext5);
-        }
-        Type.numtotal="";
-        textview.setText("");
-        media= new Media();
+        
+        super.onResume();
 	}
  
     
@@ -514,36 +587,81 @@ public class Receipt extends Activity {
          try {
         	month=br.readLine();
  			getnum=br.readLine();
+ 			getmoneyperoid=br.readLine();
  			Log.i(tag, "getnum: "+getnum);
  		} catch (IOException e) {
  			Log.i(tag, "IOException: "+e.getMessage());
  		}
+ 		
  		checknum=getnum.split(",");
  		
+ 		
+ 		
+ 		textfirst.setText("中華民國#date份");//先設回初始值,以助日後使用者改到選擇月份時,能即時將UI的月份畫面更新
  		 //month變數從txt檔裡讀出來以後，才可以將月份取代掉
         String finaltext1=textfirst.getText().toString().replace("#date", month);
         textfirst.setText(finaltext1);
     }
     
 	public boolean onCreateOptionsMenu(Menu menu) {
-		
-		menu.add(0, 0, 0, "設定");
-		menu.add(0, 1, 1, "關於");
-		menu.add(0, 2, 2, "查看中獎號");
-		/*menu.add(0, 3, 3, "月份設定");*/
-		menu.getItem(0).setIcon(R.drawable.setting);
-		menu.getItem(1).setIcon(R.drawable.about);
-		menu.getItem(2).setIcon(R.drawable.targetnum);
+
+		menu.add(0, 0, 0, "設定對獎月份");
+		menu.add(0, 1, 1, "查看中獎號");
+		menu.add(0, 2, 2, "設定");
+		menu.add(0, 3, 3, "關於");
 
 		
+		menu.getItem(0).setIcon(R.drawable.setmonth);
+		menu.getItem(1).setIcon(R.drawable.targetnum);
+		menu.getItem(2).setIcon(R.drawable.setting);
+		menu.getItem(3).setIcon(R.drawable.about);
+	
 		return super.onCreateOptionsMenu(menu);
 	}
 	
+
+
+
 	/**描述 : 建立Menu清單的觸發事件*/
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 			case 0:
+				String str_oldmonthsetted=sharedata.getString("iwantcheckmonth", "head");
+				if(str_oldmonthsetted.equals("head")){
+					oldmonthsetted=0;
+				}else if(str_oldmonthsetted.equals("head2")){
+					oldmonthsetted=1;
+				}
+				showDialog(SETMONTH);
+				break;
+			case 1:
+				
+				    LayoutInflater factory = LayoutInflater.from(this);
+		            final View form = factory.inflate(R.layout.form, null);
+				    Builder AA=new AlertDialog.Builder(Receipt.this).setView(form);        
+		               
+		            TextView text_title=(TextView) form.findViewById(R.id.text_title);
+					TextView text_spec=(TextView) form.findViewById(R.id.text_spec);
+					TextView text_head=(TextView) form.findViewById(R.id.text_head);
+					TextView text_addnew=(TextView) form.findViewById(R.id.text_addnew);
+					TextView text_period=(TextView) form.findViewById(R.id.text_period);
+					
+					text_title.setText(text_title.getText().toString().replace("#date", month));				
+					text_spec.setText(text_spec.getText().toString().replace("test1\ntest2\ntest3", checknum[0]+"\n"+checknum[1]+"\n"+checknum[2]));
+					text_head.setText(text_head.getText().toString().replace("test1\ntest2\ntest3", checknum[3]+"\n"+checknum[4]+"\n"+checknum[5]));
+					try{
+						text_addnew.setText(text_addnew.getText().toString().replace("#addnew", checknum[6]+"\n"));
+					}catch(ArrayIndexOutOfBoundsException e){		
+						text_addnew.setText(text_addnew.getText().toString().replace("#addnew", "無\n"));
+					}
+					
+					text_period.setText(text_period.getText().toString().replace("#period", getmoneyperoid+"\n"));
+					
+					AA.show();
+					
+				break;
+			case 2:
 				Intent intent=new Intent();
 				int oldvolume=am.getStreamVolume(AudioManager.STREAM_MUSIC);
 				
@@ -554,7 +672,7 @@ public class Receipt extends Activity {
 				intent.setClass(this, Setting.class);
 				startActivity(intent);
 				break;
-			case 1:
+			case 3:
 				new AlertDialog.Builder(this)
 				.setMessage(getString(R.string.app_name)+" "+ softVersion +"\n作者 Camangi Corporation\n\n版權 2010")
 				.setIcon(R.drawable.icon)
@@ -580,16 +698,54 @@ public class Receipt extends Activity {
 				})
 				.show();
 				break;
-			case 2:
-				 LayoutInflater factory = LayoutInflater.from(this);
-		            final View form = factory.inflate(R.layout.form, null);
-		            new AlertDialog.Builder(Receipt.this)
-		                .setView(form)
-
-		                .show();
-				break;
 	
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		final Editor sharedata = getSharedPreferences("data", 0).edit(); 
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		switch(id){
+		case SETMONTH:
+
+
+			builder
+			.setTitle("請選擇你想對獎的發票時間")
+			.setSingleChoiceItems(new String[]{"當期","上一期"},oldmonthsetted,new DialogInterface.OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					
+					
+					switch(which){
+						case 0:
+							sharedata.putString("iwantcheckmonth","head");
+							sharedata.commit();
+							dismissDialog(SETMONTH);
+							onResume();
+							break;
+						case 1:		
+							sharedata.putString("iwantcheckmonth","head2");
+							sharedata.commit();
+							dismissDialog(SETMONTH);
+							onResume();
+							break;
+					}
+					
+				}
+				
+			})
+			.setPositiveButton("取消", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int whichButton) {
+	        	
+	        }
+			});
+			alert = builder.create();
+			return alert;
+		}
+		return super.onCreateDialog(id);
 	}
 }

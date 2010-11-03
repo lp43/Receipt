@@ -31,6 +31,7 @@ public class LeftToRight {
     * @param num
     */
         public static void checkEight(String getnum,Context context,String voice_version){
+        	
 	         Log.i(tag, "get 8num is: "+ getnum);
 	         
 	         int i=0;
@@ -62,11 +63,12 @@ public class LeftToRight {
 				    }
 			    }else if(numcheck.length()==3){
 			    	if(numcheck.equals(lastThree)){
-//		    			Log.i(tag, "last3 is the same with NEWADD");
+		    			Log.i(tag, "last3 is the same with NEWADD");
 		    			newDialog("恭喜你中了[增開六獎]\n獎金: 200塊","congratulations",context);
 		    			media.createMedia("notsimple",context,voice_version);
 		    			return;
 		    		}else{
+//		    			Log.i(tag, "into noany");
 				    	 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
 				         View originView=toast.getView();
 				         LinearLayout layout= new LinearLayout(context);
@@ -85,6 +87,20 @@ public class LeftToRight {
    
 			    }
 	        }
+	         Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
+	         View originView=toast.getView();
+	         LinearLayout layout= new LinearLayout(context);
+	         layout.setOrientation(LinearLayout.VERTICAL);
+	         ImageView view = new ImageView(context);
+	         view.setImageResource(R.drawable.no);
+	         layout.addView(view);
+	         layout.addView(originView);
+	         toast.setView(layout);
+	         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+	         toast.show();
+	         media.createMedia("noany",context,voice_version);
+	         return;
+	        
         }
         
         private static void newDialog(String message,String icon,Context context){
@@ -108,6 +124,7 @@ public class LeftToRight {
          * 才會進來該Method檢查剩下沒檢查的5碼
          */
         private static void checkRemain5InSPEC(String getnum,Context context,String voice_version){
+
         	Log.i(tag, "maybeNum: "+maybeNum);
         	String getNumHeadFive=getnum.substring(0, 5);
         	Log.i(tag, "getnum head5: "+getNumHeadFive);
@@ -141,6 +158,7 @@ public class LeftToRight {
          * 才會進來該Method檢查剩下沒檢查的5碼
          */
         private static void checkRemain5InHEAD(String getnum,Context context,String voice_version){
+
         	Log.i(tag, "maybeNum: "+maybeNum);
 
         	if(getnum.equals(maybeNum)){

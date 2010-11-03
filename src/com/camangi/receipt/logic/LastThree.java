@@ -44,7 +44,7 @@ public class LastThree {
     */
         public static void checkThree(String getlast3num,Context context,String voice_version){
 	         Log.i(tag, "get last 3num is: "+ getlast3num);
-	         
+	     
 	         int i=0;
 	        
 	        for(String numcheck:Receipt.checknum){
@@ -125,10 +125,22 @@ public class LastThree {
 				         media.createMedia("noany",context,voice_version);
 				         return;
 				    }
-			   
-   
-			    }
+
+			    }	   
 	        }
+	        Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
+	         View originView=toast.getView();
+	         LinearLayout layout= new LinearLayout(context);
+	         layout.setOrientation(LinearLayout.VERTICAL);
+	         ImageView view = new ImageView(context);
+	         view.setImageResource(R.drawable.no);
+	         layout.addView(view);
+	         layout.addView(originView);
+	         toast.setView(layout);
+	         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+	         toast.show();
+	         media.createMedia("noany",context,voice_version);
+	         return;
         }
         
         private static void newDialog(String message,String icon,Context context){
