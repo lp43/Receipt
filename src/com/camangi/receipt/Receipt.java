@@ -38,9 +38,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.camangi.receipt.logic.*;
 import com.camangi.receipt.media.Media;
+import com.admob.android.ads.AdManager;
+import com.admob.android.ads.AdView;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.014b1";
+	private String softVersion="v1.014b2";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -130,7 +132,15 @@ public class Receipt extends Activity {
 		}else{
 			setContentView(R.layout.mainlayout800);
 		}
-        
+		
+//		AdManager.setTestDevices( new String[] {
+//				AdManager.TEST_EMULATOR,// Android emulator
+//				"6712CE5152154D52915CBB5D9780583F", // My T-Mobile G1 Test Phone
+//				});
+
+		AdView adView = (AdView)findViewById(R.id.ad);
+		adView.requestFreshAd();
+
      
         
         am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);

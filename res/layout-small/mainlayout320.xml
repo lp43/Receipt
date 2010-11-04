@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:myapp="http://schemas.android.com/apk/res/com.camangi.receipt"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -182,14 +184,17 @@
         android:layout_toRightOf="@id/button_clear"
 		android:layout_below="@id/button_8"
 		android:textSize="40dp"
-        android:text="0" />    
-         <TextView android:id="@+id/right_ad" 
-              android:layout_width="fill_parent" 
-              android:layout_height="40dip" 
-              android:text="以後要放的廣告"
-              android:textSize="40dp"
-                android:layout_below="@id/button_clear"
-              android:paddingLeft="30px"
-              android:background="@drawable/test2"/>    
-</RelativeLayout>-->
+        android:text="0" />   
+         
+<com.admob.android.ads.AdView
+android:id="@+id/ad"
+android:layout_below="@id/button_clear"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+myapp:backgroundColor="#000000"
+myapp:primaryTextColor="#FFFFFF"
+myapp:secondaryTextColor="#CCCCCC"
+/>  
+               
+</RelativeLayout>
 </LinearLayout>
