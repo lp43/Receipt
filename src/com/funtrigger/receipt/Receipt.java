@@ -16,6 +16,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -46,7 +47,7 @@ import com.admob.android.ads.AdManager;
 import com.admob.android.ads.AdView;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.0.3";
+	private String softVersion="v1.0.4";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -484,7 +485,19 @@ public class Receipt extends Activity {
      	    	.setTitle("沒有中獎號碼資料!")
      			.setIcon(R.drawable.warning)
      			.setMessage("請連上網路以取得資料...")
-     			.setCancelable(false)
+     			.setOnKeyListener(new OnKeyListener(){
+
+					@Override
+					public boolean onKey(DialogInterface dialog, int keyCode,
+							KeyEvent event) {
+						if(keyCode==KeyEvent.KEYCODE_SEARCH|keyCode==KeyEvent.KEYCODE_BACK){
+							finish();
+						}
+						
+						return true;
+					}
+     				
+     			})
      			.setPositiveButton("離開程式", new DialogInterface.OnClickListener() {
 
      				@Override
@@ -711,7 +724,19 @@ public class Receipt extends Activity {
 					     	    	.setTitle("沒有中獎號碼資料!")
 					     			.setIcon(R.drawable.warning)
 					     			.setMessage("請連上網路以取得資料...")
-					     			.setCancelable(false)
+					     			.setOnKeyListener(new OnKeyListener(){
+
+										@Override
+										public boolean onKey(DialogInterface dialog, int keyCode,
+												KeyEvent event) {
+											if(keyCode==KeyEvent.KEYCODE_SEARCH|keyCode==KeyEvent.KEYCODE_BACK){
+												finish();
+											}
+											
+											return true;
+										}
+					     				
+					     			})
 					     			.setPositiveButton("取消", new DialogInterface.OnClickListener() {
 
 					     				@Override
@@ -788,7 +813,7 @@ public class Receipt extends Activity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						Intent sendIntent = new Intent(Intent.ACTION_SEND);
-						sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"simon@camangi.com"}); 
+						sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"lp43simon@gmail.com"}); 
 						sendIntent.putExtra(Intent.EXTRA_TEXT, "請將意見填寫於此");
 						sendIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.app_name)+softVersion+" 意見回報");
 						sendIntent.setType("message/rfc822");
