@@ -46,7 +46,7 @@ import com.admob.android.ads.AdManager;
 import com.admob.android.ads.AdView;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.02";
+	private String softVersion="v1.0.3";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -481,9 +481,10 @@ public class Receipt extends Activity {
             	
 //        		 Log.i(tag, "into new");
              	new AlertDialog.Builder(this)
-     	    	.setTitle("沒有\"新的\"中獎號碼資料!")
+     	    	.setTitle("沒有中獎號碼資料!")
      			.setIcon(R.drawable.warning)
-     			.setMessage("系統必須連上網路取得資料...\n一有資料，\n之後就暫時不用再連線了")
+     			.setMessage("請連上網路以取得資料...")
+     			.setCancelable(false)
      			.setPositiveButton("離開程式", new DialogInterface.OnClickListener() {
 
      				@Override
@@ -707,9 +708,10 @@ public class Receipt extends Activity {
 								public void run() {
 									dismissDialog(UPDATENUM);
 									new AlertDialog.Builder(Receipt.this)
-					     	    	.setTitle("沒有\"新的\"中獎號碼資料!")
+					     	    	.setTitle("沒有中獎號碼資料!")
 					     			.setIcon(R.drawable.warning)
-					     			.setMessage("系統必須連上網路取得資料...\n一有資料，\n之後就暫時不用再連線了")
+					     			.setMessage("請連上網路以取得資料...")
+					     			.setCancelable(false)
 					     			.setPositiveButton("取消", new DialogInterface.OnClickListener() {
 
 					     				@Override
@@ -808,6 +810,9 @@ public class Receipt extends Activity {
 	}
 	
 	
+
+
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		final Editor sharedata = getSharedPreferences("data", 0).edit(); 
