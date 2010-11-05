@@ -1,11 +1,11 @@
-package com.camangi.receipt;
+package com.funtrigger.receipt;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.camangi.receipt.logic.LastThree;
-import com.camangi.receipt.logic.LeftToRight;
-import com.camangi.receipt.logic.RightToLeft;
+import com.funtrigger.receipt.logic.LastThree;
+import com.funtrigger.receipt.logic.LeftToRight;
+import com.funtrigger.receipt.logic.RightToLeft;
 
 /*
  * Type類別是依據傳來的邏輯判斷方式,

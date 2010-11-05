@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:myapp="http://schemas.android.com/apk/res/com.camangi.receipt"
+	xmlns:myapp="http://schemas.android.com/apk/res/com.funtrigger.receipt"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -19,7 +19,6 @@
      		  android:id="@+id/text" 
               android:layout_width="250dip" 
               android:layout_height="120dip" 
-			  android:hint="數字顯示框"
               android:textSize="32dp"
               android:textColor="@color/black"
               android:gravity="center_vertical"
@@ -60,7 +59,7 @@
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			 android:paddingLeft="34dip"
-			 android:textSize="30sp"
+			 android:textSize="26sp"
 			 android:layout_below="@id/title_thirdline"
 			 android:textColor="@color/brown"
 			 android:layout_marginTop="0dip"

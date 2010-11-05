@@ -1,4 +1,4 @@
-package com.camangi.receipt;
+package com.funtrigger.receipt;
 
 
 import java.io.BufferedReader;
@@ -10,10 +10,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -21,6 +23,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -36,13 +40,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.camangi.receipt.logic.*;
-import com.camangi.receipt.media.Media;
+import com.funtrigger.receipt.logic.*;
+import com.funtrigger.receipt.media.Media;
 import com.admob.android.ads.AdManager;
 import com.admob.android.ads.AdView;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.014b2";
+	private String softVersion="v1.02";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -96,9 +100,19 @@ public class Receipt extends Activity {
 	String iwantcheckmonth;
 	/**
 	 * onCreateDiloag視窗的第1個ID值視窗︰設定月份視窗,
-	 * 預設為0
+	 * 設為final 0
 	 */
 	private final int SETMONTH=0;
+	/**
+	 * onCreateDiloag視窗的第2個ID值視窗︰更新畫面時提示用,
+	 * 設為final 1
+	 */
+	private final int UPDATENUM=1;
+	/**
+	 * onCreateDiloag視窗的第3個ID值視窗︰初始資料下載畫面時提示用,
+	 * 設為final 2
+	 */	
+	private final int DOWNLOAD=2;
 	/**
 	 * 從sharePreference取出來的欲核對的發票月份
 	 */
@@ -111,6 +125,8 @@ public class Receipt extends Activity {
 	 * SharedPreferences屬性的sharedata設為公用變數
 	 */
 	SharedPreferences sharedata;
+	Handler handler;
+	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -139,9 +155,7 @@ public class Receipt extends Activity {
 //				});
 
 		AdView adView = (AdView)findViewById(R.id.ad);
-		adView.requestFreshAd();
-
-     
+		adView.requestFreshAd(); 
         
         am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
        
@@ -412,46 +426,14 @@ public class Receipt extends Activity {
 				media.createMedia("clear",Receipt.this,voice_version);	
 			} 	
         });
-        
-//        f= new File(this.getFilesDir()+"/receipt_"+iwantcheckmonth+".txt");
-//        
-//        if(!f.exists()){
-//        	Log.i(tag, "into f.exist==false");
-//        	Log.i(tag, "BackStage.check3GConnectStatus(this)= "+String.valueOf(BackStage.check3GConnectStatus(this)));
-//        	Log.i(tag, "BackStage.checkWIFIStatus(this)= "+String.valueOf(BackStage.checkEnableingWifiStatus(this)));
-//        	 if (BackStage.check3GConnectStatus(this)==false&BackStage.checkEnableingWifiStatus(this)==false){
-//            	 
-//            	
-////        		 Log.i(tag, "into new");
-//             	new AlertDialog.Builder(this)
-//     	    	.setTitle("沒有\"新的\"中獎號碼資料!")
-//     			.setIcon(R.drawable.warning)
-//     			.setMessage("系統必須連上網路取得資料...\n一有資料，\n之後就暫時不用再連線了")
-//     			.setPositiveButton("離開程式", new DialogInterface.OnClickListener() {
-//
-//     				@Override
-//     				public void onClick(DialogInterface dialog, int which) {
-//     					finish();
-//     				}
-//     				})
-//     			
-//     			.show();	
-//             }else{
-//            	 BackStage.dataRequest(this,iwantcheckmonth); 
-//            	 generateEntity();
-//             }
-//        }else{
-//        	Log.i(tag, "f.exist=true");
-//        	generateEntity();
-//        }
        
     }
 
 
 	@Override
 	protected void onResume() {
-//		Log.i(tag, "into onResume()");
-		
+		Log.i(tag, "into onResume()");
+		handler =new Handler();
 		
 		sharedata = getSharedPreferences("data", 0);  
         String voicedata = sharedata.getString("voice", "regular");  
@@ -484,7 +466,7 @@ public class Receipt extends Activity {
         }
         Type.numtotal="";
         textview.setText("");//數字框清空
-        media= new Media();
+        media= new Media();//建立media檔
         
         String iwantcheckmonth = sharedata.getString("iwantcheckmonth", "head");
         
@@ -512,11 +494,26 @@ public class Receipt extends Activity {
      			
      			.show();	
              }else{
-            	 //只要一檢查到沒有2個檔案，馬上一次將2筆資料請求下來
-            	 BackStage.dataRequest(this,"head");
-            	 BackStage.dataRequest(this,"head2"); 
-            	 //但是只產生被設定的月份的實體
-            	 generateEntity();
+            	 showDialog(DOWNLOAD);
+            	 new Thread(){
+            		 
+            		 public void run(){
+            			 
+            			 
+            			 //只要一檢查到沒有2個檔案，馬上一次將2筆資料請求下來
+                    	 BackStage.dataRequest(Receipt.this,"head");
+                    	 BackStage.dataRequest(Receipt.this,"head2");
+                    	 File head= new File(Receipt.this.getFilesDir()+"/receipt_head.txt");
+ 		            	 File head2= new File(Receipt.this.getFilesDir()+"/receipt_head2.txt");
+ 		            	 while(head.exists()!=true&head2.exists()!=true){
+ 		            		Log.i(tag, "wait for head & head2");
+ 		            	}
+ 		            	generateEntity();
+ 		            	dismissDialog(DOWNLOAD);
+            		 }
+            	 }.start();
+
+            	
              }
         }else{
         	Log.i(tag, "f.exist=true");
@@ -609,11 +606,20 @@ public class Receipt extends Activity {
  		checknum=getnum.split(",");
  		
  		
+ 		handler.post(new Runnable(){
+
+			@Override
+			public void run() {
+//				Log.i(tag, "back main Thread");
+		 		textfirst.setText("中華民國#date份");//先設回初始值,以助日後使用者改到選擇月份時,能即時將UI的月份畫面更新
+		 		 //month變數從txt檔裡讀出來以後，才可以將月份取代掉
+		        String finaltext1=textfirst.getText().toString().replace("#date", month);
+		        textfirst.setText(finaltext1);
+			}
+ 			
+ 		});
  		
- 		textfirst.setText("中華民國#date份");//先設回初始值,以助日後使用者改到選擇月份時,能即時將UI的月份畫面更新
- 		 //month變數從txt檔裡讀出來以後，才可以將月份取代掉
-        String finaltext1=textfirst.getText().toString().replace("#date", month);
-        textfirst.setText(finaltext1);
+
     }
     
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -676,17 +682,88 @@ public class Receipt extends Activity {
 					AA.show();
 					
 				break;
-			case 2://先刪除原檔案，再呼叫onResume()重新抓取資料
-				 File head= new File(this.getFilesDir()+"/receipt_head.txt");
-				 if(head.exists()==true){
-					 head.delete();	
-				 }
-				 File head2= new File(this.getFilesDir()+"/receipt_head2.txt");
-				 if(head2.exists()==true){
-					 head2.delete();	
-				 }
-				 onResume();//onResume()會檢查有沒有中獎txt檔案,如果沒有,會呼叫dataRequest(),並建立起實體generateEntity()
-				 Toast.makeText(this, "更新成功！", Toast.LENGTH_SHORT).show();
+			case 2://先將原檔名更名成tem,下載完後,再將tem刪除
+//				Log.i(tag, "into showDialog");
+				showDialog(UPDATENUM);
+				final Handler handler=new Handler();
+				
+				new Thread(){
+					public void run(){
+						File head= new File(Receipt.this.getFilesDir()+"/receipt_head.txt");
+						 if(head.exists()==true){
+							 File temhead=new File(Receipt.this.getFilesDir()+"/temreceipt_head.txt");
+							 head.renameTo(temhead);	 
+						 }
+						 File head2= new File(Receipt.this.getFilesDir()+"/receipt_head2.txt");
+						 if(head2.exists()==true){
+							 File temhead2=new File(Receipt.this.getFilesDir()+"/temreceipt_head2.txt");
+							 head2.renameTo(temhead2);	
+						 }
+						 
+						 if (BackStage.check3GConnectStatus(Receipt.this)==false&BackStage.checkEnableingWifiStatus(Receipt.this)==false){		            	
+							 handler.post(new Runnable(){
+
+								@Override
+								public void run() {
+									dismissDialog(UPDATENUM);
+									new AlertDialog.Builder(Receipt.this)
+					     	    	.setTitle("沒有\"新的\"中獎號碼資料!")
+					     			.setIcon(R.drawable.warning)
+					     			.setMessage("系統必須連上網路取得資料...\n一有資料，\n之後就暫時不用再連線了")
+					     			.setPositiveButton("取消", new DialogInterface.OnClickListener() {
+
+					     				@Override
+					     				public void onClick(DialogInterface dialog, int which) {
+					     				
+					     					File temhead=new File(Receipt.this.getFilesDir()+"/temreceipt_head.txt");
+					    					File temhead2=new File(Receipt.this.getFilesDir()+"/temreceipt_head2.txt");
+					    					if(temhead.exists()==true){
+					    						temhead.renameTo(new File(Receipt.this.getFilesDir()+"/receipt_head.txt"));
+					    					}
+					    					if(temhead2.exists()==true){
+					    						temhead2.renameTo(new File(Receipt.this.getFilesDir()+"/receipt_head2.txt"));
+					    					}
+					     				}
+					     				})
+					     			
+					     			.show();	
+									
+								}
+								 
+							 });
+			             	
+			             }else{
+			            	 //跟伺服器要求更新
+			            	 BackStage.dataRequest(Receipt.this,"head");
+			            	 BackStage.dataRequest(Receipt.this,"head2"); 
+			            	 
+			             }
+						 
+						 
+						 
+						 if(head.exists()==true){							 
+							 File temhead=new File(Receipt.this.getFilesDir()+"/temreceipt_head.txt");
+							 temhead.delete();
+						 }
+						 if(head2.exists()==true){
+							 File temhead2=new File(Receipt.this.getFilesDir()+"/temreceipt_head2.txt");
+							 temhead2.delete();
+							 
+						 }
+						 if(head.exists()==true){
+						 handler.post(new Runnable(){
+
+							@Override
+							public void run() {
+									Log.i(tag, "update success!");
+									Toast.makeText(Receipt.this, "更新成功！", Toast.LENGTH_SHORT).show();
+									dismissDialog(UPDATENUM);
+									onResume();				
+							}							 
+						 });
+						 }						 
+					}
+				}.start();			 
 				break;
 			case 3:
 				Intent intent=new Intent();
@@ -701,7 +778,7 @@ public class Receipt extends Activity {
 				break;
 			case 4:
 				new AlertDialog.Builder(this)
-				.setMessage(getString(R.string.app_name)+" "+ softVersion +"\n作者 Camangi Corporation\n\n版權 2010")
+				.setMessage(getString(R.string.app_name)+" "+ softVersion +"\n作者 FunTrigger\n\n版權 2010")
 				.setIcon(R.drawable.icon)
 				.setTitle("關於")
 				.setPositiveButton("問題回報", new DialogInterface.OnClickListener() {
@@ -711,7 +788,7 @@ public class Receipt extends Activity {
 						Intent sendIntent = new Intent(Intent.ACTION_SEND);
 						sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"simon@camangi.com"}); 
 						sendIntent.putExtra(Intent.EXTRA_TEXT, "請將意見填寫於此");
-						sendIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.app_name)+" 意見回報");
+						sendIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.app_name)+softVersion+" 意見回報");
 						sendIntent.setType("message/rfc822");
 						startActivity(Intent.createChooser(sendIntent, "Title:"));
 					}
@@ -741,7 +818,7 @@ public class Receipt extends Activity {
 
 			builder
 			.setTitle("請選擇你想對獎的發票時間")
-			.setSingleChoiceItems(new String[]{"當期","上一期"},oldmonthsetted,new DialogInterface.OnClickListener(){
+			.setSingleChoiceItems(new String[]{Receipt.this.sharedata.getString("head", "當期"),Receipt.this.sharedata.getString("head2", "上一期")/*"1","2"*/},oldmonthsetted,new DialogInterface.OnClickListener(){
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -772,6 +849,44 @@ public class Receipt extends Activity {
 			});
 			alert = builder.create();
 			return alert;
+			
+		case UPDATENUM:
+			ProgressDialog pd=new ProgressDialog(this) ;
+			pd.setTitle("請稍候");
+			pd.setMessage("資料更新中...");
+			pd.setButton(DialogInterface.BUTTON_POSITIVE,"取消",new DialogInterface.OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dismissDialog(UPDATENUM);
+					File temhead=new File(Receipt.this.getFilesDir()+"/temreceipt_head.txt");
+					File temhead2=new File(Receipt.this.getFilesDir()+"/temreceipt_head2.txt");
+					if(temhead.exists()==true){
+						temhead.renameTo(new File(Receipt.this.getFilesDir()+"/receipt_head.txt"));
+					}
+					if(temhead2.exists()==true){
+						temhead2.renameTo(new File(Receipt.this.getFilesDir()+"/receipt_head2.txt"));
+					}
+					
+				}
+				
+			});
+			
+			return pd;
+		case DOWNLOAD:
+			ProgressDialog pd1=new ProgressDialog(this) ;
+			pd1.setTitle("請稍候");
+			pd1.setMessage("資料下載中...");
+			pd1.setButton(DialogInterface.BUTTON_POSITIVE,"離開",new DialogInterface.OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+			 		finish();				
+				}
+				
+			});
+			
+			return pd1;
 		}
 		return super.onCreateDialog(id);
 	}

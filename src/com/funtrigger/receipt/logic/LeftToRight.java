@@ -1,4 +1,4 @@
-package com.camangi.receipt.logic;
+package com.funtrigger.receipt.logic;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -9,9 +9,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-import com.camangi.receipt.R;
-import com.camangi.receipt.Receipt;
-import com.camangi.receipt.media.Media;
+import com.funtrigger.receipt.R;
+import com.funtrigger.receipt.Receipt;
+import com.funtrigger.receipt.media.Media;
 
 /**
  * 由左至右的判斷邏輯是︰

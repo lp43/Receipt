@@ -1,4 +1,4 @@
-package com.camangi.receipt;
+package com.funtrigger.receipt;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.content.Context;
+import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
@@ -81,6 +82,18 @@ public class BackStage {
 //				   Log.i(tag, "yearend: "+dateend);
 				   String iwantyear=iwantdate.substring(0, dateend);
 //				   Log.i(tag, "iwantyear: "+iwantyear);
+				   
+				   
+				   //在計算完伺服器的對獎月份後，存到SharePreference裡，供主UI的Menu→對獎月份裡的字串使用
+				   Editor sharedata = context.getSharedPreferences("data", 0).edit();
+				   if(time.equals("head")){
+					   sharedata.putString("head",iwantyear); 
+					   sharedata.commit();  
+				   }else if(time.equals("head2")){
+					   sharedata.putString("head2",iwantyear); 
+					   sharedata.commit();
+				   }
+				   
 				   
 				   int periodstartindex,periodendindex=0;
 				   periodstartindex=contentBuffer.indexOf("<span class=\"style1\">",periodendindex);

@@ -1,5 +1,7 @@
-package com.camangi.receipt;
+package com.funtrigger.receipt;
 
+
+import com.funtrigger.receipt.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -185,7 +187,7 @@ public class Setting extends Activity {
 
 			builder
 			.setTitle("請選擇語音")
-			.setSingleChoiceItems(new String[]{"女聲正音版","大胸搖瑤版","開喜大媽版","靜音"},oldvalue,new DialogInterface.OnClickListener(){
+			.setSingleChoiceItems(new String[]{"女聲正音版","我愛搖瑤版","開心大媽版","靜音"},oldvalue,new DialogInterface.OnClickListener(){
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {

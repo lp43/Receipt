@@ -1,4 +1,6 @@
-package com.camangi.receipt;
+package com.funtrigger.receipt;
+import com.funtrigger.receipt.R;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
