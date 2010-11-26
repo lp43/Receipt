@@ -11,7 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.funtrigger.receipt.R;
 import com.funtrigger.receipt.Receipt;
-import com.funtrigger.receipt.media.Media;
+import com.funtrigger.tools.Media;
+import com.funtrigger.tools.ResponseDialog;
 
 /**
  * 由左至右的判斷邏輯是︰
@@ -20,7 +21,7 @@ import com.funtrigger.receipt.media.Media;
  * @author simon
  *
  */
-public class LeftToRight {
+public class LeftToRight{
 	private static String tag="tag";
 	static String maybeNum;
 	static Media media=new Media();
@@ -64,22 +65,26 @@ public class LeftToRight {
 			    }else if(numcheck.length()==3){
 			    	if(numcheck.equals(lastThree)){
 		    			Log.i(tag, "last3 is the same with NEWADD");
-		    			newDialog("恭喜你中了[增開六獎]\n獎金: 200塊","congratulations",context);
+//		    			newDialog("恭喜你中了[增開六獎]\n獎金: 200塊","congratulations",context);
+		    			
+		    			ResponseDialog.newDialog(context, "恭喜你中了[增開六獎]\n獎金: 200塊", "congratulations");
 		    			media.createMedia("notsimple",context,voice_version);
 		    			return;
 		    		}else{
 //		    			Log.i(tag, "into noany");
-				    	 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
-				         View originView=toast.getView();
-				         LinearLayout layout= new LinearLayout(context);
-				         layout.setOrientation(LinearLayout.VERTICAL);
-				         ImageView view = new ImageView(context);
-				         view.setImageResource(R.drawable.no);
-				         layout.addView(view);
-				         layout.addView(originView);
-				         toast.setView(layout);
-				         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-				         toast.show();
+//				    	 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
+//				         View originView=toast.getView();
+//				         LinearLayout layout= new LinearLayout(context);
+//				         layout.setOrientation(LinearLayout.VERTICAL);
+//				         ImageView view = new ImageView(context);
+//				         view.setImageResource(R.drawable.no);
+//				         layout.addView(view);
+//				         layout.addView(originView);
+//				         toast.setView(layout);
+//				         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+//				         toast.show();
+		    			
+		    			 ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
 				         media.createMedia("noany",context,voice_version);
 				         return;
 				    }
@@ -87,37 +92,39 @@ public class LeftToRight {
    
 			    }
 	        }
-	         Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
-	         View originView=toast.getView();
-	         LinearLayout layout= new LinearLayout(context);
-	         layout.setOrientation(LinearLayout.VERTICAL);
-	         ImageView view = new ImageView(context);
-	         view.setImageResource(R.drawable.no);
-	         layout.addView(view);
-	         layout.addView(originView);
-	         toast.setView(layout);
-	         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-	         toast.show();
+//	         Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
+//	         View originView=toast.getView();
+//	         LinearLayout layout= new LinearLayout(context);
+//	         layout.setOrientation(LinearLayout.VERTICAL);
+//	         ImageView view = new ImageView(context);
+//	         view.setImageResource(R.drawable.no);
+//	         layout.addView(view);
+//	         layout.addView(originView);
+//	         toast.setView(layout);
+//	         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+//	         toast.show();
+	        
+	         ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
 	         media.createMedia("noany",context,voice_version);
 	         return;
 	        
         }
         
-        private static void newDialog(String message,String icon,Context context){
-	         new AlertDialog.Builder(context)
-	         .setTitle("恭喜你")
-			    .setIcon(context.getResources().getIdentifier(icon,"drawable",context.getPackageName()))
-			    .setMessage(message)
-			    .setPositiveButton("確認", new DialogInterface.OnClickListener() {
-			
-			    @Override
-			    public void onClick(DialogInterface dialog, int which) {
-			    Receipt.textview.setText("");
-			    }
-			    })
-	
-	    .show();
-        }
+//        private static void newDialog(String message,String icon,Context context){
+//	         new AlertDialog.Builder(context)
+//	         .setTitle("恭喜你")
+//			    .setIcon(context.getResources().getIdentifier(icon,"drawable",context.getPackageName()))
+//			    .setMessage(message)
+//			    .setPositiveButton("確認", new DialogInterface.OnClickListener() {
+//			
+//			    @Override
+//			    public void onClick(DialogInterface dialog, int which) {
+//			    Receipt.textview.setText("");
+//			    }
+//			    })
+//	
+//	    .show();
+//        }
         
         /**
          * 條件:末3碼和特獎核對成功
@@ -132,20 +139,24 @@ public class LeftToRight {
         	Log.i(tag, "maybeNum head5: "+maybeNumHeadFive);
         	
         	if(getNumHeadFive.equals(maybeNumHeadFive)){    
-			    newDialog("恭喜你中了[特獎]\n獎金: 200萬!","million2",context);
+//			    newDialog("恭喜你中了[特獎]\n獎金: 200萬!","million2",context);
+        		
+        		ResponseDialog.newDialog(context, "恭喜你中了[特獎]\n獎金: 200萬!", "million2");
 			    media.createMedia("million2",context,voice_version);
         	}else{
-        		 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
-		         View originView=toast.getView();
-		         LinearLayout layout= new LinearLayout(context);
-		         layout.setOrientation(LinearLayout.VERTICAL);
-		         ImageView view = new ImageView(context);
-		         view.setImageResource(R.drawable.no);
-		         layout.addView(view);
-		         layout.addView(originView);
-		         toast.setView(layout);
-		         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-		         toast.show();
+//        		 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
+//		         View originView=toast.getView();
+//		         LinearLayout layout= new LinearLayout(context);
+//		         layout.setOrientation(LinearLayout.VERTICAL);
+//		         ImageView view = new ImageView(context);
+//		         view.setImageResource(R.drawable.no);
+//		         layout.addView(view);
+//		         layout.addView(originView);
+//		         toast.setView(layout);
+//		         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+//		         toast.show();
+        		
+        		 ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
 		         media.createMedia("noany",context,voice_version);
         	}
         	
@@ -163,31 +174,43 @@ public class LeftToRight {
 
         	if(getnum.equals(maybeNum)){
 			    
-			    newDialog("恭喜你中了[頭獎]\n獎金: 20萬!","th200",context);
+//			    newDialog("恭喜你中了[頭獎]\n獎金: 20萬!","th200",context);
+        		
+        		ResponseDialog.newDialog(context, "恭喜你中了[頭獎]\n獎金: 20萬!", "th200");
 			    media.createMedia("th200",context,voice_version);
         	}else if(getnum.subSequence(1, 5).equals(maybeNum.substring(1, 5))){
 			    
-			    newDialog("恭喜你中了[二獎]\n獎金: 4萬元!","congratulations",context);
+//			    newDialog("恭喜你中了[二獎]\n獎金: 4萬元!","congratulations",context);
+        		
+        		ResponseDialog.newDialog(context, "恭喜你中了[二獎]\n獎金: 4萬元!", "congratulations");
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getnum.subSequence(2, 5).equals(maybeNum.substring(2, 5))){
 			    
-			    newDialog("恭喜你中了[三獎]\n獎金: 1萬元!","congratulations",context);
+//			    newDialog("恭喜你中了[三獎]\n獎金: 1萬元!","congratulations",context);
+        		
+        		ResponseDialog.newDialog(context, "恭喜你中了[三獎]\n獎金: 1萬元!", "congratulations");
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getnum.subSequence(3, 5).equals(maybeNum.substring(3, 5))){
 			    
-			    newDialog("恭喜你中了[四獎]\n獎金: 4千塊","congratulations",context);
+//			    newDialog("恭喜你中了[四獎]\n獎金: 4千塊","congratulations",context);
+        		
+        		ResponseDialog.newDialog(context, "恭喜你中了[四獎]\n獎金: 4千塊!", "congratulations");
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getnum.subSequence(4, 5).equals(maybeNum.substring(4, 5))){
 			    
-			    newDialog("恭喜你中了[五獎]\n獎金: 1千塊","congratulations",context);
+//			    newDialog("恭喜你中了[五獎]\n獎金: 1千塊","congratulations",context);
+        		
+        		ResponseDialog.newDialog(context, "恭喜你中了[五獎]\n獎金: 1千塊!", "congratulations");
 			    media.createMedia("onlycon",context,voice_version);
         	}else {
 			    
-			    newDialog("恭喜你中了[六獎]\n獎金: 200塊","hundred2",context);
+//			    newDialog("恭喜你中了[六獎]\n獎金: 200塊","hundred2",context);
+        		
+        		ResponseDialog.newDialog(context, "恭喜你中了[六獎]\n獎金: 200塊", "hundred2");
 			    media.createMedia("hundred2",context,voice_version);
         	}
         	
         	maybeNum="";
         }
-   
+
 }

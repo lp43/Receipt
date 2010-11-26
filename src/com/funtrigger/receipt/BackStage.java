@@ -25,7 +25,7 @@ import android.util.Log;
  *
  */
 public class BackStage {
-//	public static String[] nums;
+
 	private final static String tag="tag";
 	static WifiManager wm;
 	static ConnectivityManager cm;
@@ -78,7 +78,7 @@ public class BackStage {
 				   monthendindex=contentBuffer.indexOf("</div>",monthstartindex);			   
 				   String iwantdate=contentBuffer.substring(monthstartindex+21, monthendindex);
 //				   Log.i(tag, "iwantmonth: "+iwantdate);
-				   int dateend=iwantdate.indexOf("統");
+				   int dateend=iwantdate.indexOf("統");//字元是"統"的，是這次要抓的字串的最後字元
 //				   Log.i(tag, "yearend: "+dateend);
 				   String iwantyear=iwantdate.substring(0, dateend);
 //				   Log.i(tag, "iwantyear: "+iwantyear);
@@ -110,7 +110,7 @@ public class BackStage {
 				   
 				   fos.write(iwantyear.getBytes());
 				
-				   fos.write(System.getProperty("line.separator").getBytes());
+				   fos.write(System.getProperty("line.separator").getBytes());//寫入換行符
 				   
 				   int startindex,endindex=0;
 				   startindex= contentBuffer.indexOf("<span class=\"number\">",endindex);
@@ -132,9 +132,6 @@ public class BackStage {
 				   uc.disconnect();
 				   
 				   String ch=iwant.replace("、", ",");
-//				   nums = ch.split(",");
-
-//				   FileOutputStream fos = context.openFileOutput("receipt"+"_"+time+".txt", context.MODE_PRIVATE);
 
 				   fos.write(ch.getBytes());
 				   fos.write(System.getProperty("line.separator").getBytes());

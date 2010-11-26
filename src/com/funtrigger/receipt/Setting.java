@@ -43,13 +43,33 @@ public class Setting extends Activity {
 
 	final static String tag ="tag";
 	private ListView lv;
-	int oldvolume;//從Receipt傳來的原音量
-	String old_voice_version;//從Receipt傳來的原聲音設定版本
-	int oldvalue;//將Receipt傳來的原聲音設定版本轉成int值，讓SingleChoiceItems能有預設值
-	int oldlogicset;//這個值是從SharePreference傳出來的值
+	/**
+	 * 從Receipt.activity傳來的原Intent音量
+	 */
+	int oldvolume;
+	/**
+	 * 從Receipt.activity傳來的原Intent聲音版本設定
+	 */
+	String old_voice_version;
+	/**
+	 * 從Receipt.activity傳來的原Intent聲音版本設定,
+	 * 轉成int值，讓SingleChoiceItems能產生預設值
+	 */
+	int oldvalue;
+	/**
+	 * 這個值是從SharePreference傳出來的值
+	 */	
+	int oldlogicset;
+	/**
+	 * 設定邏輯的Dialog視窗專用int變數,為onCreateDialog所用
+	 */		
 	final int SETLOGIC=0;
+	/**
+	 * 設定語音的Dialog視窗專用int變數,為onCreateDialog所用
+	 */	
 	final int SETVOICEVERSIONDIALOG=1;
 	AlertDialog alert;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -120,17 +140,13 @@ public class Setting extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
 //			Log.i(tag, "press_keyBack");
-//			Log.i(tag, "AlertDialog=null? "+String.valueOf(alert==null));
-			
+//			Log.i(tag, "AlertDialog=null? "+String.valueOf(alert==null));	
 				finish();
 	 			Intent intent = new Intent();
 				intent.setClass(Setting.this, Receipt.class);
 				startActivity(intent);
 			
 		}
-		
-				
-
 		return super.onKeyDown(keyCode, event);	
 	}
 	
@@ -142,8 +158,6 @@ public class Setting extends Activity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		switch(id){
 		case SETLOGIC:
-
-
 			builder
 			.setTitle("請選擇你想使用的對獎輸入方式")
 			.setSingleChoiceItems(new String[]{"由右至左輸入","由左至右輸入","末3碼輸入(建議)",},oldlogicset,new DialogInterface.OnClickListener(){

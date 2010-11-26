@@ -8,6 +8,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -42,30 +47,38 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.funtrigger.receipt.logic.*;
-import com.funtrigger.receipt.media.Media;
+import com.funtrigger.tools.Media;
+import com.funtrigger.tools.ResponseDialog;
 import com.admob.android.ads.AdManager;
 import com.admob.android.ads.AdView;
 
 public class Receipt extends Activity {
-	private String softVersion="v1.0.4";
+	private String softVersion="v1.0.4.1";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
-	private String tag="tag";
+	private static String tag="tag";
 	Media media;
 	/**
-	 * 使用者可以設定對獎所要輸入的號碼數︰2碼或3碼
+	 * 這個變數專用在由右至左對獎，
+	 * 當數值有符合中獎號碼時，才新增limit，
+	 * 讓使用者可以繼續輸入下去
 	 */
 	public static int limit=1;
 	/**
-	 * 裡面置放7組檢查碼
+	 * 裡面放置7組檢查碼
 	 */
 	public static String[] checknum;
+	/**
+	 * 這個變數專用在末三碼核對時，
+	 * 若末三碼相符，got值會為true,
+	 * 否則預設為0
+	 */
 	public static boolean got;
 	/**
 	 * 從SharePreference讀出預設的的logic運算模式,存放在此變數
 	 */
-	private String logic;
+	private static String logic;
 
 	/**
 	 * 播放音效的版本變數
@@ -80,13 +93,6 @@ public class Receipt extends Activity {
 	 */
 	Toast toast;
 	File f;//檔案
-	/**
-	 * 記錄對獎方式的邏輯變數<br/>
-	 * 0:由右至左
-	 * 1:由左至右
-	 * 2:先輸入末3碼，再輸入剩餘8碼
-	 */
-
 	/**
 	 * 從txt檔裡抓出來的月份字串
 	 */
@@ -127,13 +133,17 @@ public class Receipt extends Activity {
 	 */
 	SharedPreferences sharedata;
 	Handler handler;
+	/**
+	 * 讓onCreateDialog()建立ProgressDialog時用
+	 * 這個文檔裡被UPDATENUM和DOWNLOAD兩個值使用
+	 */
+	ProgressDialog progressdialog;
+	static Map<String,Button> buttonMap;
 	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-       
         
         //定義螢幕UI
         WindowManager manager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
@@ -150,31 +160,33 @@ public class Receipt extends Activity {
 			setContentView(R.layout.mainlayout800);
 		}
 		
-//		AdManager.setTestDevices( new String[] {
-//				AdManager.TEST_EMULATOR,// Android emulator
-//				"6712CE5152154D52915CBB5D9780583F", // My T-Mobile G1 Test Phone
-//				});
-
+		/////////////區塊內都是AdMob的程式//////////////////////////////////////
+/*		//這段是AdMob的測試廣告專用碼
+		AdManager.setTestDevices( new String[] {
+				AdManager.TEST_EMULATOR,// Android emulator
+				"6712CE5152154D52915CBB5D9780583F", // Next ONE Test Phone
+				});*/
+		//跟Admob請求廣告
 		AdView adView = (AdView)findViewById(R.id.ad);
 		adView.requestFreshAd(); 
-        
+		/////////////區塊內都是AdMob的程式//////////////////////////////////////
+		
         am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
        
         sharedata = getSharedPreferences("data", 0);  
         String voicedata = sharedata.getString("voice", "regular");  
         Log.i(tag,"data="+voicedata);
+        
+        //如果從SharePreference裡取出的voicedata值是mute,則調成最小聲,否則將值指派給voice_version變數
         if(voicedata.equals("mute")){
         	am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
         }else{
         	voice_version=voicedata;
         }
-//        String iwantcheckmonth = sharedata.getString("iwantcheckmonth", "head"); 
-        
+     
         textview=(TextView) findViewById(R.id.text);
-        textfirst=(TextView) findViewById(R.id.title_firstline);
-      
-        textfive=(TextView) findViewById(R.id.title_fiveline);
-        
+        textfirst=(TextView) findViewById(R.id.title_firstline);      
+        textfive=(TextView) findViewById(R.id.title_fiveline);        
         
         button0=(Button) findViewById(R.id.button_0);
         button1=(Button) findViewById(R.id.button_1);
@@ -188,11 +200,25 @@ public class Receipt extends Activity {
         button9=(Button) findViewById(R.id.button_9);
         button_clear=(Button) findViewById(R.id.button_clear);
         
+        buttonMap=new HashMap<String,Button>();
+        buttonMap.put("0", button0);
+        buttonMap.put("1", button1);
+        buttonMap.put("2", button2);
+        buttonMap.put("3", button3);
+        buttonMap.put("4", button4);
+        buttonMap.put("5", button5);
+        buttonMap.put("6", button6);
+        buttonMap.put("7", button7);
+        buttonMap.put("8", button8);
+        buttonMap.put("9", button9);
+        
         button0.setOnClickListener(new OnClickListener(){
-			
+
 
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setNormalButton();
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("0", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
@@ -215,6 +241,8 @@ public class Receipt extends Activity {
         button1.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setNormalButton();
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("1", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
@@ -236,6 +264,8 @@ public class Receipt extends Activity {
         button2.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setNormalButton();
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("2", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
@@ -257,6 +287,8 @@ public class Receipt extends Activity {
         button3.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setNormalButton();
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("3", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
@@ -278,6 +310,8 @@ public class Receipt extends Activity {
         button4.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setNormalButton();
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("4", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
@@ -299,6 +333,8 @@ public class Receipt extends Activity {
         button5.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setNormalButton();
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("5", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
@@ -320,6 +356,8 @@ public class Receipt extends Activity {
         button6.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setNormalButton();
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("6", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
@@ -341,6 +379,8 @@ public class Receipt extends Activity {
         button7.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setNormalButton();
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("7", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
@@ -362,6 +402,8 @@ public class Receipt extends Activity {
         button8.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setNormalButton();
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("8", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
@@ -383,6 +425,8 @@ public class Receipt extends Activity {
         button9.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setNormalButton();
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("9", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
@@ -404,18 +448,14 @@ public class Receipt extends Activity {
         button_clear.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				ResponseDialog.cancelToast();
+				setBadButton();
 				textview.setText("");
 				Type.numtotal="";//將累積的數值暫存變數清空
 				Type.first5total="";//將末三碼驗證的專屬變數︰前5碼暫存清除
 				got=false;//將LastThree專屬的中末3碼的got變數回復為false
 				
-				if(logic.equals("RightToLeft")){
-					textfive.setText("▲ 請從發票 \"最右邊\" 開始輸入！");
-				}else if(logic.equals("LeftToRight")){
-					textfive.setText("▲ 請從發票 \"最左邊\" 開始輸入！");
-				}else if(logic.equals("LastThree")){
-					textfive.setText("▲ 請從發票 \"末三碼\" 開始輸入！");
-				}
+				resetTextfive();
 				
 				//因為大奶妹和正規女音的數字是共用的，所以要將大奶妹的數字鍵導到regular
 				String voice_version="";
@@ -442,29 +482,14 @@ public class Receipt extends Activity {
         am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         if(voicedata.equals("mute")){
         	am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
-
         }else{
         	voice_version=voicedata;
         }
         logic = sharedata.getString("logic", "LastThree");
         Log.i(tag, "get SharePreferences logic: "+logic);
        
-        if(logic.equals("RightToLeft")){
-//        	Log.i(tag, "into setText5: RightToLeft");
-        	textfive.setText("▲ 請從發票 #message 開始輸入！");
-        	String finaltext5=textfive.getText().toString().replace("#message", "\"最右邊\"");
-            textfive.setText(finaltext5);
-        }else if(logic.equals("LeftToRight")){	
-//        	Log.i(tag, "into setText5: LeftToRight");
-        	textfive.setText("▲ 請從發票 #message 開始輸入！");
-        	String finaltext5=textfive.getText().toString().replace("#message", "\"最左邊\"");
-            textfive.setText(finaltext5);
-        }else if(logic.equals("LastThree")){
-//        	Log.i(tag, "into setText5: LastThree");
-        	textfive.setText("▲ 請從發票 #message 開始輸入！");
-        	String finaltext5=textfive.getText().toString().replace("#message", "\"末三碼\"");
-            textfive.setText(finaltext5);
-        }
+        resetTextfive();
+
         Type.numtotal="";
         textview.setText("");//數字框清空
         media= new Media();//建立media檔
@@ -487,7 +512,7 @@ public class Receipt extends Activity {
      			.setMessage("請連上網路以取得資料...")
      			.setOnKeyListener(new OnKeyListener(){
 
-					@Override
+					@Override//防呆專用，限制使用者不能按其它的實體按鍵返回沒有更新的主畫面
 					public boolean onKey(DialogInterface dialog, int keyCode,
 							KeyEvent event) {
 						if(keyCode==KeyEvent.KEYCODE_SEARCH|keyCode==KeyEvent.KEYCODE_BACK){
@@ -532,6 +557,8 @@ public class Receipt extends Activity {
         }else{
         	Log.i(tag, "f.exist=true");
         	generateEntity();
+        	setBadButton();
+        	ResponseDialog.newNotifyDialog(Receipt.this, "提示", "為了增加對獎速度，\n打XX代表你每張發票要輸入的第1個數字不符合開獎數字！", "warning");
         }
         
         super.onResume();
@@ -606,8 +633,8 @@ public class Receipt extends Activity {
  			Log.i(tag, "Exception: "+e.getMessage());
  		}
  		InputStreamReader is=new InputStreamReader(fi);
- 	   BufferedReader br =new BufferedReader(is);
- 	   String getnum = null;
+ 	    BufferedReader br =new BufferedReader(is);
+ 	    String getnum = null;
          try {
         	month=br.readLine();
  			getnum=br.readLine();
@@ -635,6 +662,94 @@ public class Receipt extends Activity {
  		
 
     }
+    
+    /**
+     * 將所有Button的XX都取消
+     */
+    public void setNormalButton(){
+
+    	for(int i=0;i<buttonMap.size();i++){
+    		
+    		buttonMap.get(String.valueOf(i)).setBackgroundResource(R.drawable.button_background);
+    	}
+    }
+    
+    /**
+     * 這個函式在取得[使用者選用的邏輯]的1或3或8碼<br/>
+     * 然後將沒中的號碼打上XX
+     */
+    public static void setBadButton(){
+    	
+    		for(int i=0;i<buttonMap.size();i++){
+        		
+        		buttonMap.get(String.valueOf(i)).setBackgroundResource(R.drawable.button_no_background);
+        	}
+        	
+        	
+        	//因為三種運算邏輯，各別的第1碼位置不同(分別別第1、第6、和第8[尾]碼)
+        	if(logic.equals("RightToLeft")){
+        		Log.i(tag, "into logic RightToLeft");
+        		
+    			for(String get8:checknum){
+    				if(get8.length()==8){
+    					Log.i(tag, "BadButton8: "+get8.substring(7));
+    					buttonMap.get(get8.substring(7)).setBackgroundResource(R.drawable.button_background);
+    				}else if(get8.length()==3){
+    					Log.i(tag, "BadButton3: "+get8.substring(2));
+    					buttonMap.get(get8.substring(2)).setBackgroundResource(R.drawable.button_background);
+    				}		
+    			}
+    			
+    		}else if(logic.equals("LeftToRight")){
+    			
+    			for(String get1:checknum){
+    				if(get1.length()==8){
+    					Log.i(tag, "BadButton8: "+get1.substring(0,1));
+    					buttonMap.get(get1.substring(0,1)).setBackgroundResource(R.drawable.button_background);
+    				}else if(get1.length()==3){
+    					Log.i(tag, "BadButton3: "+get1.substring(0,1));
+    					buttonMap.get(get1.substring(0,1)).setBackgroundResource(R.drawable.button_background);
+    				}		
+    			}
+    			
+    		}else if(logic.equals("LastThree")){
+            	
+    			for(String getL3:checknum){
+    				if(getL3.length()==8){
+    					Log.i(tag, "BadButton8: "+getL3.substring(5,6));
+    					buttonMap.get(getL3.substring(5,6)).setBackgroundResource(R.drawable.button_background);
+    				}else if(getL3.length()==3){
+    					Log.i(tag, "BadButton3: "+getL3.substring(0,1));
+    					buttonMap.get(getL3.substring(0,1)).setBackgroundResource(R.drawable.button_background);
+    				}		
+    			}
+    		}
+    	
+    	
+    }
+    
+
+    
+
+    
+    /**
+     * 將第5行︰提示使用者從何位置開始輸入發票的字樣還原成預設字樣
+     */
+	public static void resetTextfive() {
+		if(logic.equals("RightToLeft")){
+			textfive.setText("▲ 請從發票 #message 開始輸入！");
+        	String finaltext5=textfive.getText().toString().replace("#message", "\"最右邊\"");
+            textfive.setText(finaltext5);
+		}else if(logic.equals("LeftToRight")){
+        	textfive.setText("▲ 請從發票 #message 開始輸入！");
+        	String finaltext5=textfive.getText().toString().replace("#message", "\"最左邊\"");
+            textfive.setText(finaltext5);
+		}else if(logic.equals("LastThree")){
+        	textfive.setText("▲ 請從發票 #message 開始輸入！");
+        	String finaltext5=textfive.getText().toString().replace("#message", "\"末三碼\"");
+            textfive.setText(finaltext5);
+		}
+	}
     
 	public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -726,7 +841,7 @@ public class Receipt extends Activity {
 					     			.setMessage("請連上網路以取得資料...")
 					     			.setOnKeyListener(new OnKeyListener(){
 
-										@Override
+										@Override//防呆專用，限制使用者不能按其它的實體按鍵返回沒有更新的主畫面
 										public boolean onKey(DialogInterface dialog, int keyCode,
 												KeyEvent event) {
 											if(keyCode==KeyEvent.KEYCODE_SEARCH|keyCode==KeyEvent.KEYCODE_BACK){
@@ -784,7 +899,11 @@ public class Receipt extends Activity {
 							public void run() {
 									Log.i(tag, "update success!");
 									Toast.makeText(Receipt.this, "更新成功！", Toast.LENGTH_SHORT).show();
-									dismissDialog(UPDATENUM);
+									if(progressdialog!=null){
+										//AnMarket回報錯誤這段，加上if判斷式維護
+										dismissDialog(UPDATENUM);
+									}
+									
 									onResume();				
 							}							 
 						 });
@@ -834,9 +953,6 @@ public class Receipt extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	
-
-
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -881,10 +997,10 @@ public class Receipt extends Activity {
 			return alert;
 			
 		case UPDATENUM:
-			ProgressDialog pd=new ProgressDialog(this) ;
-			pd.setTitle("請稍候");
-			pd.setMessage("資料更新中...");
-			pd.setButton(DialogInterface.BUTTON_POSITIVE,"取消",new DialogInterface.OnClickListener(){
+			progressdialog=new ProgressDialog(this) ;
+			progressdialog.setTitle("請稍候");
+			progressdialog.setMessage("資料更新中...");
+			progressdialog.setButton(DialogInterface.BUTTON_POSITIVE,"取消",new DialogInterface.OnClickListener(){
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -902,12 +1018,12 @@ public class Receipt extends Activity {
 				
 			});
 			
-			return pd;
+			return progressdialog;
 		case DOWNLOAD:
-			ProgressDialog pd1=new ProgressDialog(this) ;
-			pd1.setTitle("請稍候");
-			pd1.setMessage("資料下載中...");
-			pd1.setButton(DialogInterface.BUTTON_POSITIVE,"離開",new DialogInterface.OnClickListener(){
+			progressdialog=new ProgressDialog(this) ;
+			progressdialog.setTitle("請稍候");
+			progressdialog.setMessage("資料下載中...");
+			progressdialog.setButton(DialogInterface.BUTTON_POSITIVE,"離開",new DialogInterface.OnClickListener(){
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -916,8 +1032,9 @@ public class Receipt extends Activity {
 				
 			});
 			
-			return pd1;
+			return progressdialog;
 		}
 		return super.onCreateDialog(id);
 	}
+	
 }
