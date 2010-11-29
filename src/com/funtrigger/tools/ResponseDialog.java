@@ -170,6 +170,7 @@ public class ResponseDialog {
 		    
 		    Receipt.setBadButton();
 		    Receipt.setterGot(false);
+		    Receipt.resetTextfive();
 		}
 		
 	}

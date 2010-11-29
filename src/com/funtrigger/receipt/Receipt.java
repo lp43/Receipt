@@ -58,17 +58,17 @@ import com.admob.android.ads.AdView;
  *
  */
 public class Receipt extends Activity {
-	private String softVersion="v1.0.4.3";
+	private String softVersion="v1.0.4.4";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
 	private static String tag="tag";
 	Media media;
-	/**
-	 * 這個變數專用在由右至左對獎，
-	 * 當數值有符合中獎號碼時，才新增limit，
-	 * 讓使用者可以繼續輸入下去
-	 */
+//	/**
+//	 * 這個變數專用在由右至左對獎，
+//	 * 當數值有符合中獎號碼時，才新增limit，
+//	 * 讓使用者可以繼續輸入下去
+//	 */
 //	public static int limit=1;
 	/**
 	 * 裡面放置7組檢查碼
