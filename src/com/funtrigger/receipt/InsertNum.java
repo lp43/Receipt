@@ -7,7 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 
-/*
+/**
  * InsertNum類別原本要拿來讓使用者可以自行輸入報紙上刊登的對獎號碼,
  * 但還不知道這個功能是否有推出的必要性
  */

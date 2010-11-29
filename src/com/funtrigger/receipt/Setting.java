@@ -37,7 +37,12 @@ import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-	
+
+/**
+ * 設定畫面
+ * @author simon
+ *
+ */
 public class Setting extends Activity {
 
 

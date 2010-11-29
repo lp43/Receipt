@@ -7,7 +7,7 @@ import com.funtrigger.receipt.logic.LastThree;
 import com.funtrigger.receipt.logic.LeftToRight;
 import com.funtrigger.receipt.logic.RightToLeft;
 
-/*
+/**
  * Type類別是依據傳來的邏輯判斷方式,
  * 設定各種的螢幕上方數字方塊的顯示方式,
  * 另外還呼叫了各種不同的運算邏輯

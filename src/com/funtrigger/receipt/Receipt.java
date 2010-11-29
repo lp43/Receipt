@@ -52,8 +52,13 @@ import com.funtrigger.tools.ResponseDialog;
 import com.admob.android.ads.AdManager;
 import com.admob.android.ads.AdView;
 
+/**
+ * [統一發票愛我]程式主檔
+ * @author simon
+ *
+ */
 public class Receipt extends Activity {
-	private String softVersion="v1.0.4.1";
+	private String softVersion="v1.0.4.2";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -558,7 +563,7 @@ public class Receipt extends Activity {
         	Log.i(tag, "f.exist=true");
         	generateEntity();
         	setBadButton();
-        	ResponseDialog.newNotifyDialog(Receipt.this, "提示", "為了增加對獎速度，\n打XX代表你每張發票要輸入的第1個數字不符合開獎數字！", "warning");
+
         }
         
         super.onResume();
@@ -751,6 +756,21 @@ public class Receipt extends Activity {
 		}
 	}
     
+	/**
+	 * 教育使用者的訊息視窗
+	 */
+	private void teachDialog(){
+    	String text="";
+    	if(logic.equals("LastThree")){
+    		text=" [第6位數] ";
+    	}else if(logic.equals("RightToLeft")){
+    		text=" [最末碼] ";
+    	}else if(logic.equals("LeftToRight")){
+    		text=" [第1位數] ";
+    	}
+    	ResponseDialog.newNotifyDialog(Receipt.this, softVersion+" 新增功能", "●懶人輸入法\n為了增加對獎速度，\n如果發票的"+text+"是XX\n發票就可以直接扔了！\n●已知問題修復", "warning");
+	}
+	
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		menu.add(0, 0, 0, "對獎月份");
@@ -939,13 +959,23 @@ public class Receipt extends Activity {
 						startActivity(Intent.createChooser(sendIntent, "Title:"));
 					}
 				})
-				.setNeutralButton("返回", new DialogInterface.OnClickListener() {
+				.setNeutralButton("查看功能", new DialogInterface.OnClickListener() {
 					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-		
+						teachDialog();
 					}
 				})
+				
+				.setNegativeButton("返回", new DialogInterface.OnClickListener() {
+					
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						
+					}
+				})
+				
 				.show();
 				break;
 	

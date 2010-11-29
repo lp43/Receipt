@@ -1,9 +1,5 @@
 package com.funtrigger.tools;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,8 +10,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.funtrigger.receipt.R;
 import com.funtrigger.receipt.Receipt;
 
 /**
@@ -44,8 +38,10 @@ public class ResponseDialog {
 		
 		    @Override
 		    public void onClick(DialogInterface dialog, int which) {
-		    Receipt.textview.setText("");
+//		    Receipt.textview.setText("");
+		    Receipt.resetTextfive();
 		    Receipt.setBadButton();
+		    
 //			try {
 //				//呼叫該傳來的Class裡的函式
 //				Method method = getClass.getMethod("resetTextfive", null);
@@ -83,7 +79,7 @@ public class ResponseDialog {
 		
 		    @Override
 		    public void onClick(DialogInterface dialog, int which) {
-		    Receipt.textview.setText("");
+//		    Receipt.textview.setText("");
 			Receipt.resetTextfive();
 			Receipt.setBadButton();
 		    }
@@ -110,7 +106,7 @@ public class ResponseDialog {
 		
 		    @Override
 		    public void onClick(DialogInterface dialog, int which) {
-		    Receipt.textview.setText("");
+//		    Receipt.textview.setText("");
 			Receipt.resetTextfive();
 			Receipt.setBadButton();
 		    }
