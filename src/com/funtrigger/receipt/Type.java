@@ -18,37 +18,92 @@ public class Type {
 	 * numtotal將使用者輸入的每一筆數值，
 	 * 一筆一筆累加,最多會有8個數字被存放
 	 */
-	public static String numtotal="";
+	private static String numtotal="";
 	public static String first5total="";
 	/**
      * 描述 : 頂頭描述框的計算公式,且邏輯是由右至左<br/>
      * @param num 當要使用這個函式時，會將要在文字框印出的數字傳進來，再做判斷，然後顯示
      */
     public static void rightToLeft(String num,Context context){
-    	Log.i(tag, "get length: "+Receipt.textview.getText().length());
-//    	Log.i(tag, "num: "+num);
-    	if(Receipt.textview.getText().length()==0){    	
-    		Receipt.textview.setText(num);
-    			RightToLeft.checkLast(Receipt.textview.getText().toString(),context,Receipt.voice_version);
-			
-    	}else if(Receipt.textview.getText().length()>0&Receipt.textview.getText().length()<Receipt.limit-1){
-
-    		Receipt.textview.setText(num+Receipt.textview.getText());	
-    	}else if(Receipt.textview.getText().length()==Receipt.limit-1){
-
-    		Receipt.textview.setText(num+Receipt.textview.getText());
-    		if(Receipt.textview.getText().length()==3){
-    			Log.i(tag, "into length 3");
-    				RightToLeft.checkThree(Receipt.textview.getText().toString(),context,Receipt.voice_version);
-        		
-    			
-    		}else if(Receipt.textview.getText().length()==8){
-    			Log.i(tag, "into length 8");
-    				RightToLeft.checkEight(Receipt.textview.getText().toString(),context,Receipt.voice_version);
-    			
-    		}
-    		
-    	}
+//    	Log.i(tag, "get length: "+Receipt.textview.getText().length());
+////    	Log.i(tag, "num: "+num);
+//    	if(Receipt.textview.getText().length()==0){    	
+//    		Receipt.textview.setText(num);
+//    			RightToLeft.checkLast(Receipt.textview.getText().toString(),context,Receipt.voice_version);
+//			
+//    	}else if(Receipt.textview.getText().length()>0&Receipt.textview.getText().length()<Receipt.limit-1){
+//
+//    		Receipt.textview.setText(num+Receipt.textview.getText());	
+//    	}else if(Receipt.textview.getText().length()==Receipt.limit-1){
+//
+//    		Receipt.textview.setText(num+Receipt.textview.getText());
+//    		if(Receipt.textview.getText().length()==3){
+//    			Log.i(tag, "into length 3");
+//    				RightToLeft.checkThree(Receipt.textview.getText().toString(),context,Receipt.voice_version);
+//        		
+//    			
+//    		}else if(Receipt.textview.getText().length()==8){
+//    			Log.i(tag, "into length 8");
+//    				RightToLeft.checkEight(Receipt.textview.getText().toString(),context,Receipt.voice_version);
+//    			
+//    		}
+//    		
+//    	}
+    	
+//    	 if(numtotal.equals("")){    
+//     		Receipt.textview.setText("???????"+num);
+//     	} else if(numtotal.length()==1){
+//     		Receipt.textview.setText("??????"+num+numtotal);
+//     	}else if(numtotal.length()==2){    
+//     		Receipt.textview.setText("?????"+num+numtotal);
+//     		RightToLeft.checkThree(num+numtotal,context,Receipt.voice_version);
+//     	}else if(numtotal.length()==3){    
+//     		Receipt.textview.setText("????"+num+numtotal);
+//     	}else if(numtotal.length()==4){    
+//     		Receipt.textview.setText("???"+num+numtotal);
+//     	}else if(numtotal.length()==5){    
+//     		Receipt.textview.setText("??"+num+numtotal);
+//     	}else if(numtotal.length()==6){    
+//     		Receipt.textview.setText("?"+num+numtotal);
+//     	}else if(numtotal.length()==7){    
+//     		Receipt.textview.setText(num+numtotal);
+//     		LeftToRight.checkEight(num+numtotal,context,Receipt.voice_version);
+//     	}else if(numtotal.length()==8){
+// 			Log.i(tag, "into length 8");
+// 			Receipt.textview.setText("???????"+num);
+// 			numtotal="";	
+// 		}	 
+//    	 numtotal=num+numtotal;
+     
+   	 numtotal=num+numtotal;
+   	 if(numtotal.equals("")){    
+  		Receipt.textview.setText("????????"+num);
+  	} else if(numtotal.length()==1){
+  		Receipt.textview.setText("???????"+numtotal);
+  	}else if(numtotal.length()==2){    
+  		Receipt.textview.setText("??????"+numtotal);
+  		
+  	}else if(numtotal.length()==3){    
+  		Receipt.textview.setText("?????"+numtotal);
+  		RightToLeft.checkThree(numtotal,context,Receipt.voice_version);
+  	}else if(numtotal.length()==4){    
+  		Receipt.textview.setText("????"+numtotal);
+  	}else if(numtotal.length()==5){    
+  		Receipt.textview.setText("???"+numtotal);
+  	}else if(numtotal.length()==6){    
+  		Receipt.textview.setText("??"+numtotal);
+  	}else if(numtotal.length()==7){    
+  		Receipt.textview.setText("?"+numtotal);
+  		
+  	}else if(numtotal.length()==8){
+  		Receipt.textview.setText(numtotal);
+			Log.i(tag, "into length 8");
+			LeftToRight.checkEight(numtotal,context,Receipt.voice_version);
+			numtotal="";
+				
+		}	 
+ 
+     	Log.i(tag, "now numtotal: "+numtotal);
 
     }
     
@@ -90,9 +145,9 @@ public class Type {
      * @param num 當要使用這個函式時，會將要在文字框印出的數字傳進來，再做判斷，然後顯示
      */
     public static void lastThree(String num,Context context){
-    	 if(Receipt.got==false){
+    	 if(Receipt.getterGot()==false){
         	 if(numtotal.equals("")){
-        		 Receipt.got=false;
+        		 Receipt.setterGot(false);
         		 
         		 Receipt.textview.setText("?????"+num+"??");
         	 }else if(numtotal.length()==1){
@@ -102,11 +157,11 @@ public class Type {
         		 LastThree.checkThree(numtotal+num,context,Receipt.voice_version);
         	 }else if(numtotal.length()==3){
         		 Receipt.textview.setText("?????"+num+"??");
-        		 Receipt.got=false;
+        		 Receipt.setterGot(false);
         		 numtotal="";
         	 }
         	 numtotal+=num;	
-    	 }else if(Receipt.got==true){
+    	 }else if(Receipt.getterGot()==true){
     		 if(numtotal.length()==3){
     			 if(first5total.equals("")){			
     				 first5total+=num;
@@ -124,15 +179,26 @@ public class Type {
             		 
             		 Receipt.textview.setText(first5total+num+numtotal);
             		 LastThree.checkRemain5(first5total+num, context, Receipt.voice_version);
-            		 Receipt.got=false;		 
+            		 Receipt.setterGot(false);	 
             		 first5total="";
-            	 }
-    			 
-    			 
-        		 
+            	 }		 
         		 
         	 }
     	 }
 
+    }
+    
+    /**
+     * 將numtotal清空
+     * @return 若成功清空，回傳true,否則回傳false
+     */
+    public static boolean resetNumTotal(){
+    	boolean returnvalue=false;
+    	if(!numtotal.equals("")){
+    		Log.i(tag, "Type.resetNumTotal()");
+    		numtotal="";
+    		returnvalue=true;
+    	}
+		return returnvalue;
     }
 }

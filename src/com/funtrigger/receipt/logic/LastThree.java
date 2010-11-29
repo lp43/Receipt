@@ -73,10 +73,10 @@ public class LastThree{
 //			    		    toast.setView(layout);
 //			    		    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 //			    		    toast.show();
-			    			ResponseDialog.newToast(context, "請繼續\"由左至右\"輸入前面5碼！", R.drawable.again);
+			    			ResponseDialog.newGoodToast(context, "請繼續\"由左至右\"輸入前面5碼！", R.drawable.again);
 			    		    
 			    		    media.createMedia("again",context,voice_version);
-			    		    Receipt.got=true;
+			    		    Receipt.setterGot(true);
 			    			return;
 			    		}
 			    	}else if(i>3){
@@ -99,10 +99,10 @@ public class LastThree{
 //			    		    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 //			    		    toast.show();
 			    		    
-			    		    ResponseDialog.newToast(context, "請繼續\"由左至右\"輸入前面5碼！", R.drawable.again);
+			    		    ResponseDialog.newGoodToast(context, "請繼續\"由左至右\"輸入前面5碼！", R.drawable.again);
 			    		    
 			    		    media.createMedia("again",context,voice_version);
-			    		    Receipt.got=true;
+			    		    Receipt.setterGot(true);
 			    			return;
 			    		}
 				    }
@@ -110,7 +110,7 @@ public class LastThree{
 			    	if(numcheck.equals(getlast3num)){
 //		    			Log.i(tag, "last3 is the same with NEWADD");
 //		    			newDialog("恭喜你中了[增開六獎]\n獎金: 200塊","congratulations",context);
-			    		ResponseDialog.newDialog(context, "恭喜你中了[增開六獎]\n獎金: 200塊", "congratulations");
+			    		ResponseDialog.newGoodDialog(context, "恭喜你中了[增開六獎]\n獎金: 200塊", "congratulations");
 		    			media.createMedia("notsimple",context,voice_version);
 		    			return;
 		    		}else{
@@ -175,7 +175,7 @@ public class LastThree{
         	Log.i(tag, "getfirst5num: "+getfirst5num);
         	
         	if(getfirst5num.equals(maybeNum.substring(0, 5))){
-        		ResponseDialog.newDialog(context, "恭喜你中了[特獎]\n獎金: 200萬!", "million2");
+        		ResponseDialog.newGoodDialog(context, "恭喜你中了[特獎]\n獎金: 200萬!", "million2");
 //			    newDialog("恭喜你中了[特獎]\n獎金: 200萬!","million2",context);
 			    media.createMedia("million2",context,voice_version);
         	}else{
@@ -211,27 +211,27 @@ public class LastThree{
         	Log.i(tag, "getfirst5num: "+getfirst5num);
         	
         	if(getfirst5num.equals(maybeNum.substring(0,5))){
-        		ResponseDialog.newDialog(context,"恭喜你中了[頭獎]\n獎金: 20萬!", "th200");
+        		ResponseDialog.newGoodDialog(context,"恭喜你中了[頭獎]\n獎金: 20萬!", "th200");
 //			    newDialog("恭喜你中了[頭獎]\n獎金: 20萬!","th200",context);
 			    media.createMedia("th200",context,voice_version);
         	}else if(getfirst5num.substring(1, 5).equals(maybeNum.substring(1, 5))){
-        		ResponseDialog.newDialog(context, "恭喜你中了[二獎]\n獎金: 4萬元!", "congratulations");
+        		ResponseDialog.newGoodDialog(context, "恭喜你中了[二獎]\n獎金: 4萬元!", "congratulations");
 //			    newDialog("恭喜你中了[二獎]\n獎金: 4萬元!","congratulations",context);
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getfirst5num.substring(2, 5).equals(maybeNum.substring(2, 5))){
-        		ResponseDialog.newDialog(context, "恭喜你中了[三獎]\n獎金: 1萬元!", "congratulations");
+        		ResponseDialog.newGoodDialog(context, "恭喜你中了[三獎]\n獎金: 1萬元!", "congratulations");
 //			    newDialog("恭喜你中了[三獎]\n獎金: 1萬元!","congratulations",context);
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getfirst5num.substring(3, 5).equals(maybeNum.substring(3, 5))){
-        		ResponseDialog.newDialog(context, "恭喜你中了[四獎]\n獎金: 4千塊!", "congratulations");
+        		ResponseDialog.newGoodDialog(context, "恭喜你中了[四獎]\n獎金: 4千塊!", "congratulations");
 //			    newDialog("恭喜你中了[四獎]\n獎金: 4千塊","congratulations",context);
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getfirst5num.substring(4, 5).equals(maybeNum.substring(4, 5))){
-        		ResponseDialog.newDialog(context, "恭喜你中了[五獎]\n獎金: 1千塊!", "congratulations");
+        		ResponseDialog.newGoodDialog(context, "恭喜你中了[五獎]\n獎金: 1千塊!", "congratulations");
 //			    newDialog("恭喜你中了[五獎]\n獎金: 1千塊","congratulations",context);
 			    media.createMedia("onlycon",context,voice_version);
         	}else {
-        		ResponseDialog.newDialog(context, "恭喜你中了[六獎]\n獎金: 200塊", "hundred2");
+        		ResponseDialog.newGoodDialog(context, "恭喜你中了[六獎]\n獎金: 200塊", "hundred2");
 //			    newDialog("恭喜你中了[六獎]\n獎金: 200塊","hundred2",context);
 			    media.createMedia("hundred2",context,voice_version);
         	}

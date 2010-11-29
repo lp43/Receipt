@@ -58,7 +58,7 @@ import com.admob.android.ads.AdView;
  *
  */
 public class Receipt extends Activity {
-	private String softVersion="v1.0.4.2";
+	private String softVersion="v1.0.4.3";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -69,7 +69,7 @@ public class Receipt extends Activity {
 	 * 當數值有符合中獎號碼時，才新增limit，
 	 * 讓使用者可以繼續輸入下去
 	 */
-	public static int limit=1;
+//	public static int limit=1;
 	/**
 	 * 裡面放置7組檢查碼
 	 */
@@ -79,7 +79,7 @@ public class Receipt extends Activity {
 	 * 若末三碼相符，got值會為true,
 	 * 否則預設為0
 	 */
-	public static boolean got;
+	private static boolean got;
 	/**
 	 * 從SharePreference讀出預設的的logic運算模式,存放在此變數
 	 */
@@ -227,7 +227,7 @@ public class Receipt extends Activity {
 				if(logic.equals("RightToLeft")){
 					Type.rightToLeft("0", Receipt.this);
 				}else if(logic.equals("LeftToRight")){
-				    limit=8; //由左至右因為全部都要輸入，所以直接將界定值定為8
+//				    limit=8; //由左至右因為全部都要輸入，所以直接將界定值定為8
 				    Type.leftToRight("0", Receipt.this);
 				}else if(logic.equals("LastThree")){
 					Type.lastThree("0", Receipt.this);
@@ -456,7 +456,7 @@ public class Receipt extends Activity {
 				ResponseDialog.cancelToast();
 				setBadButton();
 				textview.setText("");
-				Type.numtotal="";//將累積的數值暫存變數清空
+				Type.resetNumTotal();//將累積的數值暫存變數清空
 				Type.first5total="";//將末三碼驗證的專屬變數︰前5碼暫存清除
 				got=false;//將LastThree專屬的中末3碼的got變數回復為false
 				
@@ -494,8 +494,7 @@ public class Receipt extends Activity {
         Log.i(tag, "get SharePreferences logic: "+logic);
        
         resetTextfive();
-
-        Type.numtotal="";
+        Type.resetNumTotal();
         textview.setText("");//數字框清空
         media= new Media();//建立media檔
         
@@ -693,14 +692,14 @@ public class Receipt extends Activity {
         	
         	//因為三種運算邏輯，各別的第1碼位置不同(分別別第1、第6、和第8[尾]碼)
         	if(logic.equals("RightToLeft")){
-        		Log.i(tag, "into logic RightToLeft");
+//        		Log.i(tag, "into logic RightToLeft");
         		
     			for(String get8:checknum){
     				if(get8.length()==8){
-    					Log.i(tag, "BadButton8: "+get8.substring(7));
+//    					Log.i(tag, "BadButton8: "+get8.substring(7));
     					buttonMap.get(get8.substring(7)).setBackgroundResource(R.drawable.button_background);
     				}else if(get8.length()==3){
-    					Log.i(tag, "BadButton3: "+get8.substring(2));
+//    					Log.i(tag, "BadButton3: "+get8.substring(2));
     					buttonMap.get(get8.substring(2)).setBackgroundResource(R.drawable.button_background);
     				}		
     			}
@@ -769,6 +768,23 @@ public class Receipt extends Activity {
     		text=" [第1位數] ";
     	}
     	ResponseDialog.newNotifyDialog(Receipt.this, softVersion+" 新增功能", "●懶人輸入法\n為了增加對獎速度，\n如果發票的"+text+"是XX\n發票就可以直接扔了！\n●已知問題修復", "warning");
+	}
+	
+	/**
+	 * Got是記錄是否有可能中獎的旗標
+	 * @param value 使用者如果要設被有中獎,傳進來的值就會是true,否則為false
+	 */
+	public static void setterGot(boolean value){
+		got=value==true?true:false;
+		Log.i(tag, "setGot="+String.valueOf(got));
+	}
+	
+	/**
+	 * 請求獲知Got記錄是否是中獎的狀態
+	 * @return 如果被設成可能中獎狀態，回傳true
+	 */
+	public static boolean getterGot(){
+		return got;
 	}
 	
 	public boolean onCreateOptionsMenu(Menu menu) {

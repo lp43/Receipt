@@ -28,7 +28,7 @@ public class ResponseDialog {
 	 * @param message 想要顯示的訊息內容
 	 * @param icon 想要顯示的icon
 	 */
-	public static void newDialog(Context context/*,final Class getClass*/,String message,String icon){
+	public static void newGoodDialog(Context context/*,final Class getClass*/,String message,String icon){
 		Log.i(tag, "into CongraturationsDialog.newDialog");
         new AlertDialog.Builder(context)
             .setTitle("恭喜你")
@@ -41,6 +41,7 @@ public class ResponseDialog {
 //		    Receipt.textview.setText("");
 		    Receipt.resetTextfive();
 		    Receipt.setBadButton();
+		    Receipt.setterGot(false);
 		    
 //			try {
 //				//呼叫該傳來的Class裡的函式
@@ -82,6 +83,7 @@ public class ResponseDialog {
 //		    Receipt.textview.setText("");
 			Receipt.resetTextfive();
 			Receipt.setBadButton();
+			Receipt.setterGot(false);
 		    }
 		    })
 
@@ -109,6 +111,7 @@ public class ResponseDialog {
 //		    Receipt.textview.setText("");
 			Receipt.resetTextfive();
 			Receipt.setBadButton();
+
 		    }
 		    })
 
@@ -122,7 +125,7 @@ public class ResponseDialog {
 	 * @param message 想要顯示的訊息內容
 	 * @param icon 想要產生的icon
 	 */
-	public static void newToast(Context context,String message,int icon){
+	public static void newGoodToast(Context context,String message,int icon){
 		
 		if(toast==null){
 			toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
@@ -138,7 +141,7 @@ public class ResponseDialog {
 		    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 		    toast.show();
 		    
-		    
+		    Receipt.setterGot(true);
 		}
 		
 	}
@@ -166,6 +169,7 @@ public class ResponseDialog {
 		    toast.show();
 		    
 		    Receipt.setBadButton();
+		    Receipt.setterGot(false);
 		}
 		
 	}
@@ -183,6 +187,7 @@ public class ResponseDialog {
 			toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
 			toast.show();
 			Receipt.setBadButton();
+			Receipt.setterGot(false);
 		}
 	}
 	
