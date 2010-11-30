@@ -165,7 +165,7 @@
         <Button 
     	android:id="@+id/button_clear" 
 		android:layout_width="90dip" 
-        android:layout_height="50dip"
+        android:layout_height="60dip"
         android:background="@drawable/button_background"
 		android:layout_below="@id/button_7"
 		android:layout_alignLeft="@id/button_7"
@@ -175,12 +175,12 @@
         <Button 
     	android:id="@+id/button_0" 
 		android:layout_width="180dip" 
-        android:layout_height="50dip"
+        android:layout_height="60dip"
         android:background="@drawable/button_background"
         android:layout_toRightOf="@id/button_clear"
 		android:layout_below="@id/button_8"
 		android:textSize="40dp"
-        android:text="0" />  
+        android:text="0"/>  
           
 <com.admob.android.ads.AdView
 android:id="@+id/ad"

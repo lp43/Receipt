@@ -108,9 +108,46 @@ v1.0.4.4
 1.Bug修復
 
 v1.0.5
+////////////發佈至Android Market的文章////////////////
+v1.0.5版功能新增									  //
+●懶人輸入法										  //
+你要輸入的發票第1碼如果在鍵盤上打了X，發票就可以直接扔了！ //
+●已知問題修復										  //
+///////////發佈至Android Market的文章//////////////////////////////
+v1.0.5What's new?											   //
+●smart type method											   //
+You want to type the first number from Receipt,                //
+but its appear "X" on the screen,                              //
+I Sure this isn't win a prize.                                 //
+●Bug fixed 													   //
+////////////發佈至Android Market的文章/////////////////////////////
 
 v1.0.5.1
+1.更新剛安裝完且更新後，畫面沒有馬上變XX的問題
+2.按下返回鍵時，強制將程式離開
+3.XX圖示變細
+4.將SetButtonBackground取消，改為多設Drawable在按鈕上
+
+v1.0.6
+////////////發佈至Android Market的文章////////////////
+v1.0.6版功能新增									  //
+●懶人輸入法										  //
+你要輸入的發票第1碼如果在鍵盤上打了X，發票就可以直接扔了！ //
+●已知問題修復                                       //
+(1)修復剛安裝完且更新後，畫面沒有馬上變XX的問題	      //
+///////////發佈至Android Market的文章//////////////////////////////
+v1.0.6 What's new?											   //
+●smart type method											   //
+You want to type the first number from Receipt,                //
+but its appear "X" on the screen,                              //
+I Sure this isn't win a prize.                                 //
+●Bug fixed 													   //
+(1)resolve a problem which you update data at first time,      //
+there is no XX appear to the screen immediately.               //
+////////////發佈至Android Market的文章/////////////////////////////
+
+v1.0.6.1
 [待做1]設定版面
 [待做2]震動功能
-[待做3]平版介面
+[待做3]平版專用介面
 [待做4]新增更新提示

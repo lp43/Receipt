@@ -25,6 +25,8 @@ import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -44,6 +46,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.funtrigger.receipt.logic.*;
@@ -58,7 +61,8 @@ import com.admob.android.ads.AdView;
  *
  */
 public class Receipt extends Activity {
-	private String softVersion="v1.0.4.4";
+
+	private String softVersion="v1.0.6";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -81,7 +85,7 @@ public class Receipt extends Activity {
 	 */
 	private static boolean got;
 	/**
-	 * 從SharePreference讀出預設的的logic運算模式,存放在此變數
+	 * 從SharedPreferences讀出預設的的logic運算模式,存放在此變數
 	 */
 	private static String logic;
 
@@ -143,12 +147,22 @@ public class Receipt extends Activity {
 	 * 這個文檔裡被UPDATENUM和DOWNLOAD兩個值使用
 	 */
 	ProgressDialog progressdialog;
+	/**
+	 * 讓10個數字Button放進來該Map，
+	 * 好讓setBadButton時，可以用迴圈快速設定
+	 */
 	static Map<String,Button> buttonMap;
+	/**
+	 * 該變數裡放著XX圖形
+	 */
+	static Drawable drawable;
 	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        drawable=this.getResources().getDrawable(R.drawable.x);
         
         //定義螢幕UI
         WindowManager manager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
@@ -166,14 +180,14 @@ public class Receipt extends Activity {
 		}
 		
 		/////////////區塊內都是AdMob的程式//////////////////////////////////////
-/*		//這段是AdMob的測試廣告專用碼
-		AdManager.setTestDevices( new String[] {
+		//這段是AdMob的測試廣告專用碼
+/*		AdManager.setTestDevices( new String[] {
 				AdManager.TEST_EMULATOR,// Android emulator
 				"6712CE5152154D52915CBB5D9780583F", // Next ONE Test Phone
-				});*/
+				});
 		//跟Admob請求廣告
 		AdView adView = (AdView)findViewById(R.id.ad);
-		adView.requestFreshAd(); 
+		adView.requestFreshAd(); */
 		/////////////區塊內都是AdMob的程式//////////////////////////////////////
 		
         am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
@@ -194,6 +208,7 @@ public class Receipt extends Activity {
         textfive=(TextView) findViewById(R.id.title_fiveline);        
         
         button0=(Button) findViewById(R.id.button_0);
+       
         button1=(Button) findViewById(R.id.button_1);
         button2=(Button) findViewById(R.id.button_2);
         button3=(Button) findViewById(R.id.button_3);
@@ -552,6 +567,15 @@ public class Receipt extends Activity {
  		            		Log.i(tag, "wait for head & head2");
  		            	}
  		            	generateEntity();
+ 		            	
+ 		            	//請求主Thread將非中獎號打XX
+ 		            	Receipt.this.runOnUiThread(new Runnable(){
+							@Override
+							public void run() {
+								setBadButton();
+							}	
+ 		            	});
+ 		            	
  		            	dismissDialog(DOWNLOAD);
             		 }
             	 }.start();
@@ -568,7 +592,13 @@ public class Receipt extends Activity {
         super.onResume();
 	}
  
-    
+	@Override
+	protected void onPause() {
+		Log.i(tag, "Receipt.finish");
+		finish();
+		super.onPause();
+	}
+	
     @Override//覆寫音量放大或縮小鍵為控制媒體音量鍵
     public boolean dispatchKeyEvent(KeyEvent event) {
         int action = event.getAction();
@@ -674,7 +704,8 @@ public class Receipt extends Activity {
 
     	for(int i=0;i<buttonMap.size();i++){
     		
-    		buttonMap.get(String.valueOf(i)).setBackgroundResource(R.drawable.button_background);
+//    		buttonMap.get(String.valueOf(i)).setBackgroundResource(R.drawable.button_background);
+    		buttonMap.get(String.valueOf(i)).setCompoundDrawablesWithIntrinsicBounds(null,null , null, null);
     	}
     }
     
@@ -683,10 +714,12 @@ public class Receipt extends Activity {
      * 然後將沒中的號碼打上XX
      */
     public static void setBadButton(){
-    	
+    		//首先，先將按鈕全部畫XX
     		for(int i=0;i<buttonMap.size();i++){
         		
-        		buttonMap.get(String.valueOf(i)).setBackgroundResource(R.drawable.button_no_background);
+//        		buttonMap.get(String.valueOf(i)).setBackgroundResource(R.drawable.button_no_background);
+    			
+    			buttonMap.get(String.valueOf(i)).setCompoundDrawablesWithIntrinsicBounds(null,drawable , null, null);
         	}
         	
         	
@@ -697,10 +730,12 @@ public class Receipt extends Activity {
     			for(String get8:checknum){
     				if(get8.length()==8){
 //    					Log.i(tag, "BadButton8: "+get8.substring(7));
-    					buttonMap.get(get8.substring(7)).setBackgroundResource(R.drawable.button_background);
+//    					buttonMap.get(get8.substring(7)).setBackgroundResource(R.drawable.button_background);
+    					buttonMap.get(get8.substring(7)).setCompoundDrawablesWithIntrinsicBounds(null,null , null, null);
     				}else if(get8.length()==3){
 //    					Log.i(tag, "BadButton3: "+get8.substring(2));
-    					buttonMap.get(get8.substring(2)).setBackgroundResource(R.drawable.button_background);
+//    					buttonMap.get(get8.substring(2)).setBackgroundResource(R.drawable.button_background);
+    					buttonMap.get(get8.substring(2)).setCompoundDrawablesWithIntrinsicBounds(null,null , null, null);
     				}		
     			}
     			
@@ -708,11 +743,13 @@ public class Receipt extends Activity {
     			
     			for(String get1:checknum){
     				if(get1.length()==8){
-    					Log.i(tag, "BadButton8: "+get1.substring(0,1));
-    					buttonMap.get(get1.substring(0,1)).setBackgroundResource(R.drawable.button_background);
+//    					Log.i(tag, "BadButton8: "+get1.substring(0,1));
+//    					buttonMap.get(get1.substring(0,1)).setBackgroundResource(R.drawable.button_background);
+    					buttonMap.get(get1.substring(0,1)).setCompoundDrawablesWithIntrinsicBounds(null,null , null, null);
     				}else if(get1.length()==3){
-    					Log.i(tag, "BadButton3: "+get1.substring(0,1));
-    					buttonMap.get(get1.substring(0,1)).setBackgroundResource(R.drawable.button_background);
+//    					Log.i(tag, "BadButton3: "+get1.substring(0,1));
+//    					buttonMap.get(get1.substring(0,1)).setBackgroundResource(R.drawable.button_background);
+    					buttonMap.get(get1.substring(0,1)).setCompoundDrawablesWithIntrinsicBounds(null,null , null, null);
     				}		
     			}
     			
@@ -720,11 +757,14 @@ public class Receipt extends Activity {
             	
     			for(String getL3:checknum){
     				if(getL3.length()==8){
-    					Log.i(tag, "BadButton8: "+getL3.substring(5,6));
-    					buttonMap.get(getL3.substring(5,6)).setBackgroundResource(R.drawable.button_background);
+//    					Log.i(tag, "BadButton8: "+getL3.substring(5,6));
+//    					buttonMap.get(getL3.substring(5,6)).setBackgroundResource(R.drawable.button_background);
+    					buttonMap.get(getL3.substring(5,6)).setCompoundDrawablesWithIntrinsicBounds(null,null , null, null);
+
     				}else if(getL3.length()==3){
-    					Log.i(tag, "BadButton3: "+getL3.substring(0,1));
-    					buttonMap.get(getL3.substring(0,1)).setBackgroundResource(R.drawable.button_background);
+//    					Log.i(tag, "BadButton3: "+getL3.substring(0,1));
+//    					buttonMap.get(getL3.substring(0,1)).setBackgroundResource(R.drawable.button_background);
+    					buttonMap.get(getL3.substring(0,1)).setCompoundDrawablesWithIntrinsicBounds(null,null , null, null);
     				}		
     			}
     		}
@@ -756,7 +796,7 @@ public class Receipt extends Activity {
 	}
     
 	/**
-	 * 教育使用者的訊息視窗
+	 * 教育使用者新功能的訊息視窗
 	 */
 	private void teachDialog(){
     	String text="";
