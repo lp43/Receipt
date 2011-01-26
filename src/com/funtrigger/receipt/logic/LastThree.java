@@ -42,7 +42,7 @@ public class LastThree{
     * @param num
     */
         public static void checkThree(String getlast3num,Context context,String voice_version){
-	         Log.i(tag, "get last 3num is: "+ getlast3num);
+//	         Log.i(tag, "get last 3num is: "+ getlast3num);
 	     
 	         int i=0;
 	        
@@ -106,14 +106,15 @@ public class LastThree{
 			    			return;
 			    		}
 				    }
-			    }else if(numcheck.length()==3){
+			    }else if(numcheck.length()==3){		    	
+			    	
 			    	if(numcheck.equals(getlast3num)){
 //		    			Log.i(tag, "last3 is the same with NEWADD");
 //		    			newDialog("恭喜你中了[增開六獎]\n獎金: 200塊","congratulations",context);
 			    		ResponseDialog.newGoodDialog(context, "恭喜你中了[增開六獎]\n獎金: 200塊", "congratulations");
 		    			media.createMedia("notsimple",context,voice_version);
 		    			return;
-		    		}else{
+		    		}/*else{
 //				    	 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
 //				         View originView=toast.getView();
 //				         LinearLayout layout= new LinearLayout(context);
@@ -130,7 +131,7 @@ public class LastThree{
 				         
 				         media.createMedia("noany",context,voice_version);
 				         return;
-				    }
+				    }*/
 
 			    }	   
 	        }
@@ -148,7 +149,7 @@ public class LastThree{
 	         
 	         ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
 	         
-	         media.createMedia("noany",context,voice_version);
+	         media.createMedia("nono",context,voice_version);
 	         return;
         }
         

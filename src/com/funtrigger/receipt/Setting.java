@@ -40,7 +40,7 @@ import android.widget.Toast;
 
 /**
  * 設定畫面
- * @author simon
+ * @author Simon
  *
  */
 public class Setting extends Activity {

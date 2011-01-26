@@ -70,7 +70,7 @@ public class LeftToRight{
 		    			ResponseDialog.newGoodDialog(context, "恭喜你中了[增開六獎]\n獎金: 200塊", "congratulations");
 		    			media.createMedia("notsimple",context,voice_version);
 		    			return;
-		    		}else{
+		    		}/*else{
 //		    			Log.i(tag, "into noany");
 //				    	 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
 //				         View originView=toast.getView();
@@ -87,7 +87,7 @@ public class LeftToRight{
 		    			 ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
 				         media.createMedia("noany",context,voice_version);
 				         return;
-				    }
+				    }*/
 			   
    
 			    }

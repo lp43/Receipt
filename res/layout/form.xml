@@ -1,202 +1,207 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:background="@drawable/targetnum_background">
-  
- <TableLayout
- 	  android:id="@+id/form_TableLayout1"
-	  android:layout_width="wrap_content" 
-      android:layout_height="wrap_content"
-      android:background="@color/black"
-      android:stretchColumns="0">
-      
- <TableRow
-	  android:layout_margin="2dip"
-	  android:layout_marginTop="16dip">
-	  <TextView
-	  android:id="@+id/text_title"
-	  android:layout_width="fill_parent"
-      android:layout_height="fill_parent" 
-	  android:text="#date 統一發票中獎號碼單"
-	  android:background="#000000"
-	  android:textColor="#ffffff"
-	  android:textSize="20sp"
-	  android:layout_gravity="center_vertical|center_horizontal"/>
-  </TableRow>
-  </TableLayout>
-  
- <TableLayout
-	  android:id="@+id/lastline"
-	  android:layout_width="wrap_content" 
-      android:layout_height="wrap_content"
-      android:layout_below="@id/form_TableLayout1"
-      android:background="@color/black"
-      android:stretchColumns="1"
-       >
-  <TableRow
-	  android:layout_margin="2dip"
-	  android:layout_marginTop="16dip"
-	  android:layout_width="wrap_content"
-	  android:layout_height="wrap_content">  
-	   <TextView
-	  android:text="特獎\n\n"
-	  android:background="#ffe479"
-	  android:textColor="#000000"/>
-	  <TextView
-	  android:id="@+id/text_spec"
-	  android:layout_marginLeft="2dip"
-	  android:text="test1\ntest2\ntest3"
-	  android:textColor="#000000"
-	  android:background="#ffffff"/>
-  </TableRow>
-  
-  <TableRow
-	  android:layout_margin="2dip"
-	  android:layout_marginTop="16dip"
-	  android:layout_width="wrap_content"
-	  android:layout_height="wrap_content">  
-	   <TextView
-	  android:text="頭獎\n\n"
-	  android:background="#ffe479"
-	  android:textColor="#000000"/>
-	  <TextView
-	  android:id="@+id/text_head"
-	  android:layout_marginLeft="2dip"
-	  android:text="test1\ntest2\ntest3"
-	  android:textColor="#000000"
-	  android:background="#ffffff"/>
-  </TableRow>
-  
-  <TableRow
-	  android:layout_margin="2dip"
-	  android:layout_marginTop="16dip"
-	  android:layout_width="wrap_content"
-	  android:layout_height="wrap_content">  
-	   <TextView
-	  android:text="貳獎"
-	  android:background="#cccccc"
-	  android:textColor="#000000"/>
-	  <TextView
-	  android:layout_marginLeft="2dip"
-	  android:layout_width="wrap_content"
-	  android:paddingRight="5dip"
-	  android:text="末七碼 與頭獎相同者可得獎金四萬元"
-	  android:textColor="#000000"
-	  android:background="#ffffff"/>
-	  
-  </TableRow>
-  
-  <TableRow
-	  android:layout_margin="2dip"
-	  android:layout_marginTop="16dip"
-	  android:layout_width="wrap_content"
-	  android:layout_height="wrap_content">  
-	   <TextView
-	  android:text="參獎"
-	  android:background="#cccccc"
-	  android:textColor="#000000"/>
-	  <TextView
-	  android:layout_marginLeft="2dip"
-	  android:text="末六碼 與頭獎相同者可得獎金一萬元"
-	  android:textColor="#000000"
-	  android:background="#ffffff"/>
-  </TableRow>
-  
-  <TableRow
-	  android:layout_margin="2dip"
-	  android:layout_marginTop="16dip"
-	  android:layout_width="wrap_content"
-	  android:layout_height="wrap_content">  
-	   <TextView
-	  android:text="肆獎"
-	  android:background="#cccccc"
-	  android:textColor="#000000"/>
-	  <TextView
-	  android:layout_marginLeft="2dip"
-	  android:text="末五碼 與頭獎相同者可得獎金四千元"
-	  android:textColor="#000000"
-	  android:background="#ffffff"/>
-  </TableRow>
-  
-  <TableRow
-	  android:layout_margin="2dip"
-	  android:layout_marginTop="16dip"
-	  android:layout_width="wrap_content"
-	  android:layout_height="wrap_content">  
-	   <TextView
-	  android:text="伍獎"
-	  android:background="#cccccc"
-	  android:textColor="#000000"/>
-	  <TextView
-	  android:layout_marginLeft="2dip"
-	  android:text="末四碼 與頭獎相同者可得獎金一千元"
-	  android:textColor="#000000"
-	  android:background="#ffffff"/>
-  </TableRow>
-  
-  <TableRow
-	  android:layout_margin="2dip"
-	  android:layout_marginTop="16dip"
-	  android:layout_width="wrap_content"
-	  android:layout_height="wrap_content">  
-	   <TextView
-	  android:text="陸獎"
-	  android:background="#cccccc"
-	  android:textColor="#000000"/>
-	  <TextView
-	  android:layout_marginLeft="2dip"
-	  android:text="末三碼 與頭獎相同者可得獎金二百元"
-	  android:textColor="#000000"
-	  android:background="#ffffff"/>
-  </TableRow>
-  
-  <TableRow
-	  android:layout_margin="2dip"
-	  android:layout_marginTop="16dip"
-	  android:layout_width="wrap_content"
-	  android:layout_height="wrap_content">  
-	   <TextView
-	  android:text="增開\n陸獎"
-	  android:background="#e6ffff"
-	  android:textColor="#000000"/>
-	  <TextView
-	  android:id="@+id/text_addnew"
-	  android:layout_marginLeft="2dip"
-	  android:text="#addnew"
-	  android:textColor="#000000"
-	  android:background="#e6ffff"/>
-  </TableRow>
-  
-  <TableRow
-  	  
-	  android:layout_margin="2dip"
-	  android:layout_marginTop="16dip"
-	  android:layout_width="wrap_content"
-	  android:layout_height="wrap_content">  
-	   <TextView
 
-	  android:text="兌換\n日期"
-	  android:background="#cccccc"
-	  android:textColor="#000000"/>
-	  <TextView
-	  android:id="@+id/text_period"
-	  android:layout_marginLeft="2dip"
-	  android:text="#period"
-	  android:textColor="#000000"
-	  android:background="#ffffff"/>
-  </TableRow>
-
-  
-</TableLayout>
-
-	  <TextView
-	  android:layout_below="@id/lastline"
-	  android:layout_width="wrap_content"
-	  android:layout_height="wrap_content"
-	  android:layout_marginLeft="2dip"
-	  android:text="資料來源︰財政部"
-	  android:textColor="#000000"/>
- 
-</RelativeLayout>
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+  	android:layout_width="fill_parent"
+ 	android:layout_height="fill_parent">
+		<RelativeLayout
+		  android:layout_width="fill_parent"
+		  android:layout_height="fill_parent"
+		  android:background="@drawable/targetnum_background">
+		  
+		 <TableLayout
+		 	  android:id="@+id/form_TableLayout1"
+			  android:layout_width="wrap_content" 
+		      android:layout_height="wrap_content"
+		      android:background="@color/black"
+		      android:stretchColumns="0">
+		      
+		 <TableRow
+			  android:layout_margin="2dip"
+			  android:layout_marginTop="16dip">
+			  <TextView
+			  android:id="@+id/text_title"
+			  android:layout_width="fill_parent"
+		      android:layout_height="fill_parent" 
+			  android:text="#date 統一發票中獎號碼單"
+			  android:background="#000000"
+			  android:textColor="#ffffff"
+			  android:textSize="20sp"
+			  android:layout_gravity="center_vertical|center_horizontal"/>
+		  </TableRow>
+		  </TableLayout>
+		  
+		 <TableLayout
+			  android:id="@+id/lastline"
+			  android:layout_width="wrap_content" 
+		      android:layout_height="wrap_content"
+		      android:layout_below="@id/form_TableLayout1"
+		      android:background="@color/black"
+		      android:stretchColumns="1"
+		       >
+		  <TableRow
+			  android:layout_margin="2dip"
+			  android:layout_marginTop="16dip"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content">  
+			   <TextView
+			  android:text="特獎\n\n"
+			  android:background="#ffe479"
+			  android:textColor="#000000"/>
+			  <TextView
+			  android:id="@+id/text_spec"
+			  android:layout_marginLeft="2dip"
+			  android:text="test1\ntest2\ntest3"
+			  android:textColor="#000000"
+			  android:background="#ffffff"/>
+		  </TableRow>
+		  
+		  <TableRow
+			  android:layout_margin="2dip"
+			  android:layout_marginTop="16dip"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content">  
+			   <TextView
+			  android:text="頭獎\n\n"
+			  android:background="#ffe479"
+			  android:textColor="#000000"/>
+			  <TextView
+			  android:id="@+id/text_head"
+			  android:layout_marginLeft="2dip"
+			  android:text="test1\ntest2\ntest3"
+			  android:textColor="#000000"
+			  android:background="#ffffff"/>
+		  </TableRow>
+		  
+		  <TableRow
+			  android:layout_margin="2dip"
+			  android:layout_marginTop="16dip"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content">  
+			   <TextView
+			  android:text="貳獎"
+			  android:background="#cccccc"
+			  android:textColor="#000000"/>
+			  <TextView
+			  android:layout_marginLeft="2dip"
+			  android:layout_width="wrap_content"
+			  android:paddingRight="5dip"
+			  android:text="末七碼 與頭獎相同者可得獎金四萬元"
+			  android:textColor="#000000"
+			  android:background="#ffffff"/>
+			  
+		  </TableRow>
+		  
+		  <TableRow
+			  android:layout_margin="2dip"
+			  android:layout_marginTop="16dip"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content">  
+			   <TextView
+			  android:text="參獎"
+			  android:background="#cccccc"
+			  android:textColor="#000000"/>
+			  <TextView
+			  android:layout_marginLeft="2dip"
+			  android:text="末六碼 與頭獎相同者可得獎金一萬元"
+			  android:textColor="#000000"
+			  android:background="#ffffff"/>
+		  </TableRow>
+		  
+		  <TableRow
+			  android:layout_margin="2dip"
+			  android:layout_marginTop="16dip"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content">  
+			   <TextView
+			  android:text="肆獎"
+			  android:background="#cccccc"
+			  android:textColor="#000000"/>
+			  <TextView
+			  android:layout_marginLeft="2dip"
+			  android:text="末五碼 與頭獎相同者可得獎金四千元"
+			  android:textColor="#000000"
+			  android:background="#ffffff"/>
+		  </TableRow>
+		  
+		  <TableRow
+			  android:layout_margin="2dip"
+			  android:layout_marginTop="16dip"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content">  
+			   <TextView
+			  android:text="伍獎"
+			  android:background="#cccccc"
+			  android:textColor="#000000"/>
+			  <TextView
+			  android:layout_marginLeft="2dip"
+			  android:text="末四碼 與頭獎相同者可得獎金一千元"
+			  android:textColor="#000000"
+			  android:background="#ffffff"/>
+		  </TableRow>
+		  
+		  <TableRow
+			  android:layout_margin="2dip"
+			  android:layout_marginTop="16dip"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content">  
+			   <TextView
+			  android:text="陸獎"
+			  android:background="#cccccc"
+			  android:textColor="#000000"/>
+			  <TextView
+			  android:layout_marginLeft="2dip"
+			  android:text="末三碼 與頭獎相同者可得獎金二百元"
+			  android:textColor="#000000"
+			  android:background="#ffffff"/>
+		  </TableRow>
+		  
+		  <TableRow
+			  android:layout_margin="2dip"
+			  android:layout_marginTop="16dip"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content">  
+			   <TextView
+			  android:text="增開\n陸獎"
+			  android:background="#e6ffff"
+			  android:textColor="#000000"/>
+			  <TextView
+			  android:id="@+id/text_addnew"
+			  android:layout_marginLeft="2dip"
+			  android:text="#addnew"
+			  android:textColor="#000000"
+			  android:background="#e6ffff"/>
+		  </TableRow>
+		  
+		  <TableRow
+		  	  
+			  android:layout_margin="2dip"
+			  android:layout_marginTop="16dip"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content">  
+			   <TextView
+		
+			  android:text="兌換\n日期"
+			  android:background="#cccccc"
+			  android:textColor="#000000"/>
+			  <TextView
+			  android:id="@+id/text_period"
+			  android:layout_marginLeft="2dip"
+			  android:text="#period"
+			  android:textColor="#000000"
+			  android:background="#ffffff"/>
+		  </TableRow>
+		
+		  
+		</TableLayout>
+		
+			  <TextView
+			  android:layout_below="@id/lastline"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content"
+			  android:layout_marginLeft="2dip"
+			  android:text="資料來源︰財政部"
+			  android:textColor="#000000"/>
+		 
+		</RelativeLayout>
+</ScrollView>

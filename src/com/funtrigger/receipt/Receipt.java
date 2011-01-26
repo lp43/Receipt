@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -33,6 +34,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -62,7 +65,7 @@ import com.admob.android.ads.AdView;
  */
 public class Receipt extends Activity {
 
-	private String softVersion="v1.0.6";
+	private String softVersion="v1.0.7";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -688,8 +691,13 @@ public class Receipt extends Activity {
 //				Log.i(tag, "back main Thread");
 		 		textfirst.setText("中華民國#date份");//先設回初始值,以助日後使用者改到選擇月份時,能即時將UI的月份畫面更新
 		 		 //month變數從txt檔裡讀出來以後，才可以將月份取代掉
-		        String finaltext1=textfirst.getText().toString().replace("#date", month);
-		        textfirst.setText(finaltext1);
+		 		
+				String month_buffer="<font color='green'><b>"+month+"</b></font>";
+		        String finaltext1=textfirst.getText().toString().replace("#date", month_buffer);
+				textfirst.setText(Html.fromHtml(finaltext1), TextView.BufferType.SPANNABLE);
+		 		
+//		        String finaltext1=textfirst.getText().toString().replace("#date", month);
+//		        textfirst.setText(finaltext1);
 			}
  			
  		});
@@ -807,7 +815,7 @@ public class Receipt extends Activity {
     	}else if(logic.equals("LeftToRight")){
     		text=" [第1位數] ";
     	}
-    	ResponseDialog.newNotifyDialog(Receipt.this, softVersion+" 新增功能", "●懶人輸入法\n為了增加對獎速度，\n如果發票的"+text+"是XX\n發票就可以直接扔了！\n●已知問題修復", "warning");
+    	ResponseDialog.newNotifyDialog(Receipt.this, softVersion+" 新增功能", "●懶人輸入法\n為了增加對獎速度，\n如果發票的"+text+"是XX\n發票就可以直接扔了！\n●修復第2組增開獎的對獎問題。\n●調整開心大媽的部份語音。\n●特定字體加上區分的顏色。", "warning");
 	}
 	
 	/**
@@ -873,13 +881,110 @@ public class Receipt extends Activity {
 					TextView text_addnew=(TextView) form.findViewById(R.id.text_addnew);
 					TextView text_period=(TextView) form.findViewById(R.id.text_period);
 					
-					text_title.setText(text_title.getText().toString().replace("#date", month));				
-					text_spec.setText(text_spec.getText().toString().replace("test1\ntest2\ntest3", checknum[0]+"\n"+checknum[1]+"\n"+checknum[2]));
-					text_head.setText(text_head.getText().toString().replace("test1\ntest2\ntest3", checknum[3]+"\n"+checknum[4]+"\n"+checknum[5]));
+					//設定表格的開頭月份
+					text_title.setText(text_title.getText().toString().replace("#date", month));
+					
+					//設定特獎文字的紅色字體
+					String change_char_spe=new String();
+
+					for(int i=0;i<=2;i++){
+						
+						String origin_spe=checknum[i];
+						Log.i("tag", "checknum["+i+"]: "+origin_spe);
+
+						if(change_char_spe.equals("")){
+							change_char_spe=Character.toString(origin_spe.charAt(0))+Character.toString(origin_spe.charAt(1))+Character.toString(origin_spe.charAt(2))+Character.toString(origin_spe.charAt(3))+Character.toString(origin_spe.charAt(4))+"<font color='red'><b>"+origin_spe.charAt(5)+"</b></font>"+Character.toString(origin_spe.charAt(6))+Character.toString(origin_spe.charAt(7))+"<br>";
+//							Log.i("tag", "change_char_spe: "+change_char_spe);
+						}else{
+							if(i==2){
+								change_char_spe+=Character.toString(origin_spe.charAt(0))+Character.toString(origin_spe.charAt(1))+Character.toString(origin_spe.charAt(2))+Character.toString(origin_spe.charAt(3))+Character.toString(origin_spe.charAt(4))+"<font color='red'><b>"+origin_spe.charAt(5)+"</b></font>"+Character.toString(origin_spe.charAt(6))+Character.toString(origin_spe.charAt(7));
+							}else{
+								change_char_spe+=Character.toString(origin_spe.charAt(0))+Character.toString(origin_spe.charAt(1))+Character.toString(origin_spe.charAt(2))+Character.toString(origin_spe.charAt(3))+Character.toString(origin_spe.charAt(4))+"<font color='red'><b>"+origin_spe.charAt(5)+"</b></font>"+Character.toString(origin_spe.charAt(6))+Character.toString(origin_spe.charAt(7))+"<br>";
+							}
+							
+						}
+
+//						Log.i("tag", "origin_spe: "+origin_spe);
+					}
+//					Log.i("tag", "change_char_spe: "+change_char_spe);
+				
+					text_spec.setText(Html.fromHtml(change_char_spe), TextView.BufferType.SPANNABLE);
+//					text_spec.setText(text_spec.getText().toString().replace("test1\ntest2\ntest3", checknum[0]+"\n"+checknum[1]+"\n"+checknum[2]));
+				
+		//==========================================
+					//設定頭獎文字的紅色字體
+					String change_char_head="";
+					for(int i=3;i<=5;i++){
+						
+						String origin_head=checknum[i];
+						if(change_char_head.equals("")){
+							change_char_head=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7))+"<br>";
+						}else{
+							if(i==5){
+								change_char_head+=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7));
+							}else{
+								change_char_head+=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7))+"<br>";
+							}
+							
+						}
+						
+						
+										
+						
+					}
+					text_head.setText(Html.fromHtml(change_char_head), TextView.BufferType.SPANNABLE);
+//					text_head.setText(text_head.getText().toString().replace("test1\ntest2\ntest3", checknum[3]+"\n"+checknum[4]+"\n"+checknum[5]));
+					
+					
+					//=======================================
+					//檢查有幾組特別號的紅色字體
+					int last_count=0;
 					try{
-						text_addnew.setText(text_addnew.getText().toString().replace("#addnew", checknum[6]+"\n"));
+						for(int i=6;i<10;i++){
+							String buffer=checknum[i];
+							last_count=i;
+							Log.i("tag", "last is: "+i);
+							
+						}
+						
 					}catch(ArrayIndexOutOfBoundsException e){		
-						text_addnew.setText(text_addnew.getText().toString().replace("#addnew", "無\n"));
+						
+						if(last_count==0){
+							
+
+							text_addnew.setText(text_addnew.getText().toString().replace("#addnew", "無\n"));
+
+							
+						}else if(last_count==6){
+							String origin=checknum[6];
+							
+							String change_char="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2)+"<br>";
+							text_addnew.setText(Html.fromHtml(change_char), TextView.BufferType.SPANNABLE);
+//							text_addnew.setText(text_addnew.getText().toString().replace("#addnew", checknum[6]+"\n"));
+						}else if(last_count>6){
+							
+							String change_char="";
+							for(int i=6;i<=last_count;i++){
+								
+								String origin=checknum[i];
+								if(change_char.equals("")){
+									change_char="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2)+"<br>";
+								}else{
+									if(i==last_count){
+										change_char+="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2);
+									}else{
+										change_char+="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2)+"<br>";
+									}
+									
+								}
+								
+								
+								text_addnew.setText(Html.fromHtml(change_char), TextView.BufferType.SPANNABLE);				
+								
+							}
+//						
+							
+						}
 					}
 					
 					text_period.setText(text_period.getText().toString().replace("#period", getmoneyperoid+"\n"));
@@ -1000,7 +1105,7 @@ public class Receipt extends Activity {
 				break;
 			case 4:
 				new AlertDialog.Builder(this)
-				.setMessage(getString(R.string.app_name)+" "+ softVersion +"\n作者 FunTrigger\n\n版權 2010")
+				.setMessage(getString(R.string.app_name)+" "+ softVersion +"\n作者 FunTrigger\n\n版權 2011")
 				.setIcon(R.drawable.icon)
 				.setTitle("關於")
 				.setPositiveButton("問題回報", new DialogInterface.OnClickListener() {

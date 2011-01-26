@@ -130,7 +130,7 @@ public class RightToLeft{
 		        media.createMedia("notsimple",context,voice_version);
 		        Type.resetNumTotal();
 			    return;
-			         }else{
+			         }/*else{
 //			        	 Receipt.limit=1;
 			     
 //			         Receipt.textview.setText("");
@@ -150,7 +150,7 @@ public class RightToLeft{
 			         ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
 			         media.createMedia("nono",context,voice_version);
 			         return;
-			         }
+			         }*/
 			         }
 			    }
 //    	 Receipt.limit=1;

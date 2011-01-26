@@ -55,10 +55,11 @@ public class BackStage {
 		
 		try {
 			uc = (HttpURLConnection)url.openConnection();
-	
+				int connect_times=0;
 				while((uc.getResponseCode()!=HttpURLConnection.HTTP_OK)){
 				uc.disconnect();
 				uc  = (HttpURLConnection)url.openConnection();
+					
 				}
 				  InputStream is = uc.getInputStream();
 				  InputStreamReader isr = new InputStreamReader(is);
