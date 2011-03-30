@@ -25,7 +25,6 @@ public class LeftToRight{
 	private static String tag="tag";
 	static String maybeNum;
 	static Media media=new Media();
-
     
     /**
     * 描述 : 當使用者輸入完3碼後，續輸完8碼時，會呼叫這個運算函式
@@ -46,7 +45,7 @@ public class LeftToRight{
 			    
 //			    Log.i(tag, "numcheck lengh: "+numcheck.length());
 			    if(numcheck.length()==8){
-			    	if(i<4){
+			    	if(i<Receipt.cutter+1){
 			    		
 			    		if(numcheck.subSequence(5, 8).equals(lastThree)){
 //			    			Log.i(tag, "last3 is the same with SPECIAL");
@@ -54,7 +53,7 @@ public class LeftToRight{
 			    			checkRemain5InSPEC(getnum,context,voice_version);
 			    			return;
 			    		}
-			    	}else if(i>3){
+			    	}else if(i>Receipt.cutter){
 			    		if(numcheck.subSequence(5, 8).equals(lastThree)){
 //			    			Log.i(tag, "last3 is the same with HEAD");
 			    			maybeNum=numcheck;//將核對到的可能中獎號碼存進maybeNum
@@ -65,45 +64,16 @@ public class LeftToRight{
 			    }else if(numcheck.length()==3){
 			    	if(numcheck.equals(lastThree)){
 		    			Log.i(tag, "last3 is the same with NEWADD");
-//		    			newDialog("恭喜你中了[增開六獎]\n獎金: 200塊","congratulations",context);
 		    			
 		    			ResponseDialog.newGoodDialog(context, "恭喜你中了[增開六獎]\n獎金: 200塊", "congratulations");
 		    			media.createMedia("notsimple",context,voice_version);
 		    			return;
-		    		}/*else{
-//		    			Log.i(tag, "into noany");
-//				    	 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
-//				         View originView=toast.getView();
-//				         LinearLayout layout= new LinearLayout(context);
-//				         layout.setOrientation(LinearLayout.VERTICAL);
-//				         ImageView view = new ImageView(context);
-//				         view.setImageResource(R.drawable.no);
-//				         layout.addView(view);
-//				         layout.addView(originView);
-//				         toast.setView(layout);
-//				         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-//				         toast.show();
-		    			
-		    			 ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
-				         media.createMedia("noany",context,voice_version);
-				         return;
-				    }*/
+		    		}
 			   
    
 			    }
 	        }
-//	         Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
-//	         View originView=toast.getView();
-//	         LinearLayout layout= new LinearLayout(context);
-//	         layout.setOrientation(LinearLayout.VERTICAL);
-//	         ImageView view = new ImageView(context);
-//	         view.setImageResource(R.drawable.no);
-//	         layout.addView(view);
-//	         layout.addView(originView);
-//	         toast.setView(layout);
-//	         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-//	         toast.show();
-	        
+        
 	         ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
 	         media.createMedia("noany",context,voice_version);
 	         return;
@@ -139,22 +109,11 @@ public class LeftToRight{
         	Log.i(tag, "maybeNum head5: "+maybeNumHeadFive);
         	
         	if(getNumHeadFive.equals(maybeNumHeadFive)){    
-//			    newDialog("恭喜你中了[特獎]\n獎金: 200萬!","million2",context);
+
         		
-        		ResponseDialog.newGoodDialog(context, "恭喜你中了[特獎]\n獎金: 200萬!", "million2");
+        		ResponseDialog.newGoodDialog(context, "恭喜你中了[特獎]\n獎金: 200萬!(含以上)", "million2");
 			    media.createMedia("million2",context,voice_version);
         	}else{
-//        		 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
-//		         View originView=toast.getView();
-//		         LinearLayout layout= new LinearLayout(context);
-//		         layout.setOrientation(LinearLayout.VERTICAL);
-//		         ImageView view = new ImageView(context);
-//		         view.setImageResource(R.drawable.no);
-//		         layout.addView(view);
-//		         layout.addView(originView);
-//		         toast.setView(layout);
-//		         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-//		         toast.show();
         		
         		 ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
 		         media.createMedia("noany",context,voice_version);
@@ -173,39 +132,27 @@ public class LeftToRight{
         	Log.i(tag, "maybeNum: "+maybeNum);
 
         	if(getnum.equals(maybeNum)){
-			    
-//			    newDialog("恭喜你中了[頭獎]\n獎金: 20萬!","th200",context);
         		
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[頭獎]\n獎金: 20萬!", "th200");
 			    media.createMedia("th200",context,voice_version);
         	}else if(getnum.subSequence(1, 5).equals(maybeNum.substring(1, 5))){
-			    
-//			    newDialog("恭喜你中了[二獎]\n獎金: 4萬元!","congratulations",context);
         		
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[二獎]\n獎金: 4萬元!", "congratulations");
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getnum.subSequence(2, 5).equals(maybeNum.substring(2, 5))){
 			    
-//			    newDialog("恭喜你中了[三獎]\n獎金: 1萬元!","congratulations",context);
-        		
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[三獎]\n獎金: 1萬元!", "congratulations");
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getnum.subSequence(3, 5).equals(maybeNum.substring(3, 5))){
 			    
-//			    newDialog("恭喜你中了[四獎]\n獎金: 4千塊","congratulations",context);
-        		
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[四獎]\n獎金: 4千塊!", "congratulations");
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getnum.subSequence(4, 5).equals(maybeNum.substring(4, 5))){
-			    
-//			    newDialog("恭喜你中了[五獎]\n獎金: 1千塊","congratulations",context);
         		
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[五獎]\n獎金: 1千塊!", "congratulations");
 			    media.createMedia("onlycon",context,voice_version);
         	}else {
 			    
-//			    newDialog("恭喜你中了[六獎]\n獎金: 200塊","hundred2",context);
-        		
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[六獎]\n獎金: 200塊", "hundred2");
 			    media.createMedia("hundred2",context,voice_version);
         	}

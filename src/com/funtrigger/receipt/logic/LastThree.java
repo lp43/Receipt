@@ -1,6 +1,7 @@
 package com.funtrigger.receipt.logic;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -35,8 +36,9 @@ public class LastThree{
 	 */
 	private static final int EIGHTINHEAD=2;
 	static Media media=new Media();
+ 
 
-    
+	
     /**
     * 描述 : 當使用者輸入完3碼後，要要求使用者繼續輸完8碼時，會呼叫這個運算函式
     * @param num
@@ -52,8 +54,9 @@ public class LastThree{
 //			    Log.i(tag, "Receipt.checknum.length: "+Receipt.checknum.length);
 			    
 //			    Log.i(tag, "numcheck lengh: "+numcheck.length());
+			    //i的範圍以內是特別獎
 			    if(numcheck.length()==8){
-			    	if(i<4){
+			    	if(i<Receipt.cutter+1){
 			    		
 			    		if(numcheck.subSequence(5, 8).equals(getlast3num)){
 //			    			Log.i(tag, "last3 is the same with SPECIAL");
@@ -62,43 +65,21 @@ public class LastThree{
 			    			Log.i(tag, "maybeNum is: "+maybeNum);
 			    			Receipt.textfive.setText("請繼續\"由左至右\"輸入前面5碼！");
 			    			
-//			    			Toast toast = Toast.makeText(context, "請繼續\"由左至右\"輸入前面5碼！", Toast.LENGTH_SHORT);
-//			    		    View originView=toast.getView();
-//			    		    LinearLayout layout= new LinearLayout(context);
-//			    		    layout.setOrientation(LinearLayout.VERTICAL);
-//			    		    ImageView view = new ImageView(context);
-//			    		    view.setImageResource(R.drawable.again);
-//			    		    layout.addView(view);
-//			    		    layout.addView(originView);
-//			    		    toast.setView(layout);
-//			    		    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-//			    		    toast.show();
+
 			    			ResponseDialog.newGoodToast(context, "請繼續\"由左至右\"輸入前面5碼！", R.drawable.again);
 			    		    
 			    		    media.createMedia("again",context,voice_version);
 			    		    Receipt.setterGot(true);
 			    			return;
 			    		}
-			    	}else if(i>3){
+			    	}else if(i>Receipt.cutter){
 			    		if(numcheck.subSequence(5, 8).equals(getlast3num)){
 //			    			Log.i(tag, "last3 is the same with HEAD");
 			    			maybeNum=numcheck;//將核對到的可能中獎號碼存進maybeNum
 			    			checkEightType=EIGHTINHEAD;
 			    			Log.i(tag, "maybeNum is: "+maybeNum);
 			    			Receipt.textfive.setText("請繼續\"由左至右\"輸入前面5碼！");
-			    			
-//			    			Toast toast = Toast.makeText(context, "請繼續\"由左至右\"輸入前面5碼！", Toast.LENGTH_SHORT);
-//			    		    View originView=toast.getView();
-//			    		    LinearLayout layout= new LinearLayout(context);
-//			    		    layout.setOrientation(LinearLayout.VERTICAL);
-//			    		    ImageView view = new ImageView(context);
-//			    		    view.setImageResource(R.drawable.again);
-//			    		    layout.addView(view);
-//			    		    layout.addView(originView);
-//			    		    toast.setView(layout);
-//			    		    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-//			    		    toast.show();
-			    		    
+		    		    
 			    		    ResponseDialog.newGoodToast(context, "請繼續\"由左至右\"輸入前面5碼！", R.drawable.again);
 			    		    
 			    		    media.createMedia("again",context,voice_version);
@@ -110,42 +91,15 @@ public class LastThree{
 			    	
 			    	if(numcheck.equals(getlast3num)){
 //		    			Log.i(tag, "last3 is the same with NEWADD");
-//		    			newDialog("恭喜你中了[增開六獎]\n獎金: 200塊","congratulations",context);
+
 			    		ResponseDialog.newGoodDialog(context, "恭喜你中了[增開六獎]\n獎金: 200塊", "congratulations");
 		    			media.createMedia("notsimple",context,voice_version);
 		    			return;
-		    		}/*else{
-//				    	 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
-//				         View originView=toast.getView();
-//				         LinearLayout layout= new LinearLayout(context);
-//				         layout.setOrientation(LinearLayout.VERTICAL);
-//				         ImageView view = new ImageView(context);
-//				         view.setImageResource(R.drawable.no);
-//				         layout.addView(view);
-//				         layout.addView(originView);
-//				         toast.setView(layout);
-//				         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-//				         toast.show();
-				         
-				         ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
-				         
-				         media.createMedia("noany",context,voice_version);
-				         return;
-				    }*/
+		    		}
 
 			    }	   
 	        }
-//	        Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
-//	         View originView=toast.getView();
-//	         LinearLayout layout= new LinearLayout(context);
-//	         layout.setOrientation(LinearLayout.VERTICAL);
-//	         ImageView view = new ImageView(context);
-//	         view.setImageResource(R.drawable.no);
-//	         layout.addView(view);
-//	         layout.addView(originView);
-//	         toast.setView(layout);
-//	         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-//	         toast.show();
+
 	         
 	         ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
 	         
@@ -176,21 +130,11 @@ public class LastThree{
         	Log.i(tag, "getfirst5num: "+getfirst5num);
         	
         	if(getfirst5num.equals(maybeNum.substring(0, 5))){
-        		ResponseDialog.newGoodDialog(context, "恭喜你中了[特獎]\n獎金: 200萬!", "million2");
-//			    newDialog("恭喜你中了[特獎]\n獎金: 200萬!","million2",context);
+        		ResponseDialog.newGoodDialog(context, "恭喜你中了[特獎]\n獎金: 200萬!(含以上)", "million2");
+
 			    media.createMedia("million2",context,voice_version);
         	}else{
-//        		 Toast toast = Toast.makeText(context, "沒中...", Toast.LENGTH_SHORT);
-//		         View originView=toast.getView();
-//		         LinearLayout layout= new LinearLayout(context);
-//		         layout.setOrientation(LinearLayout.VERTICAL);
-//		         ImageView view = new ImageView(context);
-//		         view.setImageResource(R.drawable.no);
-//		         layout.addView(view);
-//		         layout.addView(originView);
-//		         toast.setView(layout);
-//		         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-//		         toast.show();
+
         		
         		 ResponseDialog.newBadToast(context, "沒中...", R.drawable.no);
         		
@@ -213,47 +157,33 @@ public class LastThree{
         	
         	if(getfirst5num.equals(maybeNum.substring(0,5))){
         		ResponseDialog.newGoodDialog(context,"恭喜你中了[頭獎]\n獎金: 20萬!", "th200");
-//			    newDialog("恭喜你中了[頭獎]\n獎金: 20萬!","th200",context);
+
 			    media.createMedia("th200",context,voice_version);
         	}else if(getfirst5num.substring(1, 5).equals(maybeNum.substring(1, 5))){
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[二獎]\n獎金: 4萬元!", "congratulations");
-//			    newDialog("恭喜你中了[二獎]\n獎金: 4萬元!","congratulations",context);
+
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getfirst5num.substring(2, 5).equals(maybeNum.substring(2, 5))){
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[三獎]\n獎金: 1萬元!", "congratulations");
-//			    newDialog("恭喜你中了[三獎]\n獎金: 1萬元!","congratulations",context);
+
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getfirst5num.substring(3, 5).equals(maybeNum.substring(3, 5))){
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[四獎]\n獎金: 4千塊!", "congratulations");
-//			    newDialog("恭喜你中了[四獎]\n獎金: 4千塊","congratulations",context);
+
 			    media.createMedia("onlycon",context,voice_version);
         	}else if(getfirst5num.substring(4, 5).equals(maybeNum.substring(4, 5))){
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[五獎]\n獎金: 1千塊!", "congratulations");
-//			    newDialog("恭喜你中了[五獎]\n獎金: 1千塊","congratulations",context);
+
 			    media.createMedia("onlycon",context,voice_version);
         	}else {
         		ResponseDialog.newGoodDialog(context, "恭喜你中了[六獎]\n獎金: 200塊", "hundred2");
-//			    newDialog("恭喜你中了[六獎]\n獎金: 200塊","hundred2",context);
+
 			    media.createMedia("hundred2",context,voice_version);
         	}
         	
         	maybeNum="";
         }
         
-//        private static void newDialog(String message,String icon,Context context){
-//	         new AlertDialog.Builder(context)
-//	         .setTitle("恭喜你")
-//			    .setIcon(context.getResources().getIdentifier(icon,"drawable",context.getPackageName()))
-//			    .setMessage(message)
-//			    .setPositiveButton("確認", new DialogInterface.OnClickListener() {
-//			
-//			    @Override
-//			    public void onClick(DialogInterface dialog, int which) {
-//			    Receipt.textview.setText("");
-//			    }
-//			    })
-//	
-//	    .show();
-//       }
+
 		
 }

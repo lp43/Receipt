@@ -1,6 +1,6 @@
 package com.funtrigger.receipt;
 
-
+import com.google.ads.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,10 +8,34 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import javax.net.ssl.SSLException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -31,6 +55,7 @@ import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -55,8 +80,12 @@ import android.widget.Toast;
 import com.funtrigger.receipt.logic.*;
 import com.funtrigger.tools.Media;
 import com.funtrigger.tools.ResponseDialog;
-import com.admob.android.ads.AdManager;
-import com.admob.android.ads.AdView;
+import com.google.ads.Ad;
+import com.google.ads.AdListener;
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdRequest.ErrorCode;
+
 
 /**
  * [統一發票愛我]程式主檔
@@ -65,18 +94,12 @@ import com.admob.android.ads.AdView;
  */
 public class Receipt extends Activity {
 
-	private String softVersion="v1.0.7";
+	private String softVersion="v1.0.7.1";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
 	private static String tag="tag";
 	Media media;
-//	/**
-//	 * 這個變數專用在由右至左對獎，
-//	 * 當數值有符合中獎號碼時，才新增limit，
-//	 * 讓使用者可以繼續輸入下去
-//	 */
-//	public static int limit=1;
 	/**
 	 * 裡面放置7組檢查碼
 	 */
@@ -159,6 +182,17 @@ public class Receipt extends Activity {
 	 * 該變數裡放著XX圖形
 	 */
 	static Drawable drawable;
+	/**
+	 * cutter = 特獎的最後一筆是第幾筆？起始值為1(一般這個值為3，因為有3筆特獎)
+	 * 
+	 * 告訴程式這次特獎(號碼需全中)與頭獎(末3碼即可中)的實體切割點
+	 * 一般來說，都是前3筆(<4)是特獎，第4筆(>3)開始是頭獎，
+	 * 但2011-03-25很特別，改成前2筆是特獎，後3筆是頭獎，
+	 * 所以在這裡增加一個變數，讓我以後只要改這組數值，就可以輕鬆告訴程式
+	 * 哪邊是特獎和頭獎的切割點
+	 */
+	public static int cutter = 0;
+	AdView  adView = null;
 	
 	
     @Override
@@ -182,16 +216,9 @@ public class Receipt extends Activity {
 			setContentView(R.layout.mainlayout800);
 		}
 		
-		/////////////區塊內都是AdMob的程式//////////////////////////////////////
-		//這段是AdMob的測試廣告專用碼
-/*		AdManager.setTestDevices( new String[] {
-				AdManager.TEST_EMULATOR,// Android emulator
-				"6712CE5152154D52915CBB5D9780583F", // Next ONE Test Phone
-				});
-		//跟Admob請求廣告
-		AdView adView = (AdView)findViewById(R.id.ad);
-		adView.requestFreshAd(); */
-		/////////////區塊內都是AdMob的程式//////////////////////////////////////
+
+		
+		callAdView();
 		
         am=(AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
        
@@ -555,39 +582,47 @@ public class Receipt extends Activity {
      			
      			.show();	
              }else{
-            	 showDialog(DOWNLOAD);
-            	 new Thread(){
-            		 
-            		 public void run(){
-            			 
-            			 
-            			 //只要一檢查到沒有2個檔案，馬上一次將2筆資料請求下來
-                    	 BackStage.dataRequest(Receipt.this,"head");
-                    	 BackStage.dataRequest(Receipt.this,"head2");
-                    	 File head= new File(Receipt.this.getFilesDir()+"/receipt_head.txt");
- 		            	 File head2= new File(Receipt.this.getFilesDir()+"/receipt_head2.txt");
- 		            	 while(head.exists()!=true&head2.exists()!=true){
- 		            		Log.i(tag, "wait for head & head2");
- 		            	}
- 		            	generateEntity();
- 		            	
- 		            	//請求主Thread將非中獎號打XX
- 		            	Receipt.this.runOnUiThread(new Runnable(){
-							@Override
-							public void run() {
-								setBadButton();
-							}	
- 		            	});
- 		            	
- 		            	dismissDialog(DOWNLOAD);
-            		 }
-            	 }.start();
+            	 
+         		if(checkServerMessage()==false){
+         			showDialog(DOWNLOAD);
+               	 new Thread(){
+               		 
+               		 public void run(){
+               			 
+               			 
+               			 //只要一檢查到沒有2個檔案，馬上一次將2筆資料請求下來
+                       	 BackStage.dataRequest(Receipt.this,"head");
+                       	 BackStage.dataRequest(Receipt.this,"head2");
+                       	 File head= new File(Receipt.this.getFilesDir()+"/receipt_head.txt");
+    		            	 File head2= new File(Receipt.this.getFilesDir()+"/receipt_head2.txt");
+    		            	 while(head.exists()!=true&head2.exists()!=true){
+    		            		Log.i(tag, "wait for head & head2");
+    		            	}
+    		            	generateEntity();
+    		            	
+    		            	//請求主Thread將非中獎號打XX
+    		            	Receipt.this.runOnUiThread(new Runnable(){
+   							@Override
+   							public void run() {
+   								setBadButton();
+   							}	
+    		            	});
+    		            	
+    		            	dismissDialog(DOWNLOAD);
+               		 }
+               	 }.start();
+        		}           	 
+            	 
 
             	
              }
         }else{
         	Log.i(tag, "f.exist=true");
         	generateEntity();
+        	
+        	checkCutter();
+        	
+    		
         	setBadButton();
 
         }
@@ -815,7 +850,7 @@ public class Receipt extends Activity {
     	}else if(logic.equals("LeftToRight")){
     		text=" [第1位數] ";
     	}
-    	ResponseDialog.newNotifyDialog(Receipt.this, softVersion+" 新增功能", "●懶人輸入法\n為了增加對獎速度，\n如果發票的"+text+"是XX\n發票就可以直接扔了！\n●修復第2組增開獎的對獎問題。\n●調整開心大媽的部份語音。\n●特定字體加上區分的顏色。", "warning");
+    	ResponseDialog.newNotifyDialog(Receipt.this, softVersion+" 新增功能", "●懶人輸入法\n為了增加對獎速度，\n如果發票的"+text+"是XX\n發票就可以直接扔了！\n●為了2011-03月的特別開獎做更新", "warning");
 	}
 	
 	/**
@@ -870,227 +905,296 @@ public class Receipt extends Activity {
 				showDialog(SETMONTH);
 				break;
 			case 1:
-				
-				    LayoutInflater factory = LayoutInflater.from(this);
-		            final View form = factory.inflate(R.layout.form, null);
-				    Builder AA=new AlertDialog.Builder(Receipt.this).setView(form);        
-		               
-		            TextView text_title=(TextView) form.findViewById(R.id.text_title);
-					TextView text_spec=(TextView) form.findViewById(R.id.text_spec);
-					TextView text_head=(TextView) form.findViewById(R.id.text_head);
-					TextView text_addnew=(TextView) form.findViewById(R.id.text_addnew);
-					TextView text_period=(TextView) form.findViewById(R.id.text_period);
-					
-					//設定表格的開頭月份
-					text_title.setText(text_title.getText().toString().replace("#date", month));
-					
-					//設定特獎文字的紅色字體
-					String change_char_spe=new String();
+				 if(cutter == 2){//2011-03月的特別表格
+						 LayoutInflater factory = LayoutInflater.from(this);
+						    //一般的Table Form是from，而2011-03-25特別版為form2
+				            final View form = factory.inflate(R.layout.form2, null);
+						    Builder AA=new AlertDialog.Builder(Receipt.this).setView(form);        
+				               
+				            TextView text_title=(TextView) form.findViewById(R.id.text_title);
+				            
+				            //2011-03-25新增超級特別獎
+				            TextView text_super_spec=(TextView) form.findViewById(R.id.text_super_spec);
+							TextView text_spec=(TextView) form.findViewById(R.id.text_spec);
+							TextView text_head=(TextView) form.findViewById(R.id.text_head);
+							TextView text_addnew=(TextView) form.findViewById(R.id.text_addnew);
+							TextView text_period=(TextView) form.findViewById(R.id.text_period);
+							
+							//設定表格的開頭月份
+							text_title.setText(text_title.getText().toString().replace("#date", month));
 
-					for(int i=0;i<=2;i++){
-						
-						String origin_spe=checknum[i];
-						Log.i("tag", "checknum["+i+"]: "+origin_spe);
 
-						if(change_char_spe.equals("")){
-							change_char_spe=Character.toString(origin_spe.charAt(0))+Character.toString(origin_spe.charAt(1))+Character.toString(origin_spe.charAt(2))+Character.toString(origin_spe.charAt(3))+Character.toString(origin_spe.charAt(4))+"<font color='red'><b>"+origin_spe.charAt(5)+"</b></font>"+Character.toString(origin_spe.charAt(6))+Character.toString(origin_spe.charAt(7))+"<br>";
-//							Log.i("tag", "change_char_spe: "+change_char_spe);
-						}else{
-							if(i==2){
-								change_char_spe+=Character.toString(origin_spe.charAt(0))+Character.toString(origin_spe.charAt(1))+Character.toString(origin_spe.charAt(2))+Character.toString(origin_spe.charAt(3))+Character.toString(origin_spe.charAt(4))+"<font color='red'><b>"+origin_spe.charAt(5)+"</b></font>"+Character.toString(origin_spe.charAt(6))+Character.toString(origin_spe.charAt(7));
-							}else{
-								change_char_spe+=Character.toString(origin_spe.charAt(0))+Character.toString(origin_spe.charAt(1))+Character.toString(origin_spe.charAt(2))+Character.toString(origin_spe.charAt(3))+Character.toString(origin_spe.charAt(4))+"<font color='red'><b>"+origin_spe.charAt(5)+"</b></font>"+Character.toString(origin_spe.charAt(6))+Character.toString(origin_spe.charAt(7))+"<br>";
-							}
-							
-						}
+		//======================================================					
+							//設定超級特獎文字的紅色字體
+							String change_char_super_spe=new String();	
+															
+								String origin_super_spe=checknum[0];
+								Log.i("tag", "checknum["+0+"]: "+origin_super_spe);
 
-//						Log.i("tag", "origin_spe: "+origin_spe);
-					}
-//					Log.i("tag", "change_char_spe: "+change_char_spe);
-				
-					text_spec.setText(Html.fromHtml(change_char_spe), TextView.BufferType.SPANNABLE);
-//					text_spec.setText(text_spec.getText().toString().replace("test1\ntest2\ntest3", checknum[0]+"\n"+checknum[1]+"\n"+checknum[2]));
-				
-		//==========================================
-					//設定頭獎文字的紅色字體
-					String change_char_head="";
-					for(int i=3;i<=5;i++){
+								if(change_char_super_spe.equals("")){
+									change_char_super_spe=Character.toString(origin_super_spe.charAt(0))+Character.toString(origin_super_spe.charAt(1))+Character.toString(origin_super_spe.charAt(2))+Character.toString(origin_super_spe.charAt(3))+Character.toString(origin_super_spe.charAt(4))+"<font color='red'><b>"+origin_super_spe.charAt(5)+"</b></font>"+Character.toString(origin_super_spe.charAt(6))+Character.toString(origin_super_spe.charAt(7))+"<br>";
+//									Log.i("tag", "change_char_spe: "+change_char_spe);
+								}
 						
-						String origin_head=checknum[i];
-						if(change_char_head.equals("")){
-							change_char_head=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7))+"<br>";
-						}else{
-							if(i==5){
-								change_char_head+=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7));
-							}else{
-								change_char_head+=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7))+"<br>";
-							}
+							text_super_spec.setText(Html.fromHtml(change_char_super_spe), TextView.BufferType.SPANNABLE);
 							
-						}
-						
-						
-										
-						
-					}
-					text_head.setText(Html.fromHtml(change_char_head), TextView.BufferType.SPANNABLE);
-//					text_head.setText(text_head.getText().toString().replace("test1\ntest2\ntest3", checknum[3]+"\n"+checknum[4]+"\n"+checknum[5]));
-					
-					
-					//=======================================
-					//檢查有幾組特別號的紅色字體
-					int last_count=0;
-					try{
-						for(int i=6;i<10;i++){
-							String buffer=checknum[i];
-							last_count=i;
-							Log.i("tag", "last is: "+i);
-							
-						}
-						
-					}catch(ArrayIndexOutOfBoundsException e){		
-						
-						if(last_count==0){
-							
+		//======================================================					
+							//設定特獎文字的紅色字體
+							String change_char_spe=new String();
 
-							text_addnew.setText(text_addnew.getText().toString().replace("#addnew", "無\n"));
-
-							
-						}else if(last_count==6){
-							String origin=checknum[6];
-							
-							String change_char="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2)+"<br>";
-							text_addnew.setText(Html.fromHtml(change_char), TextView.BufferType.SPANNABLE);
-//							text_addnew.setText(text_addnew.getText().toString().replace("#addnew", checknum[6]+"\n"));
-						}else if(last_count>6){
-							
-							String change_char="";
-							for(int i=6;i<=last_count;i++){
+//							for(int i=1;i<2;i++){
 								
-								String origin=checknum[i];
-								if(change_char.equals("")){
-									change_char="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2)+"<br>";
+								String origin_spe=checknum[1];
+								Log.i("tag", "checknum["+1+"]: "+origin_spe);
+
+								if(change_char_spe.equals("")){
+									change_char_spe=Character.toString(origin_spe.charAt(0))+Character.toString(origin_spe.charAt(1))+Character.toString(origin_spe.charAt(2))+Character.toString(origin_spe.charAt(3))+Character.toString(origin_spe.charAt(4))+"<font color='red'><b>"+origin_spe.charAt(5)+"</b></font>"+Character.toString(origin_spe.charAt(6))+Character.toString(origin_spe.charAt(7))+"<br>";
+//									Log.i("tag", "change_char_spe: "+change_char_spe);
+								}
+							text_spec.setText(Html.fromHtml(change_char_spe), TextView.BufferType.SPANNABLE);
+
+				//==========================================
+							//設定頭獎文字的紅色字體
+							String change_char_head="";
+							for(int i=2;i<=4;i++){
+								
+								String origin_head=checknum[i];
+								if(change_char_head.equals("")){
+									change_char_head=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7))+"<br>";
 								}else{
-									if(i==last_count){
-										change_char+="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2);
+									if(i==4){
+										change_char_head+=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7));
 									}else{
-										change_char+="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2)+"<br>";
+										change_char_head+=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7))+"<br>";
 									}
 									
-								}
-								
-								
-								text_addnew.setText(Html.fromHtml(change_char), TextView.BufferType.SPANNABLE);				
+								}									
 								
 							}
-//						
+							text_head.setText(Html.fromHtml(change_char_head), TextView.BufferType.SPANNABLE);						
+							
+							//=======================================
+							//檢查有幾組特別號的紅色字體
+
+							String change_char = "";
+								for(int i=5;i<checknum.length;i++){
+									Log.i("tag", "checknum.length "+checknum.length);
+									
+									String origin=checknum[i];
+									
+									if(i == checknum.length-1){
+										change_char+="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2);
+										Log.i("tag", "i= "+i + change_char);
+									}else{
+										change_char+="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2)+"<br>";
+										Log.i("tag", "i= "+i + change_char);
+									}
+									
+									text_addnew.setText(Html.fromHtml(change_char), TextView.BufferType.SPANNABLE);
+								}
+								
+							
+							
+							text_period.setText(text_period.getText().toString().replace("#period", getmoneyperoid+"\n"));
+							
+							AA.show();
+					}else if(cutter ==3){//3特3頭的普通表格
+						LayoutInflater factory = LayoutInflater.from(this);
+					    //一般的Table Form是from，而2011-03-25特別版為form2
+			            final View form = factory.inflate(R.layout.form, null);
+					    Builder AA=new AlertDialog.Builder(Receipt.this).setView(form);        
+			               
+			            TextView text_title=(TextView) form.findViewById(R.id.text_title);
+			            TextView text_spec=(TextView) form.findViewById(R.id.text_spec);
+						TextView text_head=(TextView) form.findViewById(R.id.text_head);
+						TextView text_addnew=(TextView) form.findViewById(R.id.text_addnew);
+						TextView text_period=(TextView) form.findViewById(R.id.text_period);
+						
+						//設定表格的開頭月份
+						text_title.setText(text_title.getText().toString().replace("#date", month));
+						//======================================================					
+						//設定特獎文字的紅色字體
+						String change_char_spe=new String();
+
+						for(int i=0;i<3;i++){
+							
+							String origin_spe=checknum[i];
+							Log.i("tag", "checknum["+i+"]: "+origin_spe);
+
+							if(change_char_spe.equals("")){
+								change_char_spe=Character.toString(origin_spe.charAt(0))+Character.toString(origin_spe.charAt(1))+Character.toString(origin_spe.charAt(2))+Character.toString(origin_spe.charAt(3))+Character.toString(origin_spe.charAt(4))+"<font color='red'><b>"+origin_spe.charAt(5)+"</b></font>"+Character.toString(origin_spe.charAt(6))+Character.toString(origin_spe.charAt(7))+"<br>";
+//								Log.i("tag", "change_char_spe: "+change_char_spe);
+							}else{
+								if(i==2){
+									change_char_spe+=Character.toString(origin_spe.charAt(0))+Character.toString(origin_spe.charAt(1))+Character.toString(origin_spe.charAt(2))+Character.toString(origin_spe.charAt(3))+Character.toString(origin_spe.charAt(4))+"<font color='red'><b>"+origin_spe.charAt(5)+"</b></font>"+Character.toString(origin_spe.charAt(6))+Character.toString(origin_spe.charAt(7));
+								}else{
+									change_char_spe+=Character.toString(origin_spe.charAt(0))+Character.toString(origin_spe.charAt(1))+Character.toString(origin_spe.charAt(2))+Character.toString(origin_spe.charAt(3))+Character.toString(origin_spe.charAt(4))+"<font color='red'><b>"+origin_spe.charAt(5)+"</b></font>"+Character.toString(origin_spe.charAt(6))+Character.toString(origin_spe.charAt(7))+"<br>";
+								}
+								
+							}
+
+//							Log.i("tag", "origin_spe: "+origin_spe);
+						}
+//						Log.i("tag", "change_char_spe: "+change_char_spe);
+					
+						text_spec.setText(Html.fromHtml(change_char_spe), TextView.BufferType.SPANNABLE);
+				
+			//==========================================
+						//設定頭獎文字的紅色字體
+						String change_char_head="";
+						for(int i=3;i<=5;i++){
+							
+							String origin_head=checknum[i];
+							if(change_char_head.equals("")){
+								change_char_head=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7))+"<br>";
+							}else{
+								if(i==5){
+									change_char_head+=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7));
+								}else{
+									change_char_head+=Character.toString(origin_head.charAt(0))+Character.toString(origin_head.charAt(1))+Character.toString(origin_head.charAt(2))+Character.toString(origin_head.charAt(3))+Character.toString(origin_head.charAt(4))+"<font color='red'><b>"+origin_head.charAt(5)+"</b></font>"+Character.toString(origin_head.charAt(6))+Character.toString(origin_head.charAt(7))+"<br>";
+								}
+								
+							}
+							
+							
+											
 							
 						}
+						text_head.setText(Html.fromHtml(change_char_head), TextView.BufferType.SPANNABLE);						
+						
+						//=======================================
+						//檢查有幾組特別號的紅色字體
+
+						try{
+							String change_char="";
+							for(int i=6;i<checknum.length;i++){
+
+								Log.i("tag", "last is: "+i);
+								String origin=checknum[i];
+								
+								if(i == checknum.length-1){
+									change_char+="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2);
+								}else{
+									change_char+="<font color='red'><b>"+origin.charAt(0)+"</b></font>"+origin.charAt(1)+origin.charAt(2)+"<br>";
+								}
+								text_addnew.setText(Html.fromHtml(change_char), TextView.BufferType.SPANNABLE);
+							}
+							
+						}catch(ArrayIndexOutOfBoundsException e){			
+
+								text_addnew.setText(text_addnew.getText().toString().replace("#addnew", "無\n"));
+
+						}
+						
+						text_period.setText(text_period.getText().toString().replace("#period", getmoneyperoid+"\n"));
+						
+						AA.show();
 					}
-					
-					text_period.setText(text_period.getText().toString().replace("#period", getmoneyperoid+"\n"));
-					
-					AA.show();
+				   
 					
 				break;
 			case 2://先將原檔名更名成tem,下載完後,再將tem刪除
 //				Log.i(tag, "into showDialog");
-				showDialog(UPDATENUM);
-				final Handler handler=new Handler();
-				
-				new Thread(){
-					public void run(){
-						File head= new File(Receipt.this.getFilesDir()+"/receipt_head.txt");
-						 if(head.exists()==true){
-							 File temhead=new File(Receipt.this.getFilesDir()+"/temreceipt_head.txt");
-							 head.renameTo(temhead);	 
-						 }
-						 File head2= new File(Receipt.this.getFilesDir()+"/receipt_head2.txt");
-						 if(head2.exists()==true){
-							 File temhead2=new File(Receipt.this.getFilesDir()+"/temreceipt_head2.txt");
-							 head2.renameTo(temhead2);	
-						 }
-						 
-						 if (BackStage.check3GConnectStatus(Receipt.this)==false&BackStage.checkEnableingWifiStatus(Receipt.this)==false){		            	
+				if(checkServerMessage()==false){
+					showDialog(UPDATENUM);
+					final Handler handler=new Handler();
+					
+					new Thread(){
+						public void run(){
+							File head= new File(Receipt.this.getFilesDir()+"/receipt_head.txt");
+							 if(head.exists()==true){
+								 File temhead=new File(Receipt.this.getFilesDir()+"/temreceipt_head.txt");
+								 head.renameTo(temhead);	 
+							 }
+							 File head2= new File(Receipt.this.getFilesDir()+"/receipt_head2.txt");
+							 if(head2.exists()==true){
+								 File temhead2=new File(Receipt.this.getFilesDir()+"/temreceipt_head2.txt");
+								 head2.renameTo(temhead2);	
+							 }
+							 
+							 if (BackStage.check3GConnectStatus(Receipt.this)==false&BackStage.checkEnableingWifiStatus(Receipt.this)==false){		            	
+								 handler.post(new Runnable(){
+
+									@Override
+									public void run() {
+										dismissDialog(UPDATENUM);
+										new AlertDialog.Builder(Receipt.this)
+						     	    	.setTitle("沒有中獎號碼資料!")
+						     			.setIcon(R.drawable.warning)
+						     			.setMessage("請連上網路以取得資料...")
+						     			.setOnKeyListener(new OnKeyListener(){
+
+											@Override//防呆專用，限制使用者不能按其它的實體按鍵返回沒有更新的主畫面
+											public boolean onKey(DialogInterface dialog, int keyCode,
+													KeyEvent event) {
+												if(keyCode==KeyEvent.KEYCODE_SEARCH|keyCode==KeyEvent.KEYCODE_BACK){
+													finish();
+												}
+												
+												return true;
+											}
+						     				
+						     			})
+						     			.setPositiveButton("取消", new DialogInterface.OnClickListener() {
+
+						     				@Override
+						     				public void onClick(DialogInterface dialog, int which) {
+						     				
+						     					File temhead=new File(Receipt.this.getFilesDir()+"/temreceipt_head.txt");
+						    					File temhead2=new File(Receipt.this.getFilesDir()+"/temreceipt_head2.txt");
+						    					if(temhead.exists()==true){
+						    						temhead.renameTo(new File(Receipt.this.getFilesDir()+"/receipt_head.txt"));
+						    					}
+						    					if(temhead2.exists()==true){
+						    						temhead2.renameTo(new File(Receipt.this.getFilesDir()+"/receipt_head2.txt"));
+						    					}
+						     				}
+						     				})
+						     			
+						     			.show();	
+										
+									}
+									 
+								 });
+				             	
+				             }else{
+				            	 //跟伺服器要求更新
+				            	 BackStage.dataRequest(Receipt.this,"head");
+				            	 BackStage.dataRequest(Receipt.this,"head2"); 
+				            	 
+				             }
+							 
+							 
+							 
+							 if(head.exists()==true){							 
+								 File temhead=new File(Receipt.this.getFilesDir()+"/temreceipt_head.txt");
+								 temhead.delete();
+							 }
+							 if(head2.exists()==true){
+								 File temhead2=new File(Receipt.this.getFilesDir()+"/temreceipt_head2.txt");
+								 temhead2.delete();
+								 
+							 }
+							 if(head.exists()==true){
 							 handler.post(new Runnable(){
 
 								@Override
 								public void run() {
-									dismissDialog(UPDATENUM);
-									new AlertDialog.Builder(Receipt.this)
-					     	    	.setTitle("沒有中獎號碼資料!")
-					     			.setIcon(R.drawable.warning)
-					     			.setMessage("請連上網路以取得資料...")
-					     			.setOnKeyListener(new OnKeyListener(){
-
-										@Override//防呆專用，限制使用者不能按其它的實體按鍵返回沒有更新的主畫面
-										public boolean onKey(DialogInterface dialog, int keyCode,
-												KeyEvent event) {
-											if(keyCode==KeyEvent.KEYCODE_SEARCH|keyCode==KeyEvent.KEYCODE_BACK){
-												finish();
-											}
-											
-											return true;
+										Log.i(tag, "update success!");
+										Toast.makeText(Receipt.this, "更新成功！", Toast.LENGTH_SHORT).show();
+										if(progressdialog!=null){
+											//AnMarket回報錯誤這段，加上if判斷式維護
+											dismissDialog(UPDATENUM);
 										}
-					     				
-					     			})
-					     			.setPositiveButton("取消", new DialogInterface.OnClickListener() {
-
-					     				@Override
-					     				public void onClick(DialogInterface dialog, int which) {
-					     				
-					     					File temhead=new File(Receipt.this.getFilesDir()+"/temreceipt_head.txt");
-					    					File temhead2=new File(Receipt.this.getFilesDir()+"/temreceipt_head2.txt");
-					    					if(temhead.exists()==true){
-					    						temhead.renameTo(new File(Receipt.this.getFilesDir()+"/receipt_head.txt"));
-					    					}
-					    					if(temhead2.exists()==true){
-					    						temhead2.renameTo(new File(Receipt.this.getFilesDir()+"/receipt_head2.txt"));
-					    					}
-					     				}
-					     				})
-					     			
-					     			.show();	
-									
-								}
-								 
+										
+										onResume();				
+								}							 
 							 });
-			             	
-			             }else{
-			            	 //跟伺服器要求更新
-			            	 BackStage.dataRequest(Receipt.this,"head");
-			            	 BackStage.dataRequest(Receipt.this,"head2"); 
-			            	 
-			             }
-						 
-						 
-						 
-						 if(head.exists()==true){							 
-							 File temhead=new File(Receipt.this.getFilesDir()+"/temreceipt_head.txt");
-							 temhead.delete();
-						 }
-						 if(head2.exists()==true){
-							 File temhead2=new File(Receipt.this.getFilesDir()+"/temreceipt_head2.txt");
-							 temhead2.delete();
+							 }						 
+						}
+					}.start();
+				}
 							 
-						 }
-						 if(head.exists()==true){
-						 handler.post(new Runnable(){
-
-							@Override
-							public void run() {
-									Log.i(tag, "update success!");
-									Toast.makeText(Receipt.this, "更新成功！", Toast.LENGTH_SHORT).show();
-									if(progressdialog!=null){
-										//AnMarket回報錯誤這段，加上if判斷式維護
-										dismissDialog(UPDATENUM);
-									}
-									
-									onResume();				
-							}							 
-						 });
-						 }						 
-					}
-				}.start();			 
 				break;
 			case 3:
 				Intent intent=new Intent();
@@ -1227,5 +1331,183 @@ public class Receipt extends Activity {
 		}
 		return super.onCreateDialog(id);
 	}
+	
+	/**
+	 * 呼叫AdMob
+	 */
+	private void callAdView(){
+//		Log.i("tag", "callAdView");
+	    // Create the adView
+	    adView = new AdView(this, AdSize.BANNER, "a14cd12a9d5c65a");
+	    // Lookup your LinearLayout assuming it’s been given
+	    // the attribute android:id="@+id/mainLayout"
+	    LinearLayout layout = (LinearLayout)findViewById(R.id.adView);
+
+	    // Add the adView to it
+	    layout.addView(adView);
+	    
+	    // Initiate a generic request to load it with an ad
+	    AdRequest ar = new AdRequest();
+//	//    ar.setTesting(true);
+	    adView.loadAd(ar);
+//	    Log.i("tag", "isAdReady? "+adView.isReady());
+//	    Log.i("tag", "isAdRefresh? "+adView.isRefreshing());
+	    adView.setAdListener(new AdListener(){
+
+			@Override
+			public void onDismissScreen(Ad arg0) {
+				Log.i("tag", "onDismissScreen, "+arg0.toString());
+			}
+
+			@Override
+			public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
+				Log.i("tag", "onFailedToReceiveAd, "+arg1.toString());
+				
+			}
+
+			@Override
+			public void onLeaveApplication(Ad arg0) {
+				Log.i("tag", "onLeaveApplication, "+arg0.toString());
+				
+			}
+
+			@Override
+			public void onPresentScreen(Ad arg0) {
+				Log.i("tag", "onPresentScreen, "+arg0.toString());
+				
+			}
+
+			@Override
+			public void onReceiveAd(Ad arg0) {
+				Log.i("tag", "onReceiveAd, "+arg0.toString());
+				
+			}
+	    	
+	    });
+	}
+	
+	/**
+	 * 算看看指定月份裡，長度為8的中獎號碼有幾筆，如果是6筆，假定為正常對獎模式
+	 * 倘若只有5筆，判斷為2011-03月特別版
+	 */
+	private void checkCutter(){
+    	int count = 0;
+    	for(int i=0;i<checknum.length;i++){
+    		Log.i("tag","checknum["+i+"].length(): "+checknum[i].length());
+    		if(checknum[i].length()==8)count++;
+    	}
+    	
+		if(count>5){
+			cutter = 3;
+		}else{
+			cutter = 2;
+		}
+	}
+	
+	/**
+	 * 檢查是否有從Camangi傳出去的訊息
+	 * 這個視窗主要目的是因為近期一直不斷亂改對獎邏輯
+	 * 為了安撫使用者，我做出一個可以即時從我這方告訴使用者
+	 * 我有沒有更新的一個訊息，可以告訴使用者暫停使用之類的
+	 */
+	private boolean checkServerMessage(){
+		Log.i("tag", "checkServerMessage");
+		boolean return_value = false;
+		HttpURLConnection uc = null;
+		URL url = null;
+		String buffera,contentBuffer="";
+		 
+		
+		 
+		 if (BackStage.check3GConnectStatus(Receipt.this)==false&BackStage.checkEnableingWifiStatus(Receipt.this)==false){		            	
+			 handler.post(new Runnable(){
+
+				@Override
+				public void run() {
+					dismissDialog(UPDATENUM);
+					new AlertDialog.Builder(Receipt.this)
+	     	    	.setTitle("注意")
+	     			.setIcon(R.drawable.warning)
+	     			.setMessage("請先連上網路...")
+	     			.setOnKeyListener(new OnKeyListener(){
+
+						@Override//防呆專用，限制使用者不能按其它的實體按鍵返回沒有更新的主畫面
+						public boolean onKey(DialogInterface dialog, int keyCode,
+								KeyEvent event) {
+							if(keyCode==KeyEvent.KEYCODE_SEARCH|keyCode==KeyEvent.KEYCODE_BACK){
+								finish();
+							}
+							
+							return true;
+						}
+	     				
+	     			})
+	     			.show();
+				}
+			 });
+		 }else{
+			 try {
+					url = new URL("http://frank.camangi.com/APK/invoice/maintain.html");
+					uc = (HttpURLConnection)url.openConnection();
+					while((uc.getResponseCode()!=HttpURLConnection.HTTP_OK)){
+						uc.disconnect();
+						uc  = (HttpURLConnection)url.openConnection();	
+						}
+					
+					InputStream is = uc.getInputStream();
+					InputStreamReader isr = new InputStreamReader(is);
+					BufferedReader br = new BufferedReader(isr);
+					   do{
+						   buffera = br.readLine();
+		  					   if(buffera!=null){	   
+		  						 contentBuffer+=new String(buffera.getBytes());   
+		  					   } 					   
+					   } while(buffera !=null);
+					   
+				} catch (MalformedURLException e1) {
+					Log.i("tag", "MalformedURLException: "+e1.getMessage());
+				} catch (IOException e) {
+					Log.i("tag", "IOException: "+e.getMessage());
+				}
+				
+				
+				Log.i("tag", "contentBuffer "+contentBuffer);
+				
+				if(!contentBuffer.equals("")){
+					return_value =true;
+					new AlertDialog.Builder(this)
+					.setTitle("即時訊息")
+					.setMessage(contentBuffer)
+					.setPositiveButton("確認", new DialogInterface.OnClickListener(){
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							finish();
+							
+						}
+						
+					})
+					.setOnKeyListener(new OnKeyListener(){
+
+						@Override//防呆專用，限制使用者不能按其它的實體按鍵返回沒有更新的主畫面
+						public boolean onKey(DialogInterface dialog, int keyCode,
+								KeyEvent event) {
+							if(keyCode==KeyEvent.KEYCODE_SEARCH|keyCode==KeyEvent.KEYCODE_BACK){
+								finish();
+							}
+							
+							return true;
+						}
+					})
+					.show();
+				}		
+			 
+			}
+					
+		
+		return return_value;
+
+	}
+	
 	
 }

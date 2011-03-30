@@ -12,7 +12,7 @@
         android:layout_width="fill_parent" 
         android:layout_height="fill_parent"
         android:background="@drawable/background"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:gravity="fill">
 
      <TextView 
@@ -80,7 +80,7 @@
     	android:layout_marginTop="18dip"
     	android:layout_below="@id/text"
 		android:layout_width="90dip" 
-        android:layout_height="70dip"
+        android:layout_height="65dip"
         android:layout_marginLeft="24dip"
         android:textSize="40dp"
         android:background="@drawable/button_background"
@@ -89,7 +89,7 @@
       <Button 
     	android:id="@+id/button_2" 
 		android:layout_width="90dip" 
-        android:layout_height="70dip" 
+        android:layout_height="65dip" 
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_1"
 		android:layout_alignTop="@id/button_1"
@@ -98,7 +98,7 @@
  <Button 
     	android:id="@+id/button_3" 
 		android:layout_width="90dip" 
-        android:layout_height="70dip" 
+        android:layout_height="65dip" 
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_2"
 		android:layout_alignTop="@id/button_2"	
@@ -107,7 +107,7 @@
       <Button 
     	android:id="@+id/button_4" 
 		android:layout_width="90dip" 
-        android:layout_height="70dip"  
+        android:layout_height="65dip"  
         android:background="@drawable/button_background"
         android:layout_below="@id/button_1"
         android:layout_alignLeft="@id/button_1"
@@ -116,7 +116,7 @@
       <Button 
     	android:id="@+id/button_5" 
 		android:layout_width="90dip" 
-        android:layout_height="70dip"  
+        android:layout_height="65dip"  
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_4"
 		android:layout_alignTop="@id/button_4"
@@ -126,7 +126,7 @@
      <Button 
     	android:id="@+id/button_6" 
 		android:layout_width="90dip" 
-        android:layout_height="70dip"
+        android:layout_height="65dip"
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_5"
 		android:layout_alignTop="@id/button_5"
@@ -136,7 +136,7 @@
       <Button 
     	android:id="@+id/button_7" 
 		android:layout_width="90dip" 
-        android:layout_height="70dip"
+        android:layout_height="65dip"
         android:background="@drawable/button_background"
         android:layout_below="@id/button_4"
         android:layout_alignLeft="@id/button_4"
@@ -145,7 +145,7 @@
       <Button 
     	android:id="@+id/button_8" 
 		android:layout_width="90dip" 
-        android:layout_height="70dip" 
+        android:layout_height="65dip" 
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_7"
 		android:layout_alignTop="@id/button_7"
@@ -155,7 +155,7 @@
      <Button 
     	android:id="@+id/button_9" 
 		android:layout_width="90dip" 
-        android:layout_height="70dip" 
+        android:layout_height="65dip" 
         android:background="@drawable/button_background"
 		android:layout_toRightOf="@id/button_8"
 		android:layout_alignTop="@id/button_8"
@@ -170,7 +170,7 @@
 		android:layout_below="@id/button_7"
 		android:layout_alignLeft="@id/button_7"
 		android:layout_marginBottom="1dip"
-		android:textSize="20dp"
+		android:textSize="30dp"
         android:text="清除" />         
         <Button 
     	android:id="@+id/button_0" 
@@ -179,18 +179,14 @@
         android:background="@drawable/button_background"
         android:layout_toRightOf="@id/button_clear"
 		android:layout_below="@id/button_8"
-		android:textSize="40dp"
+		android:textSize="30dp"
         android:text="0"/>  
           
-<com.admob.android.ads.AdView
-android:id="@+id/ad"
-android:layout_below="@id/button_clear"
+<LinearLayout
+android:id="@+id/adView"
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
-myapp:backgroundColor="#000000"
-myapp:primaryTextColor="#FFFFFF"
-myapp:secondaryTextColor="#CCCCCC"
-/>
+android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
 </LinearLayout>

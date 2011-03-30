@@ -154,8 +154,26 @@ v1.0.7
 3.特定字體加上區分的顏色。
 4.[查看中獎號]改成ScrollView以防小螢幕看不到下面的問題
 
+3/28
+v1.0.7.1 Release
+1.換掉Admob的jar
+2.在Receipt.java的onResume()裡算出對獎切割點，目前我假設若資料為6筆8位數，則為正常對獎模式，
+cutter為3，否則2011-03月為5筆8位數，cutter為2
+(以前cutter為3，因為特獎占了3筆，這次2011-3-25特獎只占了2筆)
+3.重新調整800*480/480*320/320*240的9個按鈕高度以符合新版Admob
+4.當使用者點選查看中獎號時，2011-03的表格是新畫出來的form2
+而原始表格是form,如果下一次恢復以前，那麼form2就可以拿掉了
+
 [待做1]設定版面
 [待做2]震動功能
 [待做3]平版專用介面
 [待做4]新增更新提示
 [待做5]查看中獎號碼改成ScrollView以防320*240看不到全部表格
+
+控制Camangi端伺服器防止使用者更新的方式
+UBUNTU環境︰
+上傳︰
+$scp -P 13377 maintain.html root@frank.camangi.com:/var/www/html/APK/invoice/
+
+下載︰
+$ scp -P 13377 root@frank.camangi.com:/var/www/html/APK/invoice/maintain.html /home/simon/
