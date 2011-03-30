@@ -170,7 +170,15 @@ cutter為3，否則2011-03月為5筆8位數，cutter為2
 [待做4]新增更新提示
 [待做5]查看中獎號碼改成ScrollView以防320*240看不到全部表格
 
+3/30
+v1.0.9
+1.修復第1次更新完後查看中獎號碼卻沒有出現的問題
+2.更換SDK至2.2
+3.加入APP2SD
+
+=================================================
 控制Camangi端伺服器防止使用者更新的方式
+
 UBUNTU環境︰
 上傳︰
 $scp -P 13377 maintain.html root@frank.camangi.com:/var/www/html/APK/invoice/

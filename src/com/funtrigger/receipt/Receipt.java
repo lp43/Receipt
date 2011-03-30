@@ -94,7 +94,7 @@ import com.google.ads.AdRequest.ErrorCode;
  */
 public class Receipt extends Activity {
 
-	private String softVersion="v1.0.7.1";
+	private String softVersion="v1.0.9";
     Button button0,button1,button2,button3,button4,button5,
     button6,button7,button8,button9,button_clear;
     public static TextView textview,textfirst,textfive;
@@ -619,10 +619,6 @@ public class Receipt extends Activity {
         }else{
         	Log.i(tag, "f.exist=true");
         	generateEntity();
-        	
-        	checkCutter();
-        	
-    		
         	setBadButton();
 
         }
@@ -730,14 +726,11 @@ public class Receipt extends Activity {
 				String month_buffer="<font color='green'><b>"+month+"</b></font>";
 		        String finaltext1=textfirst.getText().toString().replace("#date", month_buffer);
 				textfirst.setText(Html.fromHtml(finaltext1), TextView.BufferType.SPANNABLE);
-		 		
-//		        String finaltext1=textfirst.getText().toString().replace("#date", month);
-//		        textfirst.setText(finaltext1);
 			}
  			
  		});
  		
-
+ 		checkCutter();
     }
     
     /**
@@ -905,7 +898,9 @@ public class Receipt extends Activity {
 				showDialog(SETMONTH);
 				break;
 			case 1:
+//				Log.i("tag", "press show Dialog, cutter = "+cutter);
 				 if(cutter == 2){//2011-03月的特別表格
+					 Log.i("tag", "into cutter =2, show Dialog");
 						 LayoutInflater factory = LayoutInflater.from(this);
 						    //一般的Table Form是from，而2011-03-25特別版為form2
 				            final View form = factory.inflate(R.layout.form2, null);
@@ -999,6 +994,7 @@ public class Receipt extends Activity {
 							
 							AA.show();
 					}else if(cutter ==3){//3特3頭的普通表格
+						 Log.i("tag", "into cutter =3, show Dialog");
 						LayoutInflater factory = LayoutInflater.from(this);
 					    //一般的Table Form是from，而2011-03-25特別版為form2
 			            final View form = factory.inflate(R.layout.form, null);

@@ -56,6 +56,7 @@ public class LastThree{
 //			    Log.i(tag, "numcheck lengh: "+numcheck.length());
 			    //i的範圍以內是特別獎
 			    if(numcheck.length()==8){
+			
 			    	if(i<Receipt.cutter+1){
 			    		
 			    		if(numcheck.subSequence(5, 8).equals(getlast3num)){
